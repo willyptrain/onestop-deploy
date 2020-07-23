@@ -1,0 +1,22 @@
+
+.navbar-container {
+    top: 0px;
+    position: absolute;
+    left: 0px;
+    width: 100%;
+    height: 12vh;
+}
+.left-nav {
+    width: 70%;
+
+}
+.right-nav {
+    width: 30%;
+
+}
+.nav-link {
+    float: left;
+    margin-right: 15px !important;
+    color: black !important;
+    font-family: Montserrat !important;
+}

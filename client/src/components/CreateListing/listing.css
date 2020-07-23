@@ -1,0 +1,22 @@
+.listing-container {
+    height: 80vh;
+    position: relative;
+    top: 4vh;
+
+}
+
+.listing-header {
+    position: relative;
+    top: 8vh;
+
+}
+.form-root {
+    display: flex;
+    flex-wrap: wrap;
+}
+.listing-full-label {
+    width: 25ch,
+}
+.form-control-trade {
+    min-width: 150px;
+}

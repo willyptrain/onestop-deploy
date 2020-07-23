@@ -1,0 +1,25 @@
+.login {
+    background: blue;
+
+}
+.container {
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(#e66465, #4ECAEC);;
+}
+.textbox-generic {
+    background: white !important;
+    border: 1px solid black;
+    padding-left: 0.5em;
+}
+.login-card {
+    width: 50%;
+    position: absolute;
+    top: 20vh;
+    left: 25%;
+    height: 50vh;
+}
+.login-alert {
+    position: relative;
+    bottom: 5px;
+}
