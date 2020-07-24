@@ -9,6 +9,8 @@ import Redirect from './components/redirect.js';
 import axios from 'axios';
 import Navbar from './components/navbar/navbar.js';
 import CreateListing from './components/CreateListing/CreateListing.js';
+import ViewTrade from './components/CreateListing/ViewTrade.js';
+import ViewSale from './components/CreateListing/ViewSale.js';
 
 
 class App extends React.Component {
@@ -73,16 +75,17 @@ class App extends React.Component {
                 <CreateListing {...this.state} userInfo={this.state['userInfo']} />
               </Route>
 
-              <Route exact path="/view_listing/<id>" component={(props) =>
-                (userInfo == 'Not logged in' ? 
+              <Route exact path="/view_listing/trades/:id" render={(props) =>
                 <div>
                   <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
-                  <Home {...this.state}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <ViewSale {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
-                : <div>
-                  <Navbar {...this.state} loggedIn={userInfo != 'Not logged in'} />
-                  <Home {...this.state} userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
-                </div> )
+              }/>
+              <Route exact path="/view_listing/sales/:id" render={(props) =>
+                <div>
+                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                  <ViewSale {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
               }/>
 
 

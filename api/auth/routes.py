@@ -111,19 +111,43 @@ def verify_password(username_or_token, password):
     g.user = user
     return True
 
-@app.route('/api/users/login', methods=['POST'])
-def login():
-    username = request.json.get('email')
-    password = request.json.get('password')
-    if username is None or password is None:
-        abort(400)    
-    user = User.query.filter_by(username=username).first()
-    if user is not None:
-        if(verify_password(user.username, password)):
-            access_token = user.generate_auth_token()
-            return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':REDIRECT_URI}),201)
+
+
+@app.route('/api/users/listings/trades/<item_id>/<token>', methods=['GET'])
+def get_user_trade(item_id, token):
+    user = User.verify_auth_token(token)
+    if(user is None):
         abort(400)
+    trade = Trade.query.filter_by(id=item_id,username=user.username).first()
+    if(trade is not None):
+        trade_return = {'username': trade.username, 'id': trade.id,'sport': trade.sport,
+                            'player_name': trade.player_name, 'year': trade.year, 'manufacturer': trade.manufacturer,
+                            'cardNumber': trade.cardNumber, 'cardSeries': trade.cardSeries, 'comments': trade.comments, 
+                            'tradeOrSell': trade.tradeOrSell, 'time': trade.time }
+        return (jsonify(trade_return),201)
     abort(400)
+
+
+@app.route('/api/users/listings/sales/<item_id>/<token>', methods=['GET'])
+def get_user_sale(item_id, token):
+    user = User.verify_auth_token(token)
+    if(user is None):
+        abort(400)
+    sale = Sale.query.filter_by(id=item_id,username=user.username).first()
+    if(sale is not None):
+        sale_return = {'username': sale.username, 'id': sale.id,'sport': sale.sport,
+                            'player_name': sale.player_name, 'year': sale.year, 'manufacturer': sale.manufacturer,
+                            'cardNumber': sale.cardNumber, 'cardSeries': sale.cardSeries, 'comments': sale.comments, 
+                            'tradeOrSell': sale.tradeOrSell, 'price':sale.price, 'time': sale.time }
+        return (jsonify(sale_return),201)
+    abort(400)
+
+
+
+
+
+
+
         
 @app.route('/api/listing/create/<token>', methods=['POST'])
 def create_listing(token):
@@ -152,21 +176,36 @@ def create_listing(token):
                             'tradeOrSell': tradeOrSell, 'time': time }
             print(trade_return)
             return (jsonify(trade_return),201)
-        elif(tradeOrSell == "Trade"):
+        elif(tradeOrSell == "Sell"):
             sale = Sale(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
-                        comments=comments, tradeOrSell=tradeOrSell, price=price,time=time)
+                        comments=comments, tradeOrSell=tradeOrSell, price=price, time=time)
+            db.session.add(sale)
+            db.session.commit()
             sale_return = {'username': username, 'id':sale.id,'sport': sport,
                             'player_name': player_name, 'year': year, 'manufacturer': manufacturer,
                             'cardNumber': cardNumber, 'cardSeries': cardSeries, 'comments': comments, 
                             'tradeOrSell': tradeOrSell, 'price':price,'time': time }
-            db.session.add(sale)
-            db.session.commit()
+
             print(sale_return)
             return (jsonify(sale_return),201)
         abort(400)  
     abort(400)
     
+@app.route('/api/users/login', methods=['POST'])
+def login():
+    username = request.json.get('email')
+    password = request.json.get('password')
+    if username is None or password is None:
+        abort(400)    
+    user = User.query.filter_by(username=username).first()
+    if user is not None:
+        if(verify_password(user.username, password)):
+            access_token = user.generate_auth_token()
+            return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':REDIRECT_URI}),201)
+        abort(400)
+    abort(400)
+
 
 @app.route('/api/users/<token>')
 def get_user_info(token):
