@@ -1,4 +1,5 @@
 import React from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 
@@ -7,9 +8,7 @@ export default function Redirect(props) {
     window.location = props.url;
     return (
     <div>
-        <h2>
-            Loading...
-        </h2>
+        <CircularProgress style={{position: 'absolute', top: '40vh'}} />
 
     </div>
 

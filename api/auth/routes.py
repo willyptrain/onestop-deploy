@@ -6,6 +6,8 @@ from flask_httpauth import HTTPBasicAuth
 import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime  
+from sqlalchemy import func
+
 
 
 # initialization
@@ -43,6 +45,9 @@ class Trade(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def json_rep(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class Sale(db.Model):
     __tablename__ = 'sales'
     id = db.Column(db.Integer, primary_key=True)
@@ -62,6 +67,9 @@ class Sale(db.Model):
     def add_to_db(self):
         db.session.add(self)
         db.session.commit()
+
+    def json_rep(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
     
@@ -110,6 +118,42 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
+
+@app.route('/api/all_listings/trades/<sport>/<token>', methods=['GET'])
+def get_all_trades(sport, token):
+    user = User.verify_auth_token(token)
+    if(user is None):
+        abort(400)
+    if(sport.lower() != "all"):
+        trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
+        if(trades is not None):
+            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
+        abort(400)
+    else:
+        trades = Trade.query.all()
+        if(trades is not None):
+            print(trades)
+            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
+        abort(400)
+
+@app.route('/api/all_listings/sales/<sport>/<token>', methods=['GET'])
+def get_all_sales(sport, token):
+    user = User.verify_auth_token(token)
+    if(user is None):
+        abort(400)
+    if(sport.lower() != "all"):
+        sales = Sale.query.filter(Sale.sport.ilike("%"+sport.lower()+"%")).all()
+        if(sales is not None):
+            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+        abort(400)
+    else:
+        sales = Sale.query.all()
+        if(sales is not None):
+            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+        abort(400)
+
+
 
 
 

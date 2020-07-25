@@ -11,6 +11,9 @@ import Navbar from './components/navbar/navbar.js';
 import CreateListing from './components/CreateListing/CreateListing.js';
 import ViewTrade from './components/CreateListing/ViewTrade.js';
 import ViewSale from './components/CreateListing/ViewSale.js';
+import ForTrade from './components/Listings/ForTrade';
+import ForSale from './components/Listings/ForSale';
+import Wanted from './components/Listings/Wanted';
 
 
 class App extends React.Component {
@@ -78,7 +81,7 @@ class App extends React.Component {
               <Route exact path="/view_listing/trades/:id" render={(props) =>
                 <div>
                   <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
-                  <ViewSale {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
+                  <ViewTrade {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
               }/>
               <Route exact path="/view_listing/sales/:id" render={(props) =>
@@ -87,6 +90,24 @@ class App extends React.Component {
                   <ViewSale {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
               }/>
+              <Route exact path="/for_trade/:sport"  render={(props) =>
+                  <div>
+                    <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                    <ForTrade {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
+                  </div>
+                }/>
+              <Route exact path="/for_sale/:sport"  render={(props) =>
+                  <div>
+                    <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                    <ForSale {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
+                  </div>
+                }/>
+              <Route exact path="/wanted/:sport"  render={(props) =>
+                  <div>
+                    <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                    <Wanted {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
+                  </div>
+                }/>
 
 
 

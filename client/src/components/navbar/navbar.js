@@ -19,7 +19,6 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 
 
 export function NavBar(data) {
-    console.log(data.loggedIn);
     const useStyles = makeStyles((theme) => ({
         button: {
             color: 'white',
@@ -74,26 +73,16 @@ export function NavBar(data) {
       const [open, setOpen] = React.useState(false);
       const [onButton, setOnButton] = React.useState(false);
       const [onMenu, setOnMenu] = React.useState(false);
-
+      const [pageOption, setPageOption] = React.useState("all");
       const [anchor, setAnchor] = React.useState(null);
-
-
-      const handleClick = (event) => {
-        // setOpen({ open: true, anchorEl: event.currentTarget });
-        setOpen(true);
-        setAnchor(event.currentTarget);
-        console.log(true)
-      };
     
       const mouseEnterButton = (event) => {
         // setTimeout(() => {
           setOnButton(true);
           setOpen(true);
           setAnchor(event.currentTarget);
-
-          console.log("enter button");
-          console.log(onButton);
-          console.log(onMenu);
+          console.log(event.target.id)
+          setPageOption(event.target.id);
 
 
         // }, 300);
@@ -102,27 +91,18 @@ export function NavBar(data) {
         setTimeout(() => {
           setOnButton(false);
           setOpen(onMenu);
-          console.log("leave button");
-          console.log(onButton);
-          console.log(onMenu);
         }, 300);
       }
       const mouseEnterMenu = () => {
         // setTimeout(() => {
           setOnMenu(true);
           setOpen(true);
-          console.log("enter menu");
-          console.log(onButton);
-          console.log(onMenu);
         // }, 300);
       }
       const mouseLeaveMenu = () => {
         setTimeout(() => {
           setOnMenu(false);
           setOpen(onButton);
-          console.log("leave menu");
-          console.log(onButton);
-          console.log(onMenu);
         }, 300);
       }
 
@@ -132,15 +112,15 @@ export function NavBar(data) {
             <Toolbar>
                 <div className="left-nav">
                 <img src='logo.png' className={classes.logo} />
-                    <Button aria-owns={open ? 'simple-menu' : null} aria-haspopup="true" onClick={handleClick} onMouseEnter={mouseEnterButton} 
+                    <Button aria-owns={open ? 'simple-menu' : null} id="for_trade" aria-haspopup="true" href={`/for_trade/all`} onMouseEnter={mouseEnterButton} 
                                                             onMouseLeave={mouseLeaveButton}  className="nav-link" variant="h6">
                     For Trade
                     </Button>
-                    <Button aria-owns={open ? 'simple-menu' : null} aria-haspopup="true" onClick={handleClick} onMouseEnter={mouseEnterButton} 
+                    <Button aria-owns={open ? 'simple-menu' : null} id="for_sale" aria-haspopup="true" href={`/for_sale/all`} onMouseEnter={mouseEnterButton} 
                                                             onMouseLeave={mouseLeaveButton} className="nav-link" variant="h6">
                     For Sale
                     </Button>
-                    <Button aria-owns={open ? 'simple-menu' : null} aria-haspopup="true" onClick={handleClick} onMouseEnter={mouseEnterButton} 
+                    <Button aria-owns={open ? 'simple-menu' : null} id="wanted" aria-haspopup="true" href={`/wanted/all`}  onMouseEnter={mouseEnterButton} 
                                                             onMouseLeave={mouseLeaveButton}  className="nav-link" variant="h6">
                     Wanted
                     </Button>
@@ -162,17 +142,18 @@ export function NavBar(data) {
                   onMouseEnter={mouseEnterMenu} 
                                                             onMouseLeave={mouseLeaveMenu}
                 >
-                  <MenuItem>View All</MenuItem>
-                  <MenuItem>Baseball</MenuItem>
-                  <MenuItem>Basketball</MenuItem>
-                  <MenuItem>Football</MenuItem>
-                  <MenuItem>Hockey</MenuItem>
-                  <MenuItem>Wrestling/Fighting</MenuItem>
-                  <MenuItem>Soccer</MenuItem>
-                  <MenuItem>Racing</MenuItem>
-                  <MenuItem>Other/Gaming</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/all`}>View All</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/baseball`}>Baseball</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/basketball`}>Basketball</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/football`}>Football</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/hockey`}>Hockey</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/wrestling`}>Wrestling/Fighting</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/soccer`}>Soccer</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/racing`}>Racing</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/other`}>Other/Gaming</MenuItem>
 
                 </Menu>
+                
                 
                 <div className="right-nav">
                     <div className={classes.search}>
@@ -223,6 +204,7 @@ class Navbar extends Component {
     render() {
         return (<div>
            <NavBar {...this.state} />
+          
 
         </div>)
        
