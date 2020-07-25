@@ -71,9 +71,24 @@ class Sale(db.Model):
     def json_rep(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+class WantedCard(db.Model):
+    __tablename__ = 'wanted_cards'
+    id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, index=True)
+    username = db.Column(db.String(32), index=True)
+    type = db.Column(db.String(32), index=True) #trade or sale
+    sport = db.Column(db.String(32), index=True) 
+    time = db.Column(db.Integer, index=True)
 
-    
-    
+
+    def add_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json_rep(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
 
 
 class User(db.Model):
@@ -109,10 +124,8 @@ class User(db.Model):
 
 @auth.verify_password
 def verify_password(username_or_token, password):
-    # first try to authenticate by token
     user = User.verify_auth_token(username_or_token)
     if not user:
-        # try to authenticate with username/password
         user = User.query.filter_by(username=username_or_token).first()
         if not user or not user.verify_password(password):
             return False
@@ -120,8 +133,8 @@ def verify_password(username_or_token, password):
     return True
 
 
-@app.route('/api/all_listings/trades/<sport>/<token>', methods=['GET'])
-def get_all_trades(sport, token):
+@app.route('/api/wanted/trades/<sport>/<token>')
+def get_wanted_trades(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
         abort(400)
@@ -137,8 +150,27 @@ def get_all_trades(sport, token):
             return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
         abort(400)
 
-@app.route('/api/all_listings/sales/<sport>/<token>', methods=['GET'])
-def get_all_sales(sport, token):
+@app.route('/api/post_wanted/trades/<item_id>/<token>', methods=['POST'])
+def post_wanted_trade(item_id, token):
+    user = User.verify_auth_token(token)
+    if(user is None):
+        abort(400)
+    card_lookup = Trade.query.filter_by(id=item_id).first()
+    if(card_lookup is None):
+        abort(400)
+
+
+    wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
+                type=card_lookup.tradeOrSell, sport=card_lookup.sport,
+                time=datetime.datetime.now())
+    db.session.add(wanted)
+    db.session.commit()
+    return jsonify(wanted.json_rep(), 201)
+
+
+
+@app.route('/api/wanted/sales/<sport>/<token>')
+def get_wanted_sales(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
         abort(400)
@@ -150,7 +182,65 @@ def get_all_sales(sport, token):
     else:
         sales = Sale.query.all()
         if(sales is not None):
+            print(sales)
             return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+        abort(400)
+
+@app.route('/api/post_wanted/sales/<item_id>/<token>', methods=['POST'])
+def post_wanted_sale(item_id, token):
+    user = User.verify_auth_token(token)
+    if(user is None):
+        abort(400)
+    card_lookup = Sale.query.filter_by(id=item_id).first()
+    if(card_lookup is None):
+        abort(400)
+
+    wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
+                type=card_lookup.tradeOrSell, sport=card_lookup.sport,
+                time=datetime.datetime.now())
+    db.session.add(wanted)
+    db.session.commit()
+    return jsonify(wanted.json_rep(), 201)
+
+
+
+
+
+    
+
+
+@app.route('/api/all_listings/sales/<sport>/<token>', methods=['GET'])
+def get_all_sales(sport, token):
+    user = User.verify_auth_token(token)
+    
+    if(user is None):
+        abort(400)
+    if(sport.lower() != "all"):
+        sales = Sale.query.filter(Sale.sport.ilike("%"+sport.lower()+"%")).all()
+        if(sales is not None):
+            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+        abort(400)
+    else:
+        sales = Sale.query.all()
+        if(sales is not None):
+            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+        abort(400)
+
+@app.route('/api/all_listings/trades/<sport>/<token>', methods=['GET'])
+def get_all_trades(sport, token):
+    user = User.verify_auth_token(token)
+    
+    if(user is None):
+        abort(400)
+    if(sport.lower() != "all"):
+        trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
+        if(trades is not None):
+            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
+        abort(400)
+    else:
+        trades = Trade.query.all()
+        if(trades is not None):
+            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
         abort(400)
 
 
@@ -218,7 +308,6 @@ def create_listing(token):
                             'player_name': player_name, 'year': year, 'manufacturer': manufacturer,
                             'cardNumber': cardNumber, 'cardSeries': cardSeries, 'comments': comments, 
                             'tradeOrSell': tradeOrSell, 'time': time }
-            print(trade_return)
             return (jsonify(trade_return),201)
         elif(tradeOrSell == "Sell"):
             sale = Sale(username=username, sport=sport,player_name=player_name,

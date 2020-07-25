@@ -15,7 +15,8 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
-
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import './all_listings.css';
@@ -70,6 +71,11 @@ class ForSale extends Component {
           guests. Add 1 cup of frozen peas along with the mussels, if you like.
                                 </Typography>
                                 </CardContent>
+                                <CardActions disableSpacing>
+                                    <IconButton aria-label="add to favorites">
+                                    <FavoriteIcon />
+                                    </IconButton>   
+                                </CardActions>
                             </Card>
                     </Grid>
                     

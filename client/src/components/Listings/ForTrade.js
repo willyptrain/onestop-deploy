@@ -18,19 +18,21 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import './all_listings.css';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import CardHeader from '@material-ui/core/CardHeader';
 
 
 class ForTrade extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {"sport": props.sport.sport};
+        this.state = {"sport": props.sport.sport, 'favorite_trades':[]};
 
     }
 
     async componentDidMount() {
         let token = localStorage.access_token;
-        console.log(token);
         axios.get(`/api/all_listings/trades/${this.state['sport']}/${token}`)
         .then(res => {
             console.log(res.data.trades);
@@ -43,6 +45,23 @@ class ForTrade extends Component {
 
     }
 
+    addToFavorites = (event) => {
+        let id = event.currentTarget.value;
+        console.log(id in this.state['favorite_trades'])
+        let token = localStorage.access_token;
+        axios.post(`/api/post_wanted/trades/${id}/${token}`)
+        .then(res => {
+            console.log(res.data);
+            
+            var curr_favs = this.state['favorite_trades']
+            curr_favs.push(res.data[0]['item_id'])
+            this.setState({...this.state, 'favorite_trades':curr_favs})
+        })
+        .catch(err =>  {
+            console.log("error :(")
+            console.log(err);
+        })
+    }
 
 
     render() {
@@ -57,11 +76,23 @@ class ForTrade extends Component {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
-                        <Card className="track-card">
+                    <Card className="track-card">
+                                <CardHeader 
+                                    title={trade['player_name']}
+                                    subheader={trade['username']}
+                                  />
                                 <CardMedia className="track-img" image="https://via.placeholder.com/150"></CardMedia>
                                 <CardContent>
-                                    
+                                  <Typography variant="body2" color="textSecondary" component="p">
+          This impressive paella is a perfect party dish and a fun meal to cook together with your
+          guests. Add 1 cup of frozen peas along with the mussels, if you like.
+                                </Typography>
                                 </CardContent>
+                                <CardActions disableSpacing>
+                                    <IconButton value={trade['id']} color={trade['id'] in this.state['favorite_trades'] ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
+                                        <FavoriteIcon />
+                                    </IconButton>   
+                                </CardActions>
                             </Card>
                     </Grid>
                     
