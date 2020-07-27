@@ -10,6 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import "./home.css";
 import Modal from '@material-ui/core/Modal';
 import Login from '../login/login.js'
+import Grid from '@material-ui/core/Grid';
+
 
 class Home extends Component {
 
@@ -45,15 +47,23 @@ class Home extends Component {
     render() {
         console.log(this.loggedIn)
         return (<div className="home-container">
-            
+        
                 <Modal
                 open={this.state['open']}
                 onClose={this.handleClose}
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description">
+                    
+                    <Grid container className="grid-container"
+                  alignItems="center"
+                  justify="center" spacing={3}>
+            <Grid item xs={6} sm={4} md={4} lg={4}>
                     <Login {...this.state} userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} /> 
             
+                    </Grid>
+        </Grid>
               </Modal>
+          
             
             <Carousel interval={1000000000}>
                 <Paper className="carousel-paper" key={1}>

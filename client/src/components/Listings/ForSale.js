@@ -27,7 +27,7 @@ class ForSale extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {"sport": props.sport.sport};
+        this.state = {"sport": props.sport.sport, 'favorite_sales': []};
 
     }
 
@@ -35,7 +35,9 @@ class ForSale extends Component {
         let token = localStorage.access_token;
         axios.get(`/api/all_listings/sales/${this.state['sport']}/${token}`)
         .then(res => {
-            this.setState({...this.state, 'sales':res.data.sales})
+
+            this.setState({...this.state, 'sales':res.data.sales,
+                                'favorite_sales': res.data.wantedCards})
             console.log(res.data)
         })
         .catch(err =>  {
@@ -46,10 +48,28 @@ class ForSale extends Component {
     }
 
 
+    addToFavorites = (event) => {
+        let id = event.currentTarget.value;
+        console.log(id)
+        console.log(this.state['favorite_sales'])
+        console.log(1 in [1]);
+        console.log(id in this.state['favorite_sales']);
+        let token = localStorage.access_token;
+        axios.post(`/api/post_wanted/sales/${id}/${token}`)
+        .then(res => {
+            this.setState({...this.state, 'favorite_sales':res.data[0]})
+        })
+        .catch(err =>  {
+            console.log("error :(")
+            console.log(err);
+        })
+    }
+
+
 
     render() {
         console.log(this.loggedIn)
-        if('sales' in this.state) {
+        if('sales' in this.state && this.state['sales']) {
             return (<div className="home-container">
                               <Grid container className="grid-container"
                   alignItems="center"
@@ -72,8 +92,8 @@ class ForSale extends Component {
                                 </Typography>
                                 </CardContent>
                                 <CardActions disableSpacing>
-                                    <IconButton aria-label="add to favorites">
-                                    <FavoriteIcon />
+                                <IconButton value={sale['id']} color={this.state['favorite_sales'].includes(sale['id']) ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
+                                        <FavoriteIcon />
                                     </IconButton>   
                                 </CardActions>
                             </Card>

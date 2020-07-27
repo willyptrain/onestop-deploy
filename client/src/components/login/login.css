@@ -1,6 +1,5 @@
 .login {
-    background: blue;
-
+    
 }
 .container {
     height: 100vh;
@@ -13,13 +12,33 @@
     padding-left: 0.5em;
 }
 .login-card {
-    width: 50%;
-    position: absolute;
+    /* width: 50%; */
+    max-width: 50%;
+    max-width: 450px;
+    min-width: 200px;
+    position: relative;
     top: 20vh;
-    left: 25%;
+    /* left: 25%; */
     height: 50vh;
 }
 .login-alert {
-    position: relative;
+    position: absolute;
     bottom: 5px;
+}
+.login-form {
+    height: 100%;
+    text-align: center;
+}
+.login-email {
+    width: 80%;
+    margin-top: 0vh !important;
+
+}
+.login-password {
+    width: 80%;
+    margin-top: 2vh !important;
+}
+.login-btn {
+    width: 80%;
+    margin-top: 8vh !important;
 }

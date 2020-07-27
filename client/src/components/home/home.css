@@ -7,5 +7,6 @@
 }
 .carousel-img {
     height: 65vh;
+    max-width: 100%;
 
 }

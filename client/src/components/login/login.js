@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, FormGroup, FormControl } from "react-bootstrap";
+import {FormGroup, FormControl } from "react-bootstrap";
 import Redirect from '../redirect.js';
 import './login.css'
 import InputBase from '@material-ui/core/InputBase';
@@ -8,7 +8,8 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 class Login extends Component {
 
@@ -53,36 +54,39 @@ class Login extends Component {
         return (
                 <div className="login">
                     <Card className="login-card">
+                        <div className="login-form">
+                        <img src="./logo.png" style={{maxWidth: 160, marginTop: '2vh'}} />
                         <form onSubmit={this.handleSubmit}>
                             <FormGroup controlId="email" bsSize="large">
-                            <p>Email or Username</p>
-                            <InputBase className="textbox-generic login-email"
+                            <p style={{fontWeight: '600'}}>Welcome Back!</p>
+                            <TextField error={"error" in this.state} id="standard-basic" label="Email" className="textbox-generic login-email"
                                 autoFocus
                                 type="text"
                                 value={this.state['email']}
-                                placeholder="Email"
                                 onChange={e => this.setState({...this.state.password, email: e.target.value})}
                             />
                             </FormGroup>
                             <FormGroup controlId="password" bsSize="large">
-                            <p>Password</p>
-                            <InputBase className="textbox-generic login-email"
+                            <TextField error={"error" in this.state} id="standard-basic" label="Password" className="textbox-generic login-password"
                                 autoFocus
                                 value={this.state['password']}
                                 onChange={e => this.setState({...this.state.email, password: e.target.value})}
                                 type="password"
-                                placeholder="Password"
                             />
                             </FormGroup>
-                            <Button block bsSize="large" disabled={!this.validateForm()} type="submit">
+                            {/* {"error" in this.state &&
+                                <div>
+                                <Box display="flex" justifyContent="center" m={1} p={1} bgcolor="background.paper">
+                                <Alert className="login-alert" variant="filled" severity="error">Error loggin in</Alert>
+                                </Box>
+                                </div>
+                                } */}
+                            <Button className="login-btn" variant="contained" color="primary" disabled={!this.validateForm()} type="submit">
                             Login
                             </Button>
                         </form>
-                        {"error" in this.state &&
-                        <Box display="flex" justifyContent="center" m={1} p={1} bgcolor="background.paper">
-                           <Alert className="login-alert" variant="filled" severity="error">Error loggin in</Alert>
-                        </Box>
-                        }
+                        </div>
+                        
                     </Card>
                 </div>
 

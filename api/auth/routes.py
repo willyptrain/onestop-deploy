@@ -80,6 +80,11 @@ class WantedCard(db.Model):
     sport = db.Column(db.String(32), index=True) 
     time = db.Column(db.Integer, index=True)
 
+    def __eq__(self, other):
+        print(self.json_rep())
+        print(other)
+        return (self.json_rep()['item_id'] == other['item_id'] and
+                self.json_rep()['type'] == other['type'])
 
     def add_to_db(self):
         db.session.add(self)
@@ -96,6 +101,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(64))
+    wantedCards = db.Column(db.PickleType)
+
 
     def save_to_db(self):
         db.session.add(self)
@@ -139,16 +146,31 @@ def get_wanted_trades(sport, token):
     if(user is None):
         abort(400)
     if(sport.lower() != "all"):
-        trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
-        if(trades is not None):
-            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
-        abort(400)
+        user_wanted = list(user.wantedCards)
+        trade_wanted = []
+        for item in user_wanted:
+            print(item)
+            if(item.type == "Trade" and item.sport.lower() == sport.lower()):
+                item_id = item.item_id
+                trade = Trade.query.filter_by(id=item_id).first()
+                if(trade is not None):
+                    trade_wanted.append(trade.json_rep())
+        # trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
+        # if(trades is not None):
+        return (jsonify({'trades': trade_wanted}),201)
     else:
-        trades = Trade.query.all()
-        if(trades is not None):
-            print(trades)
-            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
-        abort(400)
+        user_wanted = list(user.wantedCards)
+        trade_wanted = []
+        for item in user_wanted:
+            print(item)
+            if(item.type == "Trade"):
+                item_id = item.item_id
+                trade = Trade.query.filter_by(id=item_id).first()
+                if(trade is not None):
+                    trade_wanted.append(trade.json_rep())
+        # trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
+        # if(trades is not None):
+        return (jsonify({'trades': trade_wanted}),201)
 
 @app.route('/api/post_wanted/trades/<item_id>/<token>', methods=['POST'])
 def post_wanted_trade(item_id, token):
@@ -163,9 +185,21 @@ def post_wanted_trade(item_id, token):
     wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
                 type=card_lookup.tradeOrSell, sport=card_lookup.sport,
                 time=datetime.datetime.now())
-    db.session.add(wanted)
+    user_wanted = list(user.wantedCards)
+    print(user_wanted)
+    if(not any((card.item_id == wanted.item_id and card.type == wanted.type) for card in user_wanted)):
+        user_wanted.append(wanted)
+        user.wantedCards = user_wanted
+    else:
+        user_wanted.remove(wanted)
+        user.wantedCards = user_wanted
+    # db.session.add(wanted)
     db.session.commit()
-    return jsonify(wanted.json_rep(), 201)
+    item_ids = []
+    for item in user_wanted:
+        if(item.type == "Trade"):
+            item_ids.append(item.item_id)
+    return jsonify(item_ids, 201)
 
 
 
@@ -175,16 +209,30 @@ def get_wanted_sales(sport, token):
     if(user is None):
         abort(400)
     if(sport.lower() != "all"):
-        sales = Sale.query.filter(Sale.sport.ilike("%"+sport.lower()+"%")).all()
-        if(sales is not None):
-            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
-        abort(400)
+        user_wanted = list(user.wantedCards)
+        sale_wanted = []
+        for item in user_wanted:
+            print(item)
+            if(item.type == "Sell" and item.sport.lower() == sport.lower()):
+                item_id = item.item_id
+                sale = Sale.query.filter_by(id=item_id).first()
+                if(sale is not None):
+                    sale_wanted.append(sale.json_rep())
+        
+        return (jsonify({'sales': sale_wanted}),201)
+        
     else:
-        sales = Sale.query.all()
-        if(sales is not None):
-            print(sales)
-            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
-        abort(400)
+        user_wanted = list(user.wantedCards)
+        sale_wanted = []
+        for item in user_wanted:
+            print(item)
+            if(item.type == "Sell"):
+                item_id = item.item_id
+                sale = Sale.query.filter_by(id=item_id).first()
+                if(sale is not None):
+                    sale_wanted.append(sale.json_rep())
+        
+        return (jsonify({'sales': sale_wanted}),201)
 
 @app.route('/api/post_wanted/sales/<item_id>/<token>', methods=['POST'])
 def post_wanted_sale(item_id, token):
@@ -198,9 +246,21 @@ def post_wanted_sale(item_id, token):
     wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
                 type=card_lookup.tradeOrSell, sport=card_lookup.sport,
                 time=datetime.datetime.now())
-    db.session.add(wanted)
+    user_wanted = list(user.wantedCards)
+    print(user_wanted)
+    if(not any(card == wanted for card in user_wanted)):
+        user_wanted.append(wanted)
+        user.wantedCards = user_wanted
+    else:
+        user_wanted.remove(wanted)
+        user.wantedCards = user_wanted
     db.session.commit()
-    return jsonify(wanted.json_rep(), 201)
+    item_ids = []
+    for item in user_wanted:
+        if(item.type == "Sell"):
+            item_ids.append(item.item_id)
+    
+    return jsonify(item_ids, 201)
 
 
 
@@ -217,13 +277,25 @@ def get_all_sales(sport, token):
         abort(400)
     if(sport.lower() != "all"):
         sales = Sale.query.filter(Sale.sport.ilike("%"+sport.lower()+"%")).all()
+        user_wanted = list(user.wantedCards)
+        sale_wanted = []
+        for item in user_wanted:
+            if(item.type == "Sell"):
+                sale_wanted.append(item.item_id)
         if(sales is not None):
-            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+            return (jsonify({'sales': [sale.json_rep() for sale in sales],
+                            'wantedCards': sale_wanted}),201)
         abort(400)
     else:
         sales = Sale.query.all()
+        user_wanted = list(user.wantedCards)
+        sale_wanted = []
+        for item in user_wanted:
+            if(item.type == "Sell"):
+                sale_wanted.append(item.item_id)
         if(sales is not None):
-            return (jsonify({'sales': [sale.json_rep() for sale in sales]}),201)
+            return (jsonify({'sales': [sale.json_rep() for sale in sales],
+                        'wantedCards': sale_wanted}),201)
         abort(400)
 
 @app.route('/api/all_listings/trades/<sport>/<token>', methods=['GET'])
@@ -234,13 +306,26 @@ def get_all_trades(sport, token):
         abort(400)
     if(sport.lower() != "all"):
         trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
+        user_wanted = list(user.wantedCards)
+        trade_wanted = []
+        for item in user_wanted:
+            if(item.type == "Trade"):
+                trade_wanted.append(item.item_id)
         if(trades is not None):
-            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
+            return (jsonify({'trades': [trade.json_rep() for trade in trades],
+                                'wantedCards': trade_wanted}),201)
         abort(400)
     else:
         trades = Trade.query.all()
+        user_wanted = list(user.wantedCards)
+        trade_wanted = []
+        for item in user_wanted:
+            print(item)
+            if(item.type == "Trade"):
+                trade_wanted.append(item.item_id)
         if(trades is not None):
-            return (jsonify({'trades': [trade.json_rep() for trade in trades]}),201)
+            return (jsonify({'trades': [trade.json_rep() for trade in trades],
+                            'wantedCards': trade_wanted}),201)
         abort(400)
 
 
@@ -356,12 +441,13 @@ def new_user():
         abort(400)    # missing arguments
     if User.query.filter_by(username=username).first() is not None:
         abort(400)    # existing user
-    user = User(username=username)
+    user = User(username=username, wantedCards=[])
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
     access_token = user.generate_auth_token()
     g.user = user
+    print(user.wantedCards)
     return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':REDIRECT_URI}),201)
 
 

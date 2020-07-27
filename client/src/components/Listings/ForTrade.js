@@ -35,8 +35,9 @@ class ForTrade extends Component {
         let token = localStorage.access_token;
         axios.get(`/api/all_listings/trades/${this.state['sport']}/${token}`)
         .then(res => {
-            console.log(res.data.trades);
-            this.setState({...this.state, 'trades':res.data.trades})
+            console.log(res.data);
+            this.setState({...this.state, 'trades':res.data.trades,
+                                'favorite_trades': res.data.wantedCards})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -47,15 +48,14 @@ class ForTrade extends Component {
 
     addToFavorites = (event) => {
         let id = event.currentTarget.value;
-        console.log(id in this.state['favorite_trades'])
+        console.log(id)
+        console.log(this.state['favorite_trades'])
+        console.log(1 in [1]);
+        console.log(id in this.state['favorite_trades']);
         let token = localStorage.access_token;
         axios.post(`/api/post_wanted/trades/${id}/${token}`)
         .then(res => {
-            console.log(res.data);
-            
-            var curr_favs = this.state['favorite_trades']
-            curr_favs.push(res.data[0]['item_id'])
-            this.setState({...this.state, 'favorite_trades':curr_favs})
+            this.setState({...this.state, 'favorite_trades':res.data[0]})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -65,8 +65,7 @@ class ForTrade extends Component {
 
 
     render() {
-        console.log(this.loggedIn)
-        if('trades' in this.state) {
+        if('trades' in this.state && this.state['trades']) {
             return (<div className="home-container">
                               <Grid container className="grid-container"
                   alignItems="center"
@@ -89,9 +88,10 @@ class ForTrade extends Component {
                                 </Typography>
                                 </CardContent>
                                 <CardActions disableSpacing>
-                                    <IconButton value={trade['id']} color={trade['id'] in this.state['favorite_trades'] ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
+                                    <IconButton value={trade['id']} color={this.state['favorite_trades'].includes(trade['id']) ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
                                         <FavoriteIcon />
                                     </IconButton>   
+                                    
                                 </CardActions>
                             </Card>
                     </Grid>

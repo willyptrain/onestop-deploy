@@ -11,11 +11,11 @@ import './navStyle.css';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
-import {logo} from './logo.png'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import NavDropdown from 'react-bootstrap/NavDropdown'
+// import {logo} from '../../images/logo.png';
 
 
 export function NavBar(data) {
@@ -111,7 +111,7 @@ export function NavBar(data) {
         <AppBar position="static" style={{backgroundColor: 'white'}}>
             <Toolbar>
                 <div className="left-nav">
-                <img src='logo.png' className={classes.logo} />
+                <img src="./logo.png" className={classes.logo} />
                     <Button aria-owns={open ? 'simple-menu' : null} id="for_trade" aria-haspopup="true" href={`/for_trade/all`} onMouseEnter={mouseEnterButton} 
                                                             onMouseLeave={mouseLeaveButton}  className="nav-link" variant="h6">
                     For Trade
