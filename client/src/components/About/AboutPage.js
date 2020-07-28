@@ -53,7 +53,12 @@ class AboutPage extends Component {
                         — Conan O’Brien
                         </Typography>
                     </div>
-                    <Divider classes="divider-quote" />
+                    <div className="divider-quote">
+                        <Divider />
+                    </div>
+                    <Typography variant="h5" paragraph gutterBottom className="about-us">
+                    We’re just two guys who love buying, selling, and trading sports cards; together we have been doing it for several decades, but we noticed a problem in the card trading industry. We realized there was no insurance when trading cards, and specifically no site set up solely for the buying and selling of cards. Well we’re here to fix that!  Trading and selling through us is made easy and more importantly safe! We can guarantee that when making trades the cards you get are the cards you agreed upon. On top of that, our website is meant solely for trading cards. So forget selling through eBay or trading through reddit, we are here specifically for cards and specifically for you!
+                    </Typography>
                 </Grid>
             </Grid>
                 

@@ -14,12 +14,12 @@ import ViewSale from './components/CreateListing/ViewSale.js';
 import ForTrade from './components/Listings/ForTrade';
 import ForSale from './components/Listings/ForSale';
 import Wanted from './components/Listings/Wanted';
-
+import AboutPage from './components/About/AboutPage.js'
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state =  {userInfo: 'Not logged in', redirectUrl: null};
+    this.state =  {userInfo: 'Not logged in', redirectUrl: null, launchModal: false};
   }
 
 
@@ -27,11 +27,11 @@ class App extends React.Component {
     let token = localStorage.access_token;
         axios.get(`/api/users/${token}`)
         .then(res => {
-            this.setState({'userInfo': res.data})
+            this.setState({...this.state, launchModal: false, 'userInfo': res.data})
         })
         .catch(err =>  {
             console.log(err)
-            this.setState({'userInfo': 'Not logged in'})
+            this.setState({...this.state, launchModal: true,'userInfo': 'Not logged in'})
 
         })
   }
@@ -41,7 +41,9 @@ class App extends React.Component {
     this.setState({ 'userInfo':userInfo });
   }
 
-
+  launchModal = (event) => {
+      this.setState({...this.state, launchModal: event.currentTarget.value});
+  }
 
 
 
@@ -59,12 +61,12 @@ class App extends React.Component {
               <Route exact path="/" component={(props) =>
                 (userInfo == 'Not logged in' ? 
                 <div>
-                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
-                  <Home {...this.state}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Navbar  {...this.state} setModal={this.launchModal}  loggedIn={userInfo != 'Not logged in'} />
+                  <Home {...this.state} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 : <div>
-                  <Navbar {...this.state} loggedIn={userInfo != 'Not logged in'} />
-                  <Home {...this.state} userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Navbar {...this.state} setModal={this.launchModal} loggedIn={userInfo != 'Not logged in'} />
+                  <Home {...this.state} loginModal={this.state['launchModal']} userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div> )
               }/>
               <Route exact path="/login" component={(props) =>
@@ -108,6 +110,10 @@ class App extends React.Component {
                     <Wanted {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
                   </div>
                 }/>
+              <Route exact path="/about">
+                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />  
+                  <AboutPage {...this.state} />
+              </Route>
 
 
 

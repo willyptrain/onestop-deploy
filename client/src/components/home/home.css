@@ -10,3 +10,66 @@
     max-width: 100%;
 
 }
+.homepage-walkthrough {
+    height: 100vh;
+    width: 100%;
+    margin-top: 10vh;
+}
+.for-trade-brief {
+    height: 50vh;
+}
+.for-sale-brief {
+    height: 60vh;
+}
+.for-trade-text {
+    position: relative;
+    /* top: 10vh; */
+    font-family: Montserrat !important;
+    width: 80%;
+}
+.for-sale-text {
+    position: relative;
+    /* top: 10vh; */
+    font-family: Montserrat !important;
+    width: 60%;
+    /* left: 10rem; */
+}
+.grid-trade-text {
+    text-align: center !important;
+}
+.home-sale-image {
+    /* height: 32vh; */
+    width: 60%;
+}
+.home-trade-image {
+    width: 60%;
+}
+.launch-sale-btn {
+    text-transform: none !important; 
+    color: black !important;
+    height: 5vh;
+    width: 30%;
+    margin-top: 3vh !important;
+    font-weight: bold !important; 
+    font-size: 1.1rem !important; 
+    font-family: Montserrat !important; 
+    border: 2px solid black !important; 
+
+}
+.launch-trade-btn {
+    text-transform: none !important; 
+    color: black !important;
+    height: 5vh;
+    width: 30%;
+    margin-top: 5vh !important;
+    font-weight: bold !important; 
+    font-size: 1.1rem !important; 
+    font-family: Montserrat !important; 
+    border: 2px solid black !important; 
+
+}
+.text-container-home {
+    width: 100%;
+    text-align: -webkit-center;
+    text-align: -moz-center;
+}

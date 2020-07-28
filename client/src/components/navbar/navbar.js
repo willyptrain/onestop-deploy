@@ -16,6 +16,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import NavDropdown from 'react-bootstrap/NavDropdown'
 // import {logo} from '../../images/logo.png';
+import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
 
 
 {/* <MenuItem component={Link} href={`/${pageOption}/all`}>View All</MenuItem>
@@ -33,36 +35,42 @@ export function MenuDropdown(props) {
     return (
       <ul className="submenu-container">
         <li className="submenu-item ">
-          <a href={`/${props.type}/all`}>View All</a>
+          <a className="submenu-text" href={`/${props.type}/all`}>View All</a>
         </li>
+
         <li className="submenu-item ">
-          <a href={`/${props.type}/baseball`}>Baseball</a>
+          <a className="submenu-text" href={`/${props.type}/baseball`}>Baseball</a>
         </li>
+
         <li className="submenu-item ">
-          <a href={`/${props.type}/basketball`}>Basketball</a>
+          <a className="submenu-text" href={`/${props.type}/basketball`}>Basketball</a>
         </li>
+
         <li className="submenu-item ">
-          <a href={`/${props.type}/football`}>Football</a>
+          <a className="submenu-text" href={`/${props.type}/football`}>Football</a>
         </li>
+
         <li className="submenu-item ">
-          <a href={`/${props.type}/hockey`}>Hockey</a>
+          <a className="submenu-text" href={`/${props.type}/hockey`}>Hockey</a>
         </li>
+
         <li className="submenu-item ">
-          <a href={`/${props.type}/wrestling`}>Wrestling</a>
+          <a className="submenu-text" href={`/${props.type}/wrestling`}>Wrestling</a>
 
         </li>
         <li className="submenu-item ">
-          <a href={`/${props.type}/soccer`}>Soccer</a>
+          <a className="submenu-text" href={`/${props.type}/soccer`}>Soccer</a>
 
         </li>
         <li className="submenu-item ">
-          <a href={`/${props.type}/racing`}>Racing</a>
+          <a className="submenu-text" href={`/${props.type}/racing`}>Racing</a>
 
         </li>
         <li className="submenu-item ">
-          <a href={`/${props.type}/gaming`}>Gaming</a>
+          <a className="submenu-text" style={{height: '4vh !important'}} href={`/${props.type}/gaming`}>Gaming</a>
 
         </li>
+        
       </ul>
     )
 }
@@ -70,23 +78,36 @@ export function MenuDropdown(props) {
 
 export function NavBar(data) {
     const useStyles = makeStyles((theme) => ({
+      root: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: 400,
+          },
         button: {
-            color: 'white',
-            background: '#3c3c3c',
-            height: '3vh',
-            position: 'absolute',
-            top: '1.2em'
+          color: 'white',
+          height: '4vh',
+          position: 'relative',
+          top: '0em',
+          background: '#141518',
+          border: '2px solid white',
+          left: '30px',
         },
         logo: {
           maxWidth: 160,
         },
+        input: {
+          marginLeft: theme.spacing(1),
+          flex: 1,
+        },
         search: {
           position: 'absolute',
-          height: '3vh',
+          height: '2.9vh',
           float: 'right',
           borderRadius: theme.shape.borderRadius,
-          border: '2px solid black',
-          top: '0.5em'
+          border: '2px solid white',
+          top: '0.5em',
+          background: 'white'
         },
         searchIcon: {
           padding: theme.spacing(0, 2),
@@ -96,7 +117,7 @@ export function NavBar(data) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'black'
+          color: 'white'
         },
         inputRoot: {
           color: 'black',
@@ -149,9 +170,12 @@ export function NavBar(data) {
         }, 300);
       }
 
+      const launchModal = () => {
+
+      }
 
       return (<div className="navbar-container">
-        <AppBar position="static" style={{backgroundColor: 'white'}}>
+        <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
             <Toolbar>
                 <div className="left-nav">
 
@@ -179,9 +203,9 @@ export function NavBar(data) {
                     </li>
                   </ul>
                 </nav>
-                <div className="navbar-img">
+                <a href={`/`} className="navbar-img">
                   <img src="../logo.png" className={classes.logo} />
-                </div>
+                </a>
 
               </div>
 
@@ -230,21 +254,24 @@ export function NavBar(data) {
                 
                 
                 <div className="right-nav">
-                    <div className={classes.search}>
-                        <div className={classes.searchIcon}>
+                <Paper component="form" className={classes.root}>
+                    {/* <div className={classes.search}> */}
+                    <IconButton type="submit" className={classes.iconButton} aria-label="search">
                             <SearchIcon />
-                        </div>
+                        </IconButton>
                             <InputBase
                             placeholder="Search…"
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
+                            classes={classes.input}
                             inputProps={{ 'aria-label': 'search' }}
                         />
-                    </div>
-                    {!data.loggedIn && <Button className={classes.button} variant="contained">Login</Button>}
+                    </Paper>
+                    {/* </div> */}
+
+                    {data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Login</Button>}
+
                 </div>
+
+                  
             </Toolbar>
             </AppBar>
 
