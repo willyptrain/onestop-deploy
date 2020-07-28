@@ -23,21 +23,20 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import CardHeader from '@material-ui/core/CardHeader';
 
 
-class ForTrade extends Component {
+class MyListings extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {"sport": props.sport.sport, 'favorite_trades':[]};
+        this.state = {};
 
     }
 
     async componentDidMount() {
         let token = localStorage.access_token;
-        axios.get(`/api/all_listings/trades/${this.state['sport']}/${token}`)
+        axios.get(`/api/my_listings/trades/${token}`)
         .then(res => {
             console.log(res.data);
-            this.setState({...this.state, 'trades':res.data.trades,
-                                'favorite_trades': res.data.wantedCards})
+            this.setState({...this.state, 'trades':res.data.trades})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -46,22 +45,6 @@ class ForTrade extends Component {
 
     }
 
-    addToFavorites = (event) => {
-        let id = event.currentTarget.value;
-        console.log(id)
-        console.log(this.state['favorite_trades'])
-        console.log(1 in [1]);
-        console.log(id in this.state['favorite_trades']);
-        let token = localStorage.access_token;
-        axios.post(`/api/post_wanted/trades/${id}/${token}`)
-        .then(res => {
-            this.setState({...this.state, 'favorite_trades':res.data[0]})
-        })
-        .catch(err =>  {
-            console.log("error :(")
-            console.log(err);
-        })
-    }
 
 
     render() {
@@ -86,12 +69,6 @@ class ForTrade extends Component {
                                   {`Sport: ${trade['sport']} \n ${trade['comments']}`}
                                 </Typography>
                                 </CardContent>
-                                <CardActions disableSpacing>
-                                    <IconButton value={trade['id']} color={this.state['favorite_trades'].includes(trade['id']) ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
-                                        <FavoriteIcon />
-                                    </IconButton>   
-                                    
-                                </CardActions>
                             </Card>
                     </Grid>
                     
@@ -112,5 +89,5 @@ class ForTrade extends Component {
     }
 
 }
-export default ForTrade;
+export default MyListings;
 

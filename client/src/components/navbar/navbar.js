@@ -196,6 +196,9 @@ export function NavBar(data) {
                       <MenuDropdown type={"wanted"} />
                     </li>
                     <li className="nav-menu-item">
+                      <a href={`/my_listings`}>My Listings</a>
+                    </li>
+                    <li className="nav-menu-item">
                       <a href={`/create_listing`}>Create A Listing</a>
                     </li>
                     <li className="nav-menu-item">

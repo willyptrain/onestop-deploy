@@ -101,6 +101,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(64))
+    trades = db.Column(db.PickleType)
+    sales = db.Column(db.PickleType)
     wantedCards = db.Column(db.PickleType)
 
 
@@ -363,7 +365,11 @@ def get_user_sale(item_id, token):
 
 
 
-
+@app.route('/api/my_listings/trades/<token>', methods=['GET'])
+def get_my_listings(token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        return (jsonify({'trades':[trade.json_rep() for trade in user.trades]}),201)
 
 
 
@@ -387,6 +393,9 @@ def create_listing(token):
             trade = Trade(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
                         comments=comments, tradeOrSell=tradeOrSell, time=time)
+            user_trades = list(user.trades)
+            user_trades.append(trade)
+            user.trades = user_trades
             db.session.add(trade)
             db.session.commit()
             trade_return = {'username': username, 'id':trade.id,'sport': sport,
@@ -398,6 +407,9 @@ def create_listing(token):
             sale = Sale(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
                         comments=comments, tradeOrSell=tradeOrSell, price=price, time=time)
+            user_sales = list(user.sales)
+            user_sales.append(sale)
+            user.sales = user_sales
             db.session.add(sale)
             db.session.commit()
             sale_return = {'username': username, 'id':sale.id,'sport': sport,
@@ -441,7 +453,7 @@ def new_user():
         return (jsonify({"error":"User not found!"}), 401)
     if User.query.filter_by(username=username).first() is not None:
         return (jsonify({"error":"User already exists!"}), 409)
-    user = User(username=username, wantedCards=[])
+    user = User(username=username, wantedCards=[], trades=[], sales=[])
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()

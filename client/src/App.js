@@ -15,6 +15,7 @@ import ForTrade from './components/Listings/ForTrade';
 import ForSale from './components/Listings/ForSale';
 import Wanted from './components/Listings/Wanted';
 import AboutPage from './components/About/AboutPage.js'
+import MyListings from './components/Listings/MyListings.js';
 
 class App extends React.Component {
   constructor(props) {
@@ -113,6 +114,10 @@ class App extends React.Component {
               <Route exact path="/about">
                   <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />  
                   <AboutPage {...this.state} />
+              </Route>
+              <Route exact path="/my_listings">
+                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />  
+                  <MyListings {...this.state} />
               </Route>
 
 
