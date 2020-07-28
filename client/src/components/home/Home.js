@@ -27,9 +27,11 @@ class Home extends Component {
         console.log(token);
         axios.get(`/api/users/${token}`)
         .then(res => {
+            console.log(res)
             this.setState()
         })
         .catch(err =>  {
+            console.log(err);
             this.setState({'open': true})
 
         })
@@ -45,7 +47,6 @@ class Home extends Component {
     
 
     render() {
-        console.log(this.loggedIn)
         return (<div className="home-container">
         
                 <Modal

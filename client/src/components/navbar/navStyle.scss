@@ -1,0 +1,93 @@
+
+.navbar-container {
+    top: 0px;
+    position: absolute;
+    left: 0px;
+    width: 100%;
+    height: 6vh;
+}
+.left-nav {
+    width: 70%;
+    text-align: left;
+
+}
+.right-nav {
+    width: 30%;
+
+}
+// .nav-link {
+//     float: left;
+//     margin-right: 15px !important;
+//     color: black !important;
+//     font-family: Montserrat !important;
+// }
+
+.submenu-container {
+    display: none;
+    border: 2px solid red;
+
+  }
+  
+  .nav-menu-item:hover {
+    .submenu-container {
+      display: block;
+    }
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .nav-menu-item {
+    color: black;
+  }
+  .nav {
+    font-size: 0.6em;
+    display: inline-block;
+    // margin: 2rem auto 0;
+    margin-left: 13rem;
+    // line-height: inherit;
+    cursor: pointer;
+    position: absolute;
+    margin-top: 1em;
+    background: white;
+    a {
+      display: block;
+      padding: 0 16px;
+      line-height: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      color: black;
+    }
+  }
+  .nav-menu {
+    // line-height: 45px;
+  }
+  .nav-menu-item {
+    display: inline-block;
+    position: relative;
+  
+    &:hover {
+      background-color: #eeeeee;
+      border: 4px solid black;
+  
+      .submenu-container {
+        display: block;
+      }
+    }
+  }
+  .submenu-container {
+    font-weight: 300;
+    text-transform: none;
+    display: none;
+    position: absolute;
+    width: 180px;
+    background-color: white;
+  }
+      
+  .submenu-item {
+    &:hover {
+      background: black;
+    }
+  }

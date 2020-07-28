@@ -83,8 +83,8 @@ class WantedCard(db.Model):
     def __eq__(self, other):
         print(self.json_rep())
         print(other)
-        return (self.json_rep()['item_id'] == other['item_id'] and
-                self.json_rep()['type'] == other['type'])
+        return (self.item_id == other.item_id and
+                self.type == other.type)
 
     def add_to_db(self):
         db.session.add(self)
@@ -144,7 +144,7 @@ def verify_password(username_or_token, password):
 def get_wanted_trades(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
         user_wanted = list(user.wantedCards)
         trade_wanted = []
@@ -176,10 +176,10 @@ def get_wanted_trades(sport, token):
 def post_wanted_trade(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     card_lookup = Trade.query.filter_by(id=item_id).first()
     if(card_lookup is None):
-        abort(400)
+        return (jsonify({"error":"Trade not found!"}), 404)
 
 
     wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
@@ -207,7 +207,7 @@ def post_wanted_trade(item_id, token):
 def get_wanted_sales(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
         user_wanted = list(user.wantedCards)
         sale_wanted = []
@@ -238,10 +238,10 @@ def get_wanted_sales(sport, token):
 def post_wanted_sale(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     card_lookup = Sale.query.filter_by(id=item_id).first()
     if(card_lookup is None):
-        abort(400)
+        return (jsonify({"error":"Sale not found!"}), 404)
 
     wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
                 type=card_lookup.tradeOrSell, sport=card_lookup.sport,
@@ -274,7 +274,7 @@ def get_all_sales(sport, token):
     user = User.verify_auth_token(token)
     
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
         sales = Sale.query.filter(Sale.sport.ilike("%"+sport.lower()+"%")).all()
         user_wanted = list(user.wantedCards)
@@ -285,7 +285,7 @@ def get_all_sales(sport, token):
         if(sales is not None):
             return (jsonify({'sales': [sale.json_rep() for sale in sales],
                             'wantedCards': sale_wanted}),201)
-        abort(400)
+        return (jsonify({"error":"Sales not found!"}), 404)
     else:
         sales = Sale.query.all()
         user_wanted = list(user.wantedCards)
@@ -296,14 +296,14 @@ def get_all_sales(sport, token):
         if(sales is not None):
             return (jsonify({'sales': [sale.json_rep() for sale in sales],
                         'wantedCards': sale_wanted}),201)
-        abort(400)
+        return (jsonify({"error":"Sales not found!"}), 404)
 
 @app.route('/api/all_listings/trades/<sport>/<token>', methods=['GET'])
 def get_all_trades(sport, token):
     user = User.verify_auth_token(token)
     
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
         trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
         user_wanted = list(user.wantedCards)
@@ -314,7 +314,7 @@ def get_all_trades(sport, token):
         if(trades is not None):
             return (jsonify({'trades': [trade.json_rep() for trade in trades],
                                 'wantedCards': trade_wanted}),201)
-        abort(400)
+        return (jsonify({"error":"Trades not found!"}), 404)
     else:
         trades = Trade.query.all()
         user_wanted = list(user.wantedCards)
@@ -326,7 +326,7 @@ def get_all_trades(sport, token):
         if(trades is not None):
             return (jsonify({'trades': [trade.json_rep() for trade in trades],
                             'wantedCards': trade_wanted}),201)
-        abort(400)
+        return (jsonify({"error":"Trades not found!"}), 404)
 
 
 
@@ -336,7 +336,7 @@ def get_all_trades(sport, token):
 def get_user_trade(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     trade = Trade.query.filter_by(id=item_id,username=user.username).first()
     if(trade is not None):
         trade_return = {'username': trade.username, 'id': trade.id,'sport': trade.sport,
@@ -344,14 +344,14 @@ def get_user_trade(item_id, token):
                             'cardNumber': trade.cardNumber, 'cardSeries': trade.cardSeries, 'comments': trade.comments, 
                             'tradeOrSell': trade.tradeOrSell, 'time': trade.time }
         return (jsonify(trade_return),201)
-    abort(400)
+    return (jsonify({"error":"No trades found!"}), 404)
 
 
 @app.route('/api/users/listings/sales/<item_id>/<token>', methods=['GET'])
 def get_user_sale(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     sale = Sale.query.filter_by(id=item_id,username=user.username).first()
     if(sale is not None):
         sale_return = {'username': sale.username, 'id': sale.id,'sport': sale.sport,
@@ -359,7 +359,7 @@ def get_user_sale(item_id, token):
                             'cardNumber': sale.cardNumber, 'cardSeries': sale.cardSeries, 'comments': sale.comments, 
                             'tradeOrSell': sale.tradeOrSell, 'price':sale.price, 'time': sale.time }
         return (jsonify(sale_return),201)
-    abort(400)
+    return (jsonify({"error":"No sales found!"}), 404)
 
 
 
@@ -407,22 +407,22 @@ def create_listing(token):
 
             print(sale_return)
             return (jsonify(sale_return),201)
-        abort(400)  
-    abort(400)
+        return (jsonify({"error":"Bad Request, specify Trade or Sale type"}), 400)
+    return (jsonify({"error":"User not found!"}), 401)
     
 @app.route('/api/users/login', methods=['POST'])
 def login():
     username = request.json.get('email')
     password = request.json.get('password')
     if username is None or password is None:
-        abort(400)    
+        return (jsonify({"error":"User not found!"}), 401)  
     user = User.query.filter_by(username=username).first()
     if user is not None:
         if(verify_password(user.username, password)):
             access_token = user.generate_auth_token()
             return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':REDIRECT_URI}),201)
-        abort(400)
-    abort(400)
+        return (jsonify({"error":"Incorrect username or password!"}), 401)
+    return (jsonify({"error":"User not found!"}), 401)
 
 
 @app.route('/api/users/<token>')
@@ -431,16 +431,16 @@ def get_user_info(token):
     if(user is not None):
         print(user.id)
         return (jsonify({'id':user.id, 'username': user.username}),201)
-    abort(400)
+    return (jsonify({"error":"User not found!"}), 401)
 
 @app.route('/api/users/signup', methods=['POST'])
 def new_user():
     username = request.json.get('email')
     password = request.json.get('password')
     if username is None or password is None:
-        abort(400)    # missing arguments
+        return (jsonify({"error":"User not found!"}), 401)
     if User.query.filter_by(username=username).first() is not None:
-        abort(400)    # existing user
+        return (jsonify({"error":"User already exists!"}), 409)
     user = User(username=username, wantedCards=[])
     user.hash_password(password)
     db.session.add(user)
@@ -458,7 +458,7 @@ def get_user(id):
     print(id)
     user = User.query.get(id)
     if not user:
-        abort(400)
+        return (jsonify({"error":"User not found!"}), 401)
     return jsonify({'username': user.username})
 
 

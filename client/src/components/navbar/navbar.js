@@ -7,7 +7,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import './navStyle.css';
+import './navStyle.scss';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import Link from '@material-ui/core/Link';
@@ -18,20 +18,75 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 // import {logo} from '../../images/logo.png';
 
 
+{/* <MenuItem component={Link} href={`/${pageOption}/all`}>View All</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/baseball`}>Baseball</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/basketball`}>Basketball</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/football`}>Football</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/hockey`}>Hockey</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/wrestling`}>Wrestling/Fighting</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/soccer`}>Soccer</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/racing`}>Racing</MenuItem>
+                  <MenuItem component={Link} href={`/${pageOption}/other`}>Other/Gaming</MenuItem> */}
+
+export function MenuDropdown(props) {
+    console.log(props.type)
+    return (
+      <ul className="submenu-container">
+        <li className="submenu-item ">
+          <a href={`/${props.type}/all`}>View All</a>
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/baseball`}>Baseball</a>
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/basketball`}>Basketball</a>
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/football`}>Football</a>
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/hockey`}>Hockey</a>
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/wrestling`}>Wrestling</a>
+
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/soccer`}>Soccer</a>
+
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/racing`}>Racing</a>
+
+        </li>
+        <li className="submenu-item ">
+          <a href={`/${props.type}/gaming`}>Gaming</a>
+
+        </li>
+      </ul>
+    )
+}
+
+
 export function NavBar(data) {
     const useStyles = makeStyles((theme) => ({
         button: {
             color: 'white',
-            background: '#3c3c3c'
+            background: '#3c3c3c',
+            height: '3vh',
+            position: 'absolute',
+            top: '1.2em'
         },
         logo: {
           maxWidth: 160,
         },
         search: {
-          position: 'relative',
-          float: 'left',
+          position: 'absolute',
+          height: '3vh',
+          float: 'right',
           borderRadius: theme.shape.borderRadius,
-          border: '2px solid black'
+          border: '2px solid black',
+          top: '0.5em'
         },
         searchIcon: {
           padding: theme.spacing(0, 2),
@@ -54,19 +109,7 @@ export function NavBar(data) {
           [theme.breakpoints.up('md')]: {
             width: '20ch',
           },
-        },
-        sectionDesktop: {
-          display: 'none',
-          [theme.breakpoints.up('md')]: {
-            display: 'flex',
-          },
-        },
-        sectionMobile: {
-          display: 'flex',
-          [theme.breakpoints.up('md')]: {
-            display: 'none',
-          },
-        },
+        }
       }));
 
       const classes = useStyles()
@@ -111,8 +154,39 @@ export function NavBar(data) {
         <AppBar position="static" style={{backgroundColor: 'white'}}>
             <Toolbar>
                 <div className="left-nav">
-                <img src="./logo.png" className={classes.logo} />
-                    <Button aria-owns={open ? 'simple-menu' : null} id="for_trade" aria-haspopup="true" href={`/for_trade/all`} onMouseEnter={mouseEnterButton} 
+
+                <nav className="nav">
+                  <ul className="nav-menu">
+                    <li className="nav-menu-item">
+                      <a href={`/for_trade/all`}>For Trade</a>
+                      <MenuDropdown type={"for_trade"} />
+                    </li>
+                    <li
+                      className="nav-menu-item"
+                    >
+                      <a href={`/for_sale/all`}>For Sale</a>
+                      <MenuDropdown type={"for_sale"} />
+                    </li>
+                    <li className="nav-menu-item">
+                      <a href={`/wanted/all`}>Wanted</a>
+                      <MenuDropdown type={"wanted"} />
+                    </li>
+                    <li className="nav-menu-item">
+                      <a href={`/create_listing`}>Create A Listing</a>
+                    </li>
+                    <li className="nav-menu-item">
+                      <a href={`/about`}>About Us</a>
+                    </li>
+                  </ul>
+                </nav>
+                <div className="navbar-img">
+                  <img src="../logo.png" className={classes.logo} />
+                </div>
+
+              </div>
+
+
+                    {/* <Button aria-owns={open ? 'simple-menu' : null} id="for_trade" aria-haspopup="true" href={`/for_trade/all`} onMouseEnter={mouseEnterButton} 
                                                             onMouseLeave={mouseLeaveButton}  className="nav-link" variant="h6">
                     For Trade
                     </Button>
@@ -152,7 +226,7 @@ export function NavBar(data) {
                   <MenuItem component={Link} href={`/${pageOption}/racing`}>Racing</MenuItem>
                   <MenuItem component={Link} href={`/${pageOption}/other`}>Other/Gaming</MenuItem>
 
-                </Menu>
+                </Menu> */}
                 
                 
                 <div className="right-nav">

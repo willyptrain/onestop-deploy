@@ -10,6 +10,8 @@ import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
+
 
 class Login extends Component {
 
@@ -24,21 +26,15 @@ class Login extends Component {
     
     handleSubmit = (event) => {
         event.preventDefault();
-        fetch("/api/users/login", {
-            method:"POST",
-            cache: "no-cache",
-            headers:{
-                "content_type":"application/json",
-            },
-            body:JSON.stringify(this.state)
-        }).then(response => 
-            response.json()
-        ).then(res => {
-            localStorage.setItem('access_token', res.access_token)
-            this.setState({'redirectUrl':res.redirectUrl, 'token':true})
-
-            
+        axios.post("/api/users/login", {
+            'email':this.state['email'],
+            'password':this.state['password']
+        }).then(res => {
+            console.log(res);
+            localStorage.setItem('access_token', res.data.access_token)
+            this.setState({'redirectUrl':res.data.redirectUrl, 'token':true})
         }).catch(err => {
+            console.log(err)
             this.setState({email: "", password: "",'error':err})
         });
     
@@ -68,7 +64,6 @@ class Login extends Component {
                             </FormGroup>
                             <FormGroup controlId="password" bsSize="large">
                             <TextField error={"error" in this.state} id="standard-basic" label="Password" className="textbox-generic login-password"
-                                autoFocus
                                 value={this.state['password']}
                                 onChange={e => this.setState({...this.state.email, password: e.target.value})}
                                 type="password"
