@@ -77,6 +77,9 @@ export function MenuDropdown(props) {
 
 
 export function NavBar(data) {
+
+  console.log(data.loggedIn)
+
     const useStyles = makeStyles((theme) => ({
       root: {
         padding: '2px 4px',
@@ -270,7 +273,9 @@ export function NavBar(data) {
                     </Paper>
                     {/* </div> */}
 
-                    {data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Login</Button>}
+                    {!data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Login</Button>}
+                    {data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Logout</Button>}
+
 
                 </div>
 

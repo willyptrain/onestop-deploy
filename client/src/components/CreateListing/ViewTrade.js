@@ -15,6 +15,7 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Carousel from 'react-material-ui-carousel'
 
 
 
@@ -63,7 +64,14 @@ class ViewTrade extends Component {
             <Grid item xs={12} sm={6} md={6} lg={6}>
                 <Paper className="left-hand-panel">
                     <div class="product-img">
-                        <img src="https://via.placeholder.com/150" />
+                    <Carousel interval={3000}>
+                        {this.state.trade_info.img_paths.map((path) =>
+                            <div>
+                                <img style={{width: '100%', position: 'relative'}} src={path} />
+                            </div>
+                        )}
+                        
+                        </Carousel>
                     </div>
                 </Paper>
             </Grid>

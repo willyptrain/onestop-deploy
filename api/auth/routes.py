@@ -5,9 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 import datetime  
 from sqlalchemy import func
-
+from .settings import access_key_id, secret_access_key, acl, bucket_name, bucket_region
+import boto3
 
 
 # initialization
@@ -15,6 +17,24 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy dog'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_URL'] = "https://"+bucket_name+".s3.us-east-2.amazonaws.com/"
+
+
+
+ALLOWED_EXTENSIONS = {'jpg', 'gif', 'png', 'gif', 'jpeg'}
+s3_client = boto3.client('s3',
+    region_name=bucket_region,
+    aws_access_key_id=access_key_id,
+    aws_secret_access_key=secret_access_key)
+s3_resource = boto3.resource('s3',
+    region_name=bucket_region,
+    aws_access_key_id=access_key_id,
+    aws_secret_access_key=secret_access_key)
+image_bucket = s3_resource.Bucket(name=bucket_name)
+print(image_bucket)
+
+
 
 # extensions
 db = SQLAlchemy(app)
@@ -25,6 +45,75 @@ REDIRECT_URI="http://localhost:3000"
 # @app.before_first_request
 # def create_tables():
 #     db.create_all()
+
+
+
+
+@app.route('/api/listing/create/<token>', methods=['POST'])
+def create_listing(token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        # print(request.get_data())
+        username = user.username
+        sport = request.form.get('sport')
+        player_name = request.form.get('player')
+        year = request.form.get('year')
+        manufacturer = request.form.get('manufacturer')
+        cardNumber = request.form.get('cardNumber')
+        cardSeries = request.form.get('cardSeries')
+        comments = request.form.get('comments')
+        tradeOrSell = request.form.get('tradeOrSell')
+        price = request.form.get('price')
+        time = datetime.datetime.now() 
+        images = request.files
+        img_paths = []
+        for file in images:
+            img = images[file]
+            if(img and allowed_file(img.filename)):
+                filename = secure_filename(img.filename)
+                image_bucket.Object(filename).put(Body=img)
+                img_paths.append(app.config['UPLOAD_URL']+filename)
+
+        if(tradeOrSell == "Trade"):
+            trade = Trade(username=username, sport=sport,player_name=player_name,
+                        year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
+                        comments=comments, tradeOrSell=tradeOrSell, time=time, img_paths=img_paths)
+            user_trades = list(user.trades)
+            user_trades.append(trade)
+            user.trades = user_trades
+            db.session.add(trade)
+            db.session.commit()
+            return (jsonify(trade.json_rep()),201)
+        elif(tradeOrSell == "Sell"):
+            sale = Sale(username=username, sport=sport,player_name=player_name,
+                        year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
+                        comments=comments, tradeOrSell=tradeOrSell, price=price, time=time, img_paths=img_paths)
+            user_sales = list(user.sales)
+            user_sales.append(sale)
+            user.sales = user_sales
+            db.session.add(sale)
+            db.session.commit()
+
+            return (jsonify(sale.json_rep()),201)
+        return (jsonify({"error":"Bad Request, specify Trade or Sale type"}), 400)
+    return (jsonify({"error":"User not found!"}), 401)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Trade(db.Model):
     __tablename__ = 'tradings'
@@ -39,7 +128,7 @@ class Trade(db.Model):
     comments = db.Column(db.String(32), index=True)
     tradeOrSell = db.Column(db.String(32), index=True)
     time = db.Column(db.Integer, index=True)
-
+    img_paths = db.Column(db.PickleType) #array of strings (file names)
 
     def add_to_db(self):
         db.session.add(self)
@@ -62,6 +151,8 @@ class Sale(db.Model):
     price = db.Column(db.Integer, index=True)
     tradeOrSell = db.Column(db.String(32), index=True)
     time = db.Column(db.Integer, index=True)
+    img_paths = db.Column(db.PickleType) #array of strings (file names)
+
 
 
     def add_to_db(self):
@@ -341,11 +432,11 @@ def get_user_trade(item_id, token):
         return (jsonify({"error":"User not found!"}), 401)
     trade = Trade.query.filter_by(id=item_id,username=user.username).first()
     if(trade is not None):
-        trade_return = {'username': trade.username, 'id': trade.id,'sport': trade.sport,
-                            'player_name': trade.player_name, 'year': trade.year, 'manufacturer': trade.manufacturer,
-                            'cardNumber': trade.cardNumber, 'cardSeries': trade.cardSeries, 'comments': trade.comments, 
-                            'tradeOrSell': trade.tradeOrSell, 'time': trade.time }
-        return (jsonify(trade_return),201)
+        # trade_return = {'username': trade.username, 'id': trade.id,'sport': trade.sport,
+        #                     'player_name': trade.player_name, 'year': trade.year, 'manufacturer': trade.manufacturer,
+        #                     'cardNumber': trade.cardNumber, 'cardSeries': trade.cardSeries, 'comments': trade.comments, 
+        #                     'tradeOrSell': trade.tradeOrSell, 'time': trade.time }
+        return (jsonify(trade.json_rep()),201)
     return (jsonify({"error":"No trades found!"}), 404)
 
 
@@ -356,71 +447,36 @@ def get_user_sale(item_id, token):
         return (jsonify({"error":"User not found!"}), 401)
     sale = Sale.query.filter_by(id=item_id,username=user.username).first()
     if(sale is not None):
-        sale_return = {'username': sale.username, 'id': sale.id,'sport': sale.sport,
-                            'player_name': sale.player_name, 'year': sale.year, 'manufacturer': sale.manufacturer,
-                            'cardNumber': sale.cardNumber, 'cardSeries': sale.cardSeries, 'comments': sale.comments, 
-                            'tradeOrSell': sale.tradeOrSell, 'price':sale.price, 'time': sale.time }
-        return (jsonify(sale_return),201)
+        # sale_return = {'username': sale.username, 'id': sale.id,'sport': sale.sport,
+        #                     'player_name': sale.player_name, 'year': sale.year, 'manufacturer': sale.manufacturer,
+        #                     'cardNumber': sale.cardNumber, 'cardSeries': sale.cardSeries, 'comments': sale.comments, 
+        #                     'tradeOrSell': sale.tradeOrSell, 'price':sale.price, 'time': sale.time }
+        return (jsonify(sale.json_rep()),201)
     return (jsonify({"error":"No sales found!"}), 404)
 
 
 
 @app.route('/api/my_listings/trades/<token>', methods=['GET'])
-def get_my_listings(token):
+def get_my_trades(token):
     user = User.verify_auth_token(token)
     if(user is not None):
         return (jsonify({'trades':[trade.json_rep() for trade in user.trades]}),201)
+    return (jsonify({"error":"No trades found!"}), 404)
 
+@app.route('/api/my_listings/sales/<token>', methods=['GET'])
+def get_my_sales(token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        return (jsonify({'sales':[sale.json_rep() for sale in user.sales]}),201)
+    return (jsonify({"error":"No trades found!"}), 404)
+
+def allowed_file(filename):
+    print(filename.rsplit('.', 1)[1].lower())
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
         
-@app.route('/api/listing/create/<token>', methods=['POST'])
-def create_listing(token):
-    user = User.verify_auth_token(token)
-    if(user is not None):
-        username = user.username
-        sport = request.json.get('sport')
-        player_name = request.json.get('player')
-        year = request.json.get('year')
-        manufacturer = request.json.get('manufacturer')
-        cardNumber = request.json.get('cardNumber')
-        cardSeries = request.json.get('cardSeries')
-        comments = request.json.get('comments')
-        tradeOrSell = request.json.get('tradeOrSell')
-        price = request.json.get('price')
-        time = datetime.datetime.now() 
-        if(tradeOrSell == "Trade"):
-            trade = Trade(username=username, sport=sport,player_name=player_name,
-                        year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
-                        comments=comments, tradeOrSell=tradeOrSell, time=time)
-            user_trades = list(user.trades)
-            user_trades.append(trade)
-            user.trades = user_trades
-            db.session.add(trade)
-            db.session.commit()
-            trade_return = {'username': username, 'id':trade.id,'sport': sport,
-                            'player_name': player_name, 'year': year, 'manufacturer': manufacturer,
-                            'cardNumber': cardNumber, 'cardSeries': cardSeries, 'comments': comments, 
-                            'tradeOrSell': tradeOrSell, 'time': time }
-            return (jsonify(trade_return),201)
-        elif(tradeOrSell == "Sell"):
-            sale = Sale(username=username, sport=sport,player_name=player_name,
-                        year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
-                        comments=comments, tradeOrSell=tradeOrSell, price=price, time=time)
-            user_sales = list(user.sales)
-            user_sales.append(sale)
-            user.sales = user_sales
-            db.session.add(sale)
-            db.session.commit()
-            sale_return = {'username': username, 'id':sale.id,'sport': sport,
-                            'player_name': player_name, 'year': year, 'manufacturer': manufacturer,
-                            'cardNumber': cardNumber, 'cardSeries': cardSeries, 'comments': comments, 
-                            'tradeOrSell': tradeOrSell, 'price':price,'time': time }
-
-            print(sale_return)
-            return (jsonify(sale_return),201)
-        return (jsonify({"error":"Bad Request, specify Trade or Sale type"}), 400)
-    return (jsonify({"error":"User not found!"}), 401)
     
 @app.route('/api/users/login', methods=['POST'])
 def login():

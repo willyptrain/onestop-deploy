@@ -56,7 +56,11 @@ class ViewSale extends Component {
             <Grid item xs={12} sm={6} md={6} lg={6}>
                 <Paper className="left-hand-panel">
                     <div class="product-img">
-                        <img src="https://via.placeholder.com/150" />
+                        {this.state.sale_info.img_paths.map((path) =>
+                            <div>
+                                <img style={{width: '100%', position: 'relative'}} src={path} />
+                            </div>
+                        )}
                     </div>
                 </Paper>
             </Grid>

@@ -20,7 +20,7 @@ import MyListings from './components/Listings/MyListings.js';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state =  {userInfo: 'Not logged in', redirectUrl: null, launchModal: false};
+    this.state =  {status: 'Not logged in', redirectUrl: null, launchModal: false};
   }
 
 
@@ -28,16 +28,16 @@ class App extends React.Component {
     let token = localStorage.access_token;
         axios.get(`/api/users/${token}`)
         .then(res => {
-            this.setState({...this.state, launchModal: false, 'userInfo': res.data})
+            console.log(res)
+            this.setState({...this.state, launchModal: false, 'status':"logged in",'userInfo': res.data})
         })
         .catch(err =>  {
             console.log(err)
-            this.setState({...this.state, launchModal: true,'userInfo': 'Not logged in'})
+            this.setState({...this.state, launchModal: true,'status': 'Not logged in'})
 
         })
   }
   setUserInfo = (userInfo) => {
-    console.log("userInfo");
     console.log(userInfo);
     this.setState({ 'userInfo':userInfo });
   }
@@ -51,7 +51,7 @@ class App extends React.Component {
   render() {
     const { userInfo } = this.state;
 
-
+    console.log(userInfo);
     return (
       <div style={{background: 'white'}} className="App">
         <header className="App-header">
@@ -62,11 +62,11 @@ class App extends React.Component {
               <Route exact path="/" component={(props) =>
                 (userInfo == 'Not logged in' ? 
                 <div>
-                  <Navbar  {...this.state} setModal={this.launchModal}  loggedIn={userInfo != 'Not logged in'} />
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
                   <Home {...this.state} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 : <div>
-                  <Navbar {...this.state} setModal={this.launchModal} loggedIn={userInfo != 'Not logged in'} />
+                  <Navbar {...this.state} setModal={this.launchModal} loggedIn={this.state.status != 'Not logged in'} />
                   <Home {...this.state} loginModal={this.state['launchModal']} userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div> )
               }/>
@@ -74,49 +74,49 @@ class App extends React.Component {
                 <Login {...this.state} userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
               }/>
               <Route exact path="/signup" component={(props) =>
-                <Signup {...this.state} userInfo={this.state['userInfo']} redirectUrl={this.state.userInfo.redirectUrl} setUserInfo={this.setUserInfo} />
+                <Signup {...this.state} userInfo={this.state['userInfo']} redirectUrl={this.state.redirectUrl} setUserInfo={this.setUserInfo} />
               }/>
               <Route exact path="/create_listing">
-                <Navbar {...this.state} loggedIn={userInfo != 'Not logged in'} />
+                <Navbar {...this.state} loggedIn={this.state.status != 'Not logged in'} />
                 <CreateListing {...this.state} userInfo={this.state['userInfo']} />
               </Route>
 
               <Route exact path="/view_listing/trades/:id" render={(props) =>
                 <div>
-                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
                   <ViewTrade {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
               }/>
               <Route exact path="/view_listing/sales/:id" render={(props) =>
                 <div>
-                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
                   <ViewSale {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
               }/>
               <Route exact path="/for_trade/:sport"  render={(props) =>
                   <div>
-                    <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                    <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
                     <ForTrade {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
                   </div>
                 }/>
               <Route exact path="/for_sale/:sport"  render={(props) =>
                   <div>
-                    <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                    <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
                     <ForSale {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
                   </div>
                 }/>
               <Route exact path="/wanted/:sport"  render={(props) =>
                   <div>
-                    <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />
+                    <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
                     <Wanted {...this.state} sport={props.match.params} loggedIn={userInfo != 'Not logged in'}  />
                   </div>
                 }/>
               <Route exact path="/about">
-                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />  
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
                   <AboutPage {...this.state} />
               </Route>
               <Route exact path="/my_listings">
-                  <Navbar  {...this.state}  loggedIn={userInfo != 'Not logged in'} />  
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
                   <MyListings {...this.state} />
               </Route>
 

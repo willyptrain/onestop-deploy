@@ -80,7 +80,7 @@ class ForTrade extends Component {
                                     title={trade['player_name']}
                                     subheader={trade['username']}
                                   />
-                                <CardMedia className="track-img" image="https://via.placeholder.com/150"></CardMedia>
+                                <CardMedia className="track-img" image={trade['img_paths'][0]}></CardMedia>
                                 <CardContent>
                                   <Typography variant="body2" color="textSecondary" component="p">
                                   {`Sport: ${trade['sport']} \n ${trade['comments']}`}

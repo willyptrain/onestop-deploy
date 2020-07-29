@@ -84,7 +84,7 @@ class ForSale extends Component {
                                     title={sale['player_name']}
                                     subheader={sale['username']}
                                   />
-                                <CardMedia className="track-img" image="https://via.placeholder.com/150"></CardMedia>
+                                <CardMedia className="track-img" image={sale['img_paths'][0]}></CardMedia>
                                 <CardContent>
                                   <Typography variant="body2" color="textSecondary" component="p">
                                     {`Sport: ${sale['sport']} \n ${sale['comments']}`}

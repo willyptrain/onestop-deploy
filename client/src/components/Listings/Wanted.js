@@ -102,7 +102,7 @@ class Wanted extends Component {
                                     title={trade['player_name']}
                                     subheader={trade['username']}
                                   />
-                                <CardMedia className="track-img" image="https://via.placeholder.com/150"></CardMedia>
+                                <CardMedia className="track-img" image={trade['img_paths'][0]}></CardMedia>
                                 <CardContent>
                                   <Typography variant="body2" color="textSecondary" component="p">
                                   {`Sport: ${trade['sport']} \n ${trade['comments']}`}
@@ -118,6 +118,11 @@ class Wanted extends Component {
                     
                     
                     )}
+                    {
+                        this.state['trades'].length == 0 &&
+                        <h4 style={{fontFamily: 'Montserrat !important'}}>You have 0 Favorited Trades</h4>
+                        
+                    }
                     </Grid>
             </div>);
         }
@@ -150,7 +155,7 @@ class Wanted extends Component {
                                     title={sale['player_name']}
                                     subheader={sale['username']}
                                   />
-                                <CardMedia className="track-img" image="https://via.placeholder.com/150"></CardMedia>
+                                <CardMedia className="track-img" image={sale['img_paths'][0]}></CardMedia>
                                 <CardContent>
                                   <Typography variant="body2" color="textSecondary" component="p">
                                   {`Sport: ${sale['sport']} \n ${sale['comments']}`}
@@ -166,6 +171,13 @@ class Wanted extends Component {
                     
                     
                     )}
+                    {
+                        this.state['sales'].length == 0 &&
+                        <h4 style={{fontFamily: 'Montserrat !important'}}>You have 0 Favorited Sales</h4>
+                        
+                    }
+
+
                     </Grid>
 
                 
