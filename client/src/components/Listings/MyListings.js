@@ -74,10 +74,14 @@ class MyListings extends Component {
 
 
     editTrade = (event) => {
-        window.location = `/view_listing/trades/${event.currentTarget.value}`
+        console.log(event.currentTarget.id)
+        console.log(event.target.id)
+        window.location = `/view_listing/trades/${event.currentTarget.id}`
     }
     editSale = (event) => {
-        window.location = `/view_listing/sales/${event.currentTarget.value}`
+        console.log(event.target.id)
+        console.log(event.currentTarget.id)
+        window.location = `/view_listing/sales/${event.currentTarget.id}`
     }
     // editSale = (event) => {
     //     let token = localStorage.access_token;
@@ -119,6 +123,8 @@ class MyListings extends Component {
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
                         <Card className="track-card">
+                                    
+                        <CardActionArea onClick={() => window.location = `/view_listing/trades/${trade['id']}`}>
                                     <CardHeader 
                                         title={trade['player_name']}
                                         subheader={trade['username']}
@@ -129,7 +135,8 @@ class MyListings extends Component {
                                     {`Sport: ${trade['sport']} \n ${trade['comments']}`}
                                     </Typography>
                                     </CardContent>
-                                    <IconButton style={{float:'left'}} value={trade['id']} onClick={this.editTrade} aria-label="add to favorites">
+                        </CardActionArea>
+                                    <IconButton style={{float:'left'}} id={trade['id']} onClick={() => window.location = `/create_listing/edit/trade/${trade['id']}`} aria-label="add to favorites">
                                             <EditIcon />
                                     </IconButton>   
                         </Card>
@@ -166,6 +173,7 @@ class MyListings extends Component {
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
                         <Card className="track-card">
+                        <CardActionArea onClick={() => window.location = `/view_listing/trades/${sale['id']}`}>
                                     <CardHeader 
                                         title={sale['player_name']}
                                         subheader={sale['username']}
@@ -176,7 +184,8 @@ class MyListings extends Component {
                                     {`Sport: ${sale['sport']} \n ${sale['comments']}`}
                                     </Typography>
                                     </CardContent>
-                                    <IconButton style={{float:'left'}} value={sale['id']} onClick={this.editSale} aria-label="add to favorites">
+                        </CardActionArea>
+                                    <IconButton style={{float:'left'}} id={sale['id']} onClick={() => window.location = `/create_listing/edit/sale/${sale['id']}`} aria-label="add to favorites">
                                             <EditIcon />
                                     </IconButton>   
                         </Card>

@@ -22,6 +22,32 @@
 //     font-family: Montserrat !important;
 // }
 
+.autocomplete {
+  width: 400px;
+  // height: 40vh;
+  margin-right: 3%;
+  right: 0;
+  position: absolute;
+  z-index:4;
+  overflow: scroll;
+  background: white;
+  border: 2px solid blue;
+
+}
+.dropdown-container {
+  max-height: 40vh;
+}
+.search-bar {
+    width: 100%;
+    position: relative;
+    top: 2vh;
+}
+
+
+
+
+
+
 .submenu-container {
     display: none;
     // border: 0.2px solid black

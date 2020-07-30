@@ -18,6 +18,15 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 // import {logo} from '../../images/logo.png';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
+import ListItemText from '@material-ui/core/ListItemText';
+
+
+
+
 
 
 {/* <MenuItem component={Link} href={`/${pageOption}/all`}>View All</MenuItem>
@@ -78,6 +87,10 @@ export function MenuDropdown(props) {
 
 export function NavBar(data) {
 
+
+
+
+  
   console.log(data.loggedIn)
 
     const useStyles = makeStyles((theme) => ({
@@ -86,6 +99,8 @@ export function NavBar(data) {
         display: 'flex',
         alignItems: 'center',
         width: 400,
+        float: 'right',
+        marginRight: '3%'
           },
         button: {
           color: 'white',
@@ -137,45 +152,70 @@ export function NavBar(data) {
       }));
 
       const classes = useStyles()
-      const [open, setOpen] = React.useState(false);
-      const [onButton, setOnButton] = React.useState(false);
-      const [onMenu, setOnMenu] = React.useState(false);
-      const [pageOption, setPageOption] = React.useState("all");
-      const [anchor, setAnchor] = React.useState(null);
+      const [searchResults, setSearchResults] = React.useState([]);
+      // const [saleSearch, setSaleSearch] = React.useState([]);
+      const [hideDropdown, setHideDropdown] = React.useState(true);
+
     
-      const mouseEnterButton = (event) => {
-        // setTimeout(() => {
-          setOnButton(true);
-          setOpen(true);
-          setAnchor(event.currentTarget);
-          console.log(event.target.id)
-          setPageOption(event.target.id);
+      // const mouseEnterButton = (event) => {
+      //   // setTimeout(() => {
+      //     setOnButton(true);
+      //     setOpen(true);
+      //     setAnchor(event.currentTarget);
+      //     console.log(event.target.id)
+      //     setPageOption(event.target.id);
 
 
-        // }, 300);
-      }
-      const mouseLeaveButton = () => {
-        setTimeout(() => {
-          setOnButton(false);
-          setOpen(onMenu);
-        }, 300);
-      }
-      const mouseEnterMenu = () => {
-        // setTimeout(() => {
-          setOnMenu(true);
-          setOpen(true);
-        // }, 300);
-      }
-      const mouseLeaveMenu = () => {
-        setTimeout(() => {
-          setOnMenu(false);
-          setOpen(onButton);
-        }, 300);
+      //   // }, 300);
+      // }
+      // const mouseLeaveButton = () => {
+      //   setTimeout(() => {
+      //     setOnButton(false);
+      //     setOpen(onMenu);
+      //   }, 300);
+      // }
+      // const mouseEnterMenu = () => {
+      //   // setTimeout(() => {
+      //     setOnMenu(true);
+      //     setOpen(true);
+      //   // }, 300);
+      // }
+      // const mouseLeaveMenu = () => {
+      //   setTimeout(() => {
+      //     setOnMenu(false);
+      //     setOpen(onButton);
+      //   }, 300);
+      // }
+
+      // const launchModal = () => {
+
+      // }
+
+      const searchChange = (event) => {
+        if(event.currentTarget.value == "") {
+          setHideDropdown(true);
+        }
+        else {
+          let token = localStorage.access_token;
+          axios.get(`/api/search/${event.currentTarget.value}/${token}`)
+          .then(res => {
+              setSearchResults(res.data.results);
+              console.log(res.data)
+          })
+          .catch(err =>  {
+              console.log(err)
+
+          })
+          setHideDropdown(false);
+        }
       }
 
-      const launchModal = () => {
 
-      }
+
+
+
+
+
 
       return (<div className="navbar-container">
         <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
@@ -260,17 +300,55 @@ export function NavBar(data) {
                 
                 
                 <div className="right-nav">
+                  <div className="search-bar">
                 <Paper component="form" className={classes.root}>
                     {/* <div className={classes.search}> */}
-                    <IconButton type="submit" className={classes.iconButton} aria-label="search">
+                    <IconButton type="submit" aria-label="search">
                             <SearchIcon />
                         </IconButton>
+                          
                             <InputBase
                             placeholder="Search…"
                             classes={classes.input}
+                            onChange={searchChange}
                             inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Paper>
+                          />
+
+                </Paper>
+                <div style={{width: '100%', float: 'right', display: (!hideDropdown ? 'block' : 'none')}}>
+
+                          <div className="autocomplete">
+
+                            
+                              <Paper className="dropdown-container">
+                                  <List>
+                                    {searchResults.map((res, index) =>
+                                            <ListItem divider={true} component="a">
+                                                <ListItemAvatar>
+                                                  <Avatar
+                                                    alt="Trade Image" 
+                                                    variant="rounded"
+                                                    src={res['img_paths'][0]}
+                                                  />
+                                                </ListItemAvatar>
+                                              <ListItemText primary={res['player_name']} secondary={res['sport']} />
+                                            <Divider />
+                                            </ListItem>
+                                              )}
+
+                                </List>
+                              </Paper>
+                            {/* } */}
+
+                            </div>
+
+                    
+                    </div>
+                    </div>
+
+
+                    
+                  
                     {/* </div> */}
 
                     {!data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Login</Button>}

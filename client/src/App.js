@@ -78,8 +78,26 @@ class App extends React.Component {
               }/>
               <Route exact path="/create_listing">
                 <Navbar {...this.state} loggedIn={this.state.status != 'Not logged in'} />
-                <CreateListing {...this.state} userInfo={this.state['userInfo']} />
+                <CreateListing {...this.state} edit={false} userInfo={this.state['userInfo']} />
               </Route>
+              <Route exact path="/create_listing/edit/:id" render={(props) =>
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <CreateListing {...this.state} edit={true} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+              }/>
+              <Route exact path="/create_listing/edit/trade/:id" render={(props) =>
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <CreateListing {...this.state} edit={true} type={"trade"} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+              }/>
+              <Route exact path="/create_listing/edit/sale/:id" render={(props) =>
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <CreateListing {...this.state} edit={true} type={"sale"} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+              }/>
 
               <Route exact path="/view_listing/trades/:id" render={(props) =>
                 <div>

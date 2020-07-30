@@ -10,6 +10,7 @@ import datetime
 from sqlalchemy import func
 from .settings import access_key_id, secret_access_key, acl, bucket_name, bucket_region
 import boto3
+import numpy as np
 
 
 # initialization
@@ -46,7 +47,114 @@ REDIRECT_URI="http://localhost:3000"
 # def create_tables():
 #     db.create_all()
 
+class Trade(db.Model):
+    __tablename__ = 'tradings'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32), index=True)
+    player_name = db.Column(db.String(32), index=True)
+    sport = db.Column(db.String(32), index=True)
+    year = db.Column(db.Integer, index=True)
+    manufacturer = db.Column(db.String(32), index=True)
+    cardNumber =  db.Column(db.String(32), index=True)
+    cardSeries = db.Column(db.String(32), index=True)
+    comments = db.Column(db.String(32), index=True)
+    tradeOrSell = db.Column(db.String(32), index=True)
+    time = db.Column(db.Integer, index=True)
+    img_paths = db.Column(db.PickleType) #array of strings (file names)
 
+    def add_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json_rep(self):
+        print(self.id)
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class Sale(db.Model):
+    __tablename__ = 'sales'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32), index=True)
+    player_name = db.Column(db.String(32), index=True)
+    sport = db.Column(db.String(32), index=True)
+    year = db.Column(db.Integer, index=True)
+    manufacturer = db.Column(db.String(32), index=True)
+    cardNumber =  db.Column(db.String(32), index=True)
+    cardSeries = db.Column(db.String(32), index=True)
+    comments = db.Column(db.String(32), index=True)
+    price = db.Column(db.Integer, index=True)
+    tradeOrSell = db.Column(db.String(32), index=True)
+    time = db.Column(db.Integer, index=True)
+    img_paths = db.Column(db.PickleType) #array of strings (file names)
+
+
+
+    def add_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json_rep(self):
+        print(self.id)
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class WantedCard(db.Model):
+    __tablename__ = 'wanted_cards'
+    id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, index=True)
+    username = db.Column(db.String(32), index=True)
+    type = db.Column(db.String(32), index=True) #trade or sale
+    sport = db.Column(db.String(32), index=True) 
+    time = db.Column(db.Integer, index=True)
+
+    def __eq__(self, other):
+        print(self.json_rep())
+        print(other)
+        return (self.item_id == other.item_id and
+                self.type == other.type)
+
+    def add_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json_rep(self):
+        print(self.id)
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32), index=True)
+    password_hash = db.Column(db.String(64))
+    trades = db.Column(db.PickleType)
+    sales = db.Column(db.PickleType)
+    wantedCards = db.Column(db.PickleType)
+
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def hash_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def generate_auth_token(self, expires_in=600):
+        return jwt.encode(
+            {'id': self.id, 'exp': time.time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_auth_token(token):
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'],
+                              algorithms=['HS256'])
+        except:
+            return
+        return User.query.get(data['id'])
 
 
 @app.route('/api/listing/create/<token>', methods=['POST'])
@@ -56,7 +164,7 @@ def create_listing(token):
         # print(request.get_data())
         username = user.username
         sport = request.form.get('sport')
-        player_name = request.form.get('player')
+        player_name = request.form.get('player_name')
         year = request.form.get('year')
         manufacturer = request.form.get('manufacturer')
         cardNumber = request.form.get('cardNumber')
@@ -100,126 +208,39 @@ def create_listing(token):
 
 
 
+@app.route('/api/search/<keyword>/<token>')
+def search(keyword, token):
+    trade_results = Trade.query.filter(Trade.player_name.ilike("%"+keyword.lower()+"%")).all()
+    sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
+    np_trades = np.array([trade.json_rep() for trade in trade_results])
+    np_sales = np.array([sale.json_rep() for sale in sale_results])
+    all_results = np.empty((np_trades.size + np_sales.size,), dtype=np_trades.dtype)
+    all_results[0::2] = np_trades
+    all_results[1::2] = np_sales
+    print(all_results)
+    return (jsonify({"results":list(all_results)}), 201)
+
+
+
+
+@app.route('/api/trade_lookup/<id>/<token>')
+def get_trade_by_id(id, token):
+    trade = Trade.query.filter_by(id=id).first()
+    if(trade is not None):
+        return (jsonify(trade.json_rep()),201)
+    return (jsonify({"error": "Trade not found"}),404)
+
+@app.route('/api/sale_lookup/<id>/<token>')
+def get_sale_by_id(id, token):
+    sale = Sale.query.filter_by(id=id).first()
+    if(sale is not None):
+        return (jsonify(sale.json_rep()),201)
+    return (jsonify({"error": "Sale not found"}),404)
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-class Trade(db.Model):
-    __tablename__ = 'tradings'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(32), index=True)
-    player_name = db.Column(db.String(32), index=True)
-    sport = db.Column(db.String(32), index=True)
-    year = db.Column(db.Integer, index=True)
-    manufacturer = db.Column(db.String(32), index=True)
-    cardNumber =  db.Column(db.String(32), index=True)
-    cardSeries = db.Column(db.String(32), index=True)
-    comments = db.Column(db.String(32), index=True)
-    tradeOrSell = db.Column(db.String(32), index=True)
-    time = db.Column(db.Integer, index=True)
-    img_paths = db.Column(db.PickleType) #array of strings (file names)
-
-    def add_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def json_rep(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-class Sale(db.Model):
-    __tablename__ = 'sales'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(32), index=True)
-    player_name = db.Column(db.String(32), index=True)
-    sport = db.Column(db.String(32), index=True)
-    year = db.Column(db.Integer, index=True)
-    manufacturer = db.Column(db.String(32), index=True)
-    cardNumber =  db.Column(db.String(32), index=True)
-    cardSeries = db.Column(db.String(32), index=True)
-    comments = db.Column(db.String(32), index=True)
-    price = db.Column(db.Integer, index=True)
-    tradeOrSell = db.Column(db.String(32), index=True)
-    time = db.Column(db.Integer, index=True)
-    img_paths = db.Column(db.PickleType) #array of strings (file names)
-
-
-
-    def add_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def json_rep(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-class WantedCard(db.Model):
-    __tablename__ = 'wanted_cards'
-    id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, index=True)
-    username = db.Column(db.String(32), index=True)
-    type = db.Column(db.String(32), index=True) #trade or sale
-    sport = db.Column(db.String(32), index=True) 
-    time = db.Column(db.Integer, index=True)
-
-    def __eq__(self, other):
-        print(self.json_rep())
-        print(other)
-        return (self.item_id == other.item_id and
-                self.type == other.type)
-
-    def add_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def json_rep(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
-
-
-
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(32), index=True)
-    password_hash = db.Column(db.String(64))
-    trades = db.Column(db.PickleType)
-    sales = db.Column(db.PickleType)
-    wantedCards = db.Column(db.PickleType)
-
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def hash_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def generate_auth_token(self, expires_in=600):
-        return jwt.encode(
-            {'id': self.id, 'exp': time.time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256')
-
-    @staticmethod
-    def verify_auth_token(token):
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'],
-                              algorithms=['HS256'])
-        except:
-            return
-        return User.query.get(data['id'])
 
 
 @auth.verify_password
@@ -460,6 +481,7 @@ def get_user_sale(item_id, token):
 def get_my_trades(token):
     user = User.verify_auth_token(token)
     if(user is not None):
+        print([trade.json_rep() for trade in user.trades])
         return (jsonify({'trades':[trade.json_rep() for trade in user.trades]}),201)
     return (jsonify({"error":"No trades found!"}), 404)
 
