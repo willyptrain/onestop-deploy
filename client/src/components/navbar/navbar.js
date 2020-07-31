@@ -320,7 +320,7 @@ export function NavBar(data) {
                           <div className="autocomplete">
 
                             
-                              <Paper className="dropdown-container">
+                              {/* <Paper className="dropdown-container"> */}
                                   <List>
                                     {searchResults.map((res, index) =>
                                             <ListItem divider={true} component="a">
@@ -331,13 +331,13 @@ export function NavBar(data) {
                                                     src={res['img_paths'][0]}
                                                   />
                                                 </ListItemAvatar>
-                                              <ListItemText primary={res['player_name']} secondary={res['sport']} />
+                                              <ListItemText className='search-primary' primary={res['player_name']} secondary={res['sport']} />
                                             <Divider />
                                             </ListItem>
                                               )}
 
                                 </List>
-                              </Paper>
+                              {/* </Paper> */}
                             {/* } */}
 
                             </div>

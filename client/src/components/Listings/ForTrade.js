@@ -76,16 +76,18 @@ class ForTrade extends Component {
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
                     <Card className="track-card">
-                                <CardHeader 
-                                    title={trade['player_name']}
-                                    subheader={trade['username']}
-                                  />
-                                <CardMedia className="track-img" image={trade['img_paths'][0]}></CardMedia>
-                                <CardContent>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                  {`Sport: ${trade['sport']} \n ${trade['comments']}`}
-                                </Typography>
-                                </CardContent>
+                                <CardActionArea href={`/for_trade/item/${trade['id']}`}>
+                                    <CardHeader 
+                                        title={trade['player_name']}
+                                        subheader={trade['username']}
+                                    />
+                                    <CardMedia className="track-img" image={trade['img_paths'][0]}></CardMedia>
+                                    <CardContent>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                    {`Sport: ${trade['sport']} \n ${trade['comments']}`}
+                                    </Typography>
+                                    </CardContent>
+                                </CardActionArea>
                                 <CardActions disableSpacing>
                                     <IconButton value={trade['id']} color={this.state['favorite_trades'].includes(trade['id']) ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
                                         <FavoriteIcon />

@@ -20,3 +20,116 @@
     height: 0;
     padding-top: 56.25%;
 }
+.listing-container {
+    height: 80vh;
+    position: relative;
+    top: 4vh;
+
+}
+
+.listing-header {
+    position: relative;
+    top: 8vh;
+
+}
+.form-root {
+    display: flex;
+    flex-wrap: wrap;
+}
+.listing-full-label {
+    width: 25ch,
+}
+.form-control-trade {
+    min-width: 150px;
+}
+.left-hand-panel {
+    height: 65vh;
+    width: 100%;
+}
+.product-img {
+    display: inline-block;
+    width: 94%;
+}
+.product-text {
+    margin-top: 2vh;
+}
+
+.product-top-text {
+    position: absolute;
+    top: 5vh;
+}
+.button-below-img {
+    height: 7vh;
+    position: relative;
+    top: 56vh;
+
+}
+.button-item {
+    background: #90caf9 !important;
+    position: absolute;
+    top: 1vh;
+    height: 5.5vh;
+    width: 90%;
+    color: black !important;
+    font-weight: 900 !important;
+    font-family: Montserrat !important;
+    /* border: 2px solid white !important; */
+
+}
+.price-container {
+    position: relative; 
+    top: 15vh;
+}
+.price-text {
+    margin-left: 20px !important;
+    color: green !important; 
+}
+
+
+.tabs-details {
+    margin-left: 20px !important;
+}
+
+
+.carousel-slider {
+    height: 32vh;
+    margin-top: 1vh !important;
+}
+
+
+.right-hand-panel {
+    height: 65vh;
+    width: 95%;
+}
+
+.item-details-tabs {
+    position: relative;
+    top: 20vh;
+    height: 30vh;
+}
+
+
+.player-text {
+    font-family: Montserrat !important;
+    margin-left: 20px !important;
+}
+.sport-text {
+    font-family: Montserrat !important;
+    margin-left: 20px !important;
+}
+.year-text {
+    font-family: Montserrat !important;
+    margin-left: 20px !important;
+}
+.manufacturer-text {
+    font-family: Montserrat !important;
+    margin-left: 20px !important;
+}
+.cardNumber-text {
+    font-family: Montserrat !important;
+    margin-left: 20px !important;
+}
+.cardSeries-text {
+    font-family: Montserrat !important;
+    margin-left: 20px !important;
+}

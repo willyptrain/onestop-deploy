@@ -80,16 +80,18 @@ class ForSale extends Component {
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
                         <Card className="track-card">
-                                <CardHeader 
-                                    title={sale['player_name']}
-                                    subheader={sale['username']}
-                                  />
-                                <CardMedia className="track-img" image={sale['img_paths'][0]}></CardMedia>
-                                <CardContent>
-                                  <Typography variant="body2" color="textSecondary" component="p">
-                                    {`Sport: ${sale['sport']} \n ${sale['comments']}`}
-                                </Typography>
-                                </CardContent>
+                                <CardActionArea href={`/for_sale/item/${sale['id']}`}>
+                                    <CardHeader 
+                                        title={sale['player_name']}
+                                        subheader={sale['username']}
+                                    />
+                                    <CardMedia className="track-img" image={sale['img_paths'][0]}></CardMedia>
+                                    <CardContent>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        {`Sport: ${sale['sport']} \n ${sale['comments']}`}
+                                    </Typography>
+                                    </CardContent>
+                                </CardActionArea>
                                 <CardActions disableSpacing>
                                 <IconButton value={sale['id']} color={this.state['favorite_sales'].includes(sale['id']) ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
                                         <FavoriteIcon />

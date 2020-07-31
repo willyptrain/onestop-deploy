@@ -128,8 +128,9 @@ class CreateListing extends Component {
             this.setState({...res.data,  'submitted': true});
         })
         .catch(err =>  {
+            console.log("error")
             console.log(err)
-            this.setState({'userInfo': 'Not logged in'})
+            this.setState({'error':err,'userInfo': 'Not logged in'})
 
         })
     }
@@ -150,8 +151,10 @@ class CreateListing extends Component {
             }
             
           }
-          console.log(this.state);
-        return (<div className="listing-container">
+        if(this.state.error && this.state.userInfo == "Not logged in") {
+            return <Redirect {...this.state} url={`/`} />
+        }
+    return (<div className="listing-container">
             <h2 className="listing-header">Create A Listing</h2>
             <div className="form-root">    
                {/* <form onSubmit={this.createAListing} id="listing-form"> */}

@@ -214,6 +214,10 @@ def search(keyword, token):
     sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
     np_trades = np.array([trade.json_rep() for trade in trade_results])
     np_sales = np.array([sale.json_rep() for sale in sale_results])
+    if(np_trades.shape[0] == 0):
+        return (jsonify({"results":[sale.json_rep() for sale in sale_results]}), 201)
+    if(np_sales.shape[0] == 0):
+        return (jsonify({"results":[trade.json_rep() for trade in trade_results]}), 201)
     all_results = np.empty((np_trades.size + np_sales.size,), dtype=np_trades.dtype)
     all_results[0::2] = np_trades
     all_results[1::2] = np_sales
@@ -443,6 +447,24 @@ def get_all_trades(sport, token):
         return (jsonify({"error":"Trades not found!"}), 404)
 
 
+
+
+
+# @app.route('/api/listings/trades/<item_id>/<token>', methods=['GET'])
+# def get_trade(item_id, token):
+#     trade = Trade.query.filter_by(id=item_id).first()
+#     if(trade is not None):
+#         return (jsonify(trade.json_rep()),201)
+#     return (jsonify({"error":"No trades found!"}), 404)
+
+
+
+# @app.route('/api/listings/sales/<item_id>/<token>', methods=['GET'])
+# def get_trade(item_id, token):
+#     sale = Sale.query.filter_by(id=item_id).first()
+#     if(sale is not None):
+#         return (jsonify(sale.json_rep()),201)
+#     return (jsonify({"error":"No sales found!"}), 404)
 
 
 

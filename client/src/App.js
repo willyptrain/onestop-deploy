@@ -13,6 +13,8 @@ import ViewTrade from './components/CreateListing/ViewTrade.js';
 import ViewSale from './components/CreateListing/ViewSale.js';
 import ForTrade from './components/Listings/ForTrade';
 import ForSale from './components/Listings/ForSale';
+import ViewForTradeItem from './components/Listings/ViewForTradeItem';
+import ViewForSaleItem from './components/Listings/ViewForSaleItem';
 import Wanted from './components/Listings/Wanted';
 import AboutPage from './components/About/AboutPage.js'
 import MyListings from './components/Listings/MyListings.js';
@@ -111,6 +113,21 @@ class App extends React.Component {
                   <ViewSale {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
               }/>
+
+              <Route exact path="/for_sale/item/:id" render={(props) =>
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <ViewForSaleItem {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+              }/>
+              <Route exact path="/for_trade/item/:id" render={(props) =>
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <ViewForTradeItem {...this.state} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+              }/>
+
+
               <Route exact path="/for_trade/:sport"  render={(props) =>
                   <div>
                     <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
