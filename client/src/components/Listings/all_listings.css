@@ -27,6 +27,67 @@
 
 }
 
+.tradeBox-card {
+    position: relative;
+    top: 20vh;
+    /* left: 25%; */
+    height: 50vh;
+}
+.left-hand-tradeBox {
+    height: 100%;
+
+}
+.left-hand-paper {
+    height: 100%;
+    margin-left: 0px !important;
+}
+.right-hand-tradeBox {
+    height: 100%;
+
+}
+.right-hand-paper {
+    height: 100%;
+}
+
+.middle-icon {
+    text-align: center;
+    width: 50%;
+}
+.tradeBox-want-text {
+    /* margin-left: 30px !important; */
+}
+.tradeBox-card-container {
+    height: 85%;
+}
+.tradeBox-paper-container {
+    height: 75%;
+    margin-left: 0px !important;
+}
+
+
+
+.tradeBox-wanted-img {
+    height: 80%;
+}
+
+
+
+
+.tradeBox-grid-container {
+    height: 100%;
+}
+
+.tradeBox-button {
+    background: #90caf9 !important;
+    color: black !important;
+    position: relative;
+    top: 20px;
+    height: 8%;
+    width: 100%;
+}
+
+
+
 .listing-header {
     position: relative;
     top: 8vh;
@@ -61,7 +122,7 @@
 .button-below-img {
     height: 7vh;
     position: relative;
-    top: 56vh;
+    /* top: 56vh; */
 
 }
 .button-item {

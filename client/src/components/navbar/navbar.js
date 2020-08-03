@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Redirect from '../redirect.js';
 import axios from 'axios';
@@ -91,7 +91,7 @@ export function NavBar(data) {
 
 
   
-  console.log(data.loggedIn)
+  console.log(data)
 
     const useStyles = makeStyles((theme) => ({
       root: {
@@ -190,6 +190,24 @@ export function NavBar(data) {
       // const launchModal = () => {
 
       // }
+
+      // useEffect(() => {
+      //   let token = localStorage.access_token;
+      //   axios.get(`/api/users/${token}`)
+      //   .then(res => {          
+      //       console.log(res);
+      //   })
+      //   .catch(err =>  {
+      //     console.log(err);
+
+      //   })
+      // });
+
+
+
+
+
+
 
       const searchChange = (event) => {
         if(event.currentTarget.value == "") {

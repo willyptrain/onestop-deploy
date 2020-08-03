@@ -71,6 +71,12 @@ class ForTrade extends Component {
                   alignItems="center"
                   justify="center" spacing={0}>
                 
+                
+
+
+
+
+
                 {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={6} sm={3} md={3} lg={3}>

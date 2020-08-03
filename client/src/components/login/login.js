@@ -17,7 +17,8 @@ class Login extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {email: "", password: "", setUserInfo: props.setUserInfo}
+        console.log(props);
+        this.state = {email: "", password: "", setUserInfo: props.setUserInfo, redirectUrl: props.redirectUrl}
     }
 
     validateForm() {
@@ -32,10 +33,10 @@ class Login extends Component {
         }).then(res => {
             console.log(res);
             localStorage.setItem('access_token', res.data.access_token)
-            this.setState({'redirectUrl':res.data.redirectUrl, 'token':true})
+            this.setState({...this.state, 'token':true})
         }).catch(err => {
             console.log(err)
-            this.setState({email: "", password: "",'error':err})
+            this.setState({...this.state, email: "", password: "",'error':err})
         });
     
 

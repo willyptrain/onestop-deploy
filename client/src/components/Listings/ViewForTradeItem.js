@@ -19,7 +19,8 @@ import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a lo
 import { Carousel } from 'react-responsive-carousel';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
- 
+import Modal from '@material-ui/core/Modal';
+import TradeBox from './TradeBox.js';
 
 
 class ViewForTradeItem extends Component {
@@ -27,12 +28,11 @@ class ViewForTradeItem extends Component {
     constructor(props) {
         super(props);
         console.log(props); 
-        this.state = {'item_id':props.id.id, 'tab':'details'};
+        this.state = {'item_id':props.id.id, 'tab':'details', 'open':true};
     }
 
     async componentDidMount() {
         let token = localStorage.access_token;
-        console.log(token);
         axios.get(`/api/trade_lookup/${this.state['item_id']}/${token}`)
         .then(res => {
             this.setState({...this.state, 'trade_info':res.data})
@@ -61,7 +61,19 @@ class ViewForTradeItem extends Component {
     changeTab = (event, new_val) => {
         this.setState({...this.state, 'tab':new_val})
     }
+    handleClose = () => {
+        this.setState({...this.state,'open':false});
+    }
+    open = () => {
+        this.setState({...this.state, 'open': true})
+    }
 
+
+    offerTrade = (checked_ids) => {
+        console.log(checked_ids)
+
+        this.setState({...this.state,'open':false});
+    }
 
 
 
@@ -70,53 +82,99 @@ class ViewForTradeItem extends Component {
         return (<div  className="home-container">
         {'trade_info' in this.state && 
 
-        <Grid container spacing={3} alignItems="center"
-        justify="center" >
-            <Grid item xs={12} sm={6} md={6} lg={4}>
-                <Paper className="left-hand-panel">
-                    <div class="product-img">
-                    <Carousel indicators={false} navButtonsAlwaysVisible={false} interval={3000}>
-                        {this.state.trade_info.img_paths.map((path) =>
-                            <div>
-                                <img style={{ position: 'relative'}} src={path} />
-                            </div>
-                        )}
-                        
-                        </Carousel>
-                    </div>
-                </Paper>
-            </Grid>
-            <Grid item xs={12} sm={6} md={6} lg={4}>
-                <Paper className="right-hand-panel">
-                    <div class="product-top-text">
-                        <Typography className="player-text"
-                        variant="h3" align="left">{this.state.trade_info['player_name']}</Typography>
-                        <Typography className="sport-text" 
-                        variant="subtitle1" align="left">Sport: {this.state.trade_info['sport']}</Typography>
-                        <Typography className="year-text" 
-                        variant="subtitle1" align="left">Year: {this.state.trade_info['year']}</Typography>
-                    </div>
-
-                    <div style={{top: '56vh'}} className="button-below-img">
-                        <Button color="secondary" size="large" variant="contained" className="button-item">Offer Trade</Button>
-                    </div>
+        <div>
+            <div>
+                <Modal
+                open={this.state['open']}
+                onClose={this.handleClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description">
                     
-                    <div className="item-details-tabs">
-                        
-                            <div style={{width: '100%'}}>
-                                <Tabs className="tabs-details"
-                                    value={this.state['tab']}
-                                    indicatorColor="primary"
-                                    textColor="primary"
-                                    onChange={this.changeTab}
-                                    aria-label="disabled tabs example"
-                                >
-                                    <Tab value="details" label="details" />
-                                    <Tab value="comments" label="comments"  />
-                                </Tabs>
-                            </div>
+                    <Grid container className="grid-container"
+                alignItems="center"
+                justify="center" spacing={3}>
+                        <Grid item xs={10} sm={6} md={6} lg={6}>
 
-                        {this.state['tab'] == "details" && 
+                            <TradeBox {...this.state} offerTrade={this.offerTrade} />
+
+                        </Grid>
+                    </Grid>
+                </Modal>
+            </div>
+
+
+        <div>
+
+            <Grid container spacing={3} alignItems="center"
+            justify="center" >
+                <Grid item xs={12} sm={6} md={6} lg={4}>
+                    <Paper className="left-hand-panel">
+                        <div class="product-img">
+                        <Carousel indicators={false} navButtonsAlwaysVisible={false} interval={3000}>
+                            {this.state.trade_info.img_paths.map((path) =>
+                                <div>
+                                    <img style={{ position: 'relative'}} src={path} />
+                                </div>
+                            )}
+                            
+                            </Carousel>
+                        </div>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} lg={4}>
+                    <Paper className="right-hand-panel">
+                        <div class="product-top-text">
+                            <Typography className="player-text"
+                            variant="h3" align="left">{this.state.trade_info['player_name']}</Typography>
+                            <Typography className="sport-text" 
+                            variant="subtitle1" align="left">Sport: {this.state.trade_info['sport']}</Typography>
+                            <Typography className="year-text" 
+                            variant="subtitle1" align="left">Year: {this.state.trade_info['year']}</Typography>
+                        </div>
+
+                        <div style={{top: '56vh'}} className="button-below-img">
+                            <Button color="secondary" size="large" variant="contained" onClick={this.open} className="button-item">Offer Trade</Button>
+                        </div>
+                        
+                        <div className="item-details-tabs">
+                            
+                                <div style={{width: '100%'}}>
+                                    <Tabs className="tabs-details"
+                                        value={this.state['tab']}
+                                        indicatorColor="primary"
+                                        textColor="primary"
+                                        onChange={this.changeTab}
+                                        aria-label="disabled tabs example"
+                                    >
+                                        <Tab value="details" label="details" />
+                                        <Tab value="comments" label="comments"  />
+                                    </Tabs>
+                                </div>
+
+                            {this.state['tab'] == "details" && 
+                            <div class="product-text">
+                                <Typography className="manufacturer-text" 
+                                variant="h5" align="left">Manufacturer: {this.state.trade_info['manufacturer']}</Typography>
+                                <Typography className="cardNumber-text" 
+                                variant="subtitle1" align="left">Card Number: {this.state.trade_info['cardNumber']}</Typography>
+                                <Typography className="cardSeries-text" 
+                                variant="subtitle1" align="left">Card Set/Series: {this.state.trade_info['cardSeries']}</Typography>
+                            </div>
+                            }
+                            {this.state['tab'] == "comments" && 
+                            <div class="product-text">
+                                <Typography className="manufacturer-text" 
+                                variant="body1" align="left">{this.state.trade_info['comments']}</Typography>
+                                
+                            </div>
+                            }
+                        </div>
+
+
+                    </Paper>
+                </Grid>
+                {/* <Grid item xs={11} sm={11} md={11} lg={11}>
+                    <Paper className="right-hand-panel">
                         <div class="product-text">
                             <Typography className="manufacturer-text" 
                             variant="h5" align="left">Manufacturer: {this.state.trade_info['manufacturer']}</Typography>
@@ -125,33 +183,12 @@ class ViewForTradeItem extends Component {
                             <Typography className="cardSeries-text" 
                             variant="subtitle1" align="left">Card Set/Series: {this.state.trade_info['cardSeries']}</Typography>
                         </div>
-                        }
-                        {this.state['tab'] == "comments" && 
-                        <div class="product-text">
-                            <Typography className="manufacturer-text" 
-                            variant="body1" align="left">{this.state.trade_info['comments']}</Typography>
-                            
-                        </div>
-                        }
-                    </div>
+                    </Paper>
+                </Grid> */}
 
-
-                </Paper>
             </Grid>
-            {/* <Grid item xs={11} sm={11} md={11} lg={11}>
-                <Paper className="right-hand-panel">
-                    <div class="product-text">
-                        <Typography className="manufacturer-text" 
-                        variant="h5" align="left">Manufacturer: {this.state.trade_info['manufacturer']}</Typography>
-                        <Typography className="cardNumber-text" 
-                        variant="subtitle1" align="left">Card Number: {this.state.trade_info['cardNumber']}</Typography>
-                        <Typography className="cardSeries-text" 
-                        variant="subtitle1" align="left">Card Set/Series: {this.state.trade_info['cardSeries']}</Typography>
-                    </div>
-                </Paper>
-            </Grid> */}
-
-        </Grid>
+        </div>
+    </div>  
         }
 
 

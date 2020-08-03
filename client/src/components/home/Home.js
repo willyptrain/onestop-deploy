@@ -23,7 +23,7 @@ class Home extends Component {
         super(props);
         console.log(props)
         this.loggedIn = props.loggedIn;
-        this.state = {'open': props.launchModal}; 
+        this.state = {'open': props.launchModal, 'redirectUrl':props.redirectUrl}; 
     }
 
     async componentDidMount() {
@@ -36,7 +36,7 @@ class Home extends Component {
         })
         .catch(err =>  {
             console.log(err);
-            this.setState({'open': true})
+            this.setState({...this.state, 'open': true})
 
         })
 
