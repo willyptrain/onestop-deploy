@@ -23,6 +23,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import ListItemText from '@material-ui/core/ListItemText';
+import Badge from '@material-ui/core/Badge';
+import MailIcon from '@material-ui/icons/Mail';
 
 
 
@@ -40,7 +42,6 @@ import ListItemText from '@material-ui/core/ListItemText';
                   <MenuItem component={Link} href={`/${pageOption}/other`}>Other/Gaming</MenuItem> */}
 
 export function MenuDropdown(props) {
-    console.log(props.type)
     return (
       <ul className="submenu-container">
         <li className="submenu-item ">
@@ -77,7 +78,6 @@ export function MenuDropdown(props) {
         </li>
         <li className="submenu-item ">
           <a className="submenu-text" style={{height: '4vh !important'}} href={`/${props.type}/gaming`}>Gaming</a>
-
         </li>
         
       </ul>
@@ -238,8 +238,8 @@ export function NavBar(data) {
       return (<div className="navbar-container">
         <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
             <Toolbar>
+              {'status' in data && data.status == 'logged in' && 'userInfo' in data && data.userInfo && 
                 <div className="left-nav">
-
                 <nav className="nav">
                   <ul className="nav-menu">
                     <li className="nav-menu-item">
@@ -265,13 +265,20 @@ export function NavBar(data) {
                     <li className="nav-menu-item">
                       <a href={`/about`}>About Us</a>
                     </li>
+                    <li className="nav-menu-item">
+                        <IconButton>
+                          <Badge badgeContent={'userInfo' in data ? data.userInfo.trades_in.length : null} color="secondary">
+                            <a href={`/notifications/${data.userInfo.id}`}>Notifications</a>
+                          </Badge>
+                        </IconButton>
+                    </li> 
                   </ul>
                 </nav>
                 <a href={`/`} className="navbar-img">
                   <img src="../logo.png" className={classes.logo} />
                 </a>
 
-              </div>
+              </div>}
 
 
                     {/* <Button aria-owns={open ? 'simple-menu' : null} id="for_trade" aria-haspopup="true" href={`/for_trade/all`} onMouseEnter={mouseEnterButton} 

@@ -9,14 +9,14 @@ class Signup extends Component {
     constructor(props) {
         super(props);
         console.log(props)
-        this.state = {email: 'username' in props ? props.username : "", password: "", setUserInfo: props.setUserInfo, 
+        this.state = {email: "", password: "", username: "", setUserInfo: props.setUserInfo, 
                         redirectUrl: 'redirectUrl' in props ? props.redirectUrl : ""}
         console.log(this.state)
         this.setToken = false;
     }
 
     validateForm() {
-        return this.state['email'].length > 0 && this.state['password'].length > 0;
+        return this.state['email'].length > 0 && this.state['username'].length > 0 && this.state['password'].length > 0;
     }
     
     handleSubmit = (event) => {
@@ -55,20 +55,30 @@ class Signup extends Component {
                     <p>{this.state["error"]}</p>
                 }
                 <form onSubmit={this.handleSubmit}>
-                    <FormGroup controlId="email" bsSize="large">
-                    <p>Email or Username</p>
+                    <FormGroup controlId="username" bsSize="large">
+                    <p>Username</p>
                     <FormControl
                         autoFocus
                         type="text"
-                        value={this.state['email']}
-                        onChange={e => this.setState({...this.state.password, email: e.target.value})}
+                        value={this.state['username']}
+                        onChange={e => this.setState({...this.state, username: e.target.value})}
                     />
                     </FormGroup>
+
+                    <FormGroup controlId="email" bsSize="large">
+                    <p>Email</p>
+                    <FormControl
+                        value={this.state['email']}
+                        onChange={e => this.setState({...this.state, email: e.target.value})}
+                        type="text"
+                    />
+                    </FormGroup>
+
                     <FormGroup controlId="password" bsSize="large">
                     <p>Password</p>
                     <FormControl
                         value={this.state['password']}
-                        onChange={e => this.setState({...this.state.email, password: e.target.value})}
+                        onChange={e => this.setState({...this.state, password: e.target.value})}
                         type="password"
                     />
                     </FormGroup>

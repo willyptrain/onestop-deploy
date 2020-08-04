@@ -85,6 +85,18 @@
     height: 8%;
     width: 100%;
 }
+.tradeBox-button-disabled {
+    background: rgba(144,202,249,0.2) !important;
+    color: #767676 !important;
+    position: relative;
+    top: 20px;
+    height: 8%;
+    width: 100%;
+}
+
+
+
+
 
 
 

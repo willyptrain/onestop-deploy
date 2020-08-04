@@ -19,7 +19,7 @@ import Wanted from './components/Listings/Wanted';
 import AboutPage from './components/About/AboutPage.js'
 import MyListings from './components/Listings/MyListings.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import Notifications from './components/Notifications/Notifications.js'
 
 
 class App extends React.Component {
@@ -30,6 +30,7 @@ class App extends React.Component {
 
 
   async componentDidMount() {
+
     let token = localStorage.access_token;
         axios.get(`/api/users/${token}`)
         .then(res => {
@@ -42,6 +43,11 @@ class App extends React.Component {
 
         })
   }
+
+
+
+
+
   setUserInfo = (userInfo) => {
     console.log(userInfo);
     this.setState({ 'userInfo':userInfo });
@@ -151,6 +157,30 @@ class App extends React.Component {
                   <CreateListing {...this.state} edit={true} type={"sale"} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
                 )}/>
+
+              <Route exact path="/notifications/:id" render={(props) =>
+                
+                (this.state.status == 'Not logged in' ? 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} launchModal={this.state['launchModal']} redirectUrl={`/create_listing/edit/sale/${props.match.params.id}`}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+                :
+                
+                
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <Notifications id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+                )}/>
+
+
+
+
+
+
+
 
               <Route exact path="/view_listing/trades/:id" render={(props) =>
                 

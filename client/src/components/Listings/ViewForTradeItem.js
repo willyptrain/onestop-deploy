@@ -21,14 +21,20 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Modal from '@material-ui/core/Modal';
 import TradeBox from './TradeBox.js';
+import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
+//Taken from Material UI: 
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 class ViewForTradeItem extends Component {
 
     constructor(props) {
         super(props);
         console.log(props); 
-        this.state = {'item_id':props.id.id, 'tab':'details', 'open':true};
+        this.state = {'item_id':props.id.id, 'tab':'details', 'open':true, 'tradeSent':false};
     }
 
     async componentDidMount() {
@@ -69,16 +75,40 @@ class ViewForTradeItem extends Component {
     }
 
 
+
+
     offerTrade = (checked_ids) => {
-        console.log(checked_ids)
+        let token = localStorage.access_token;
+        console.log(checked_ids);
+        let poster_username = this.state['trade_info']['username']
+        let card_id = this.state['trade_info']['id']
+        axios.get(`/api/make_trade_offer/${card_id}/${checked_ids}/${poster_username}/${token}`)
+        .then(res => {
+            console.log(res.data);
+            // this.setState({...this.state, 'tradeSent':true, 'yourOffer':res.data.trades})
+        })
+        .catch(err =>  {
+            console.log("error :(");
+            this.setState({...this.state, 'tradeSent':true, 'error':err})
+            console.log(err);
+        })
 
         this.setState({...this.state,'open':false});
     }
+    handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        this.setState({...this.state, 'tradeSent':false})
+        
+      };
 
 
 
     render() {
-        console.log(this.state)
+        
+
+
         return (<div  className="home-container">
         {'trade_info' in this.state && 
 
@@ -173,21 +203,14 @@ class ViewForTradeItem extends Component {
 
                     </Paper>
                 </Grid>
-                {/* <Grid item xs={11} sm={11} md={11} lg={11}>
-                    <Paper className="right-hand-panel">
-                        <div class="product-text">
-                            <Typography className="manufacturer-text" 
-                            variant="h5" align="left">Manufacturer: {this.state.trade_info['manufacturer']}</Typography>
-                            <Typography className="cardNumber-text" 
-                            variant="subtitle1" align="left">Card Number: {this.state.trade_info['cardNumber']}</Typography>
-                            <Typography className="cardSeries-text" 
-                            variant="subtitle1" align="left">Card Set/Series: {this.state.trade_info['cardSeries']}</Typography>
-                        </div>
-                    </Paper>
-                </Grid> */}
 
             </Grid>
         </div>
+        <Snackbar open={this.state['tradeSent']} autoHideDuration={3000} onClose={this.handleClose}>
+            <Alert onClose={this.handleClose} severity="success">
+                This is a success message!
+            </Alert>
+        </Snackbar>
     </div>  
         }
 

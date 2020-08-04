@@ -58,6 +58,7 @@ class TradeBox extends Component {
         }
     
         this.setState({...this.state, 'checked':new_checked});
+        console.log(new_checked)
       };
     
 
@@ -121,7 +122,8 @@ class TradeBox extends Component {
                                         )}
                                     </List>
                                 </Paper>
-                                <Button color="secondary" onClick={this.state.offerTrade.bind(null,this.state['checked'])} size="large" variant="contained" className="tradeBox-button">Submit</Button>
+                                <Button disabled={this.state.checked.length <= 0} onClick={this.state.offerTrade.bind(null,this.state['checked'])} 
+                                    size="large" variant="contained" className={!(this.state.checked.length <= 0) ? "tradeBox-button" : "tradeBox-button-disabled"}>Submit</Button>
 
                             </div>
                         </Grid>
