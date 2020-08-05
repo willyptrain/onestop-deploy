@@ -20,6 +20,7 @@ import AboutPage from './components/About/AboutPage.js'
 import MyListings from './components/Listings/MyListings.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Notifications from './components/Notifications/Notifications.js'
+import ConfirmationPage from './components/Notifications/ConfirmationPage.js'
 
 
 class App extends React.Component {
@@ -158,24 +159,39 @@ class App extends React.Component {
                 </div>
                 )}/>
 
-              <Route exact path="/notifications/:id" render={(props) =>
+              <Route exact path="/notifications">
+              { this.state.status == 'Not logged in' && 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} redirectUrl={`/about`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+              }
+              { this.state.status != 'Not logged in' && 
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
+                  <Notifications userInfo={this.state['userInfo']} />
+                </div>
+              } 
+
+
+              </Route>
+
+              <Route exact path="/confirmation/:id" render={(props) =>
                 
                 (this.state.status == 'Not logged in' ? 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} launchModal={this.state['launchModal']} redirectUrl={`/create_listing/edit/sale/${props.match.params.id}`}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Home {...this.state} redirectUrl={`/confirmation/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 
                 :
                 
-                
                 <div>
                   <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
-                  <Notifications id={props.match.params} userInfo={this.state['userInfo']} />
+                  <ConfirmationPage {...this.state} offer_id={props.match.params.id} userInfo={this.state['userInfo']} />
                 </div>
                 )}/>
-
-
 
 
 

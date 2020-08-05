@@ -266,11 +266,11 @@ export function NavBar(data) {
                       <a href={`/about`}>About Us</a>
                     </li>
                     <li className="nav-menu-item">
-                        <IconButton>
-                          <Badge badgeContent={'userInfo' in data ? data.userInfo.trades_in.length : null} color="secondary">
-                            <a href={`/notifications/${data.userInfo.id}`}>Notifications</a>
-                          </Badge>
-                        </IconButton>
+                        {/* <IconButton> */}
+                          {/* <Badge badgeContent={'userInfo' in data ? data.userInfo.pending_trades_in.length : null} color="secondary"> */}
+                            <a href={`/notifications`}>Orders</a>
+                          {/* </Badge> */}
+                        {/* </IconButton> */}
                     </li> 
                   </ul>
                 </nav>

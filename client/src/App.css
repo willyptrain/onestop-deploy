@@ -24,6 +24,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: black;
+  overflow-y: scroll;
 }
 
 .App-link {

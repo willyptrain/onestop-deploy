@@ -1,0 +1,87 @@
+.trade-in-notif-container {
+    text-align: left;
+}
+.trade-out-notif-container {
+    text-align: left;
+    margin-bottom: 10vh;
+}
+
+.trade-in-notif-paper {
+    
+}
+.notif-grid {
+    max-width: 96% !important;
+}
+.accept-button {
+    background: #5fba56 !important;
+    color: white !important;
+}
+.deny-button {
+    background: rgba(217,59,59, 0.92) !important;
+    margin-left: 15px !important;
+}
+.notif-text {
+
+}
+.list-item-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+.notif-grid-container {
+    margin-top: 2vh !important;
+}
+.notif-header {
+    margin-left: 30px !important;
+}
+
+
+
+
+
+
+.confirmation-grid {
+    max-width: 72% !important;
+}
+.confirmation-paper {
+    height: 100vh;
+    
+}
+.confirmation-done-icon {
+    /* top: 8vh !important; */
+    /* position: absolute; */
+    height: 10vh;
+    width: 100%;
+}
+.cloud-icon {
+    color: #252b6c;
+    margin-top: 12vh !important;
+}
+.order-success-confirm-text {
+    font-family: Montserrat !important;
+}
+.order-number-text {
+    margin-top: 16vh !important;
+    float: left;
+    margin-left: 4% !important;
+}
+.order-number-divider {
+    margin-top: 20vh !important;
+    margin-left: 50px !important;
+    margin-right: 100px !important;
+}
+.wanted-card-confirm {
+    height: 20vh;
+    width: 100%;
+    display: inline-block;
+    text-align: left;
+}
+.wanted-card-confirm-img {
+    top: 4vh !important;
+    left: 4%;
+    border: 2px solid black;
+    border-radius: 2% !important;
+    height: 12vh !important;
+    width: 12% !important;
+}

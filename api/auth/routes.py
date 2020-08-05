@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Flask, abort, request, jsonify, g, url_for
+from flask import Flask, abort, request, jsonify, g, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 import jwt
@@ -11,6 +11,8 @@ from sqlalchemy import func
 from .settings import access_key_id, secret_access_key, acl, bucket_name, bucket_region
 import boto3
 import numpy as np
+from flask_mail import Mail, Message
+from .email_settings import mail_server, mail_port, mail_username, mail_password
 
 
 # initialization
@@ -20,6 +22,34 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['UPLOAD_URL'] = "https://"+bucket_name+".s3.us-east-2.amazonaws.com/"
+app.config['TESTING'] = False
+app.config['MAIL_SUPPRESS_SEND'] = False
+app.config['MAIL_DEBUG'] = True
+
+#Flask Mail
+# MAIL_SERVER : default ‘localhost’
+# MAIL_PORT : default 25
+# MAIL_USE_TLS : default False
+# MAIL_USE_SSL : default False
+# MAIL_DEBUG : default app.debug
+# MAIL_USERNAME : default None
+# MAIL_PASSWORD : default None
+# MAIL_DEFAULT_SENDER : default None
+# MAIL_MAX_EMAILS : default None
+# MAIL_SUPPRESS_SEND : default app.testing
+# MAIL_ASCII_ATTACHMENTS : default False
+app.config['MAIL_SERVER'] = mail_server
+app.config['MAIL_PORT'] = mail_port
+app.config['MAIL_USERNAME'] = mail_username
+app.config['MAIL_PASSWORD'] = mail_password
+app.config['MAIL_USE_TLS'] = 1
+app.config['launch_url'] = "http://localhost:3000"
+
+
+
+
+
+
 
 
 
@@ -40,6 +70,7 @@ print(image_bucket)
 # extensions
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
+mail = Mail(app)
 REDIRECT_URI="http://localhost:3000"
 
 
@@ -126,14 +157,14 @@ class WantedCard(db.Model):
 class TradeOffer(db.Model):
     __tablename__ = 'trade_offers'
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, index=True)
+    sender_id = db.Column(db.Integer, index=True) #SENDER = USER
     sender_username = db.Column(db.String(32), index=True)
-    recipient_id = db.Column(db.Integer, index=True)
+    recipient_id = db.Column(db.Integer, index=True) # RECIPIENT = POSTER USER
     recipient_username = db.Column(db.String(32), index=True)
     wanted_trade_card = db.Column(db.PickleType)
     cards_to_be_traded = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
-    status = db.Column(db.String(32), index=True)
+    status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
 
     def json_rep(self):
         print(self.id)
@@ -188,6 +219,124 @@ class User(db.Model):
         except:
             return
         return User.query.get(data['id'])
+
+
+@app.route('/api/users/<token>')
+def get_user_info(token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        pending_trades_in = []
+        accepted_trades_in = []
+        pending_trades_out = []
+        accepted_trades_out = []
+        for offer in user.trades_in:
+            if(offer.status == "pending"):
+                pending_trades_in.append(offer.json_rep())
+            elif(offer.status == "accepted"):
+                accepted_trades_in.append(offer.json_rep())
+        
+        for offer in user.trades_out:
+            if(offer.status == "pending"):
+                pending_trades_out.append(offer.json_rep())
+            elif(offer.status == "accepted"):
+                accepted_trades_out.append(offer.json_rep())
+
+        
+        return (jsonify({'id':user.id, 'username': user.username, 'pending_trades_in':pending_trades_in, 'accepted_trades_in':accepted_trades_in, \
+                                'pending_trades_out':pending_trades_out, 'accepted_trades_out':accepted_trades_out}),201)
+    return (jsonify({"error":"User not found!"}), 401)
+
+
+
+@app.route('/api/get_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
+def get_trade_offer(trade_offer_id, token):
+    print(trade_offer_id, token)
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        print(user)
+        for offer in user.trades_in:
+            if(offer.id == int(trade_offer_id)):
+                return (jsonify(offer.json_rep()),201)
+        for offer in user.trades_out:
+            if(offer.id == int(trade_offer_id)):
+                return (jsonify(offer.json_rep()),201)
+        return (jsonify({"error":"No trade offer found!"}), 404)
+    return (jsonify({"error":"User not found!"}), 401)
+
+
+
+
+
+
+
+
+
+
+
+@app.route('/api/accept_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
+def accept_offer(trade_offer_id, token):
+    user = User.verify_auth_token(token)
+    trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
+    print(user, token)
+    print(trade_offer)
+    if(user is not None and trade_offer is not None):
+        trade_offer.status = "accepted"
+        poster_user = User.query.filter_by(id=trade_offer.recipient_id, username=trade_offer.recipient_username).first()
+        poster_trades = list(poster_user.trades_in)
+        for i, offer in enumerate(poster_trades):
+            if (offer.id == trade_offer.id):
+                poster_trades[i] = trade_offer
+
+        poster_user.trades_in = poster_trades
+        user_trades = list(user.trades_out)
+        for i, offer in enumerate(user_trades):
+            if (offer.id == trade_offer.id):
+                user_trades[i] = trade_offer
+        user.trades_out = user_trades
+        db.session.commit()
+
+
+        #send email
+        print("CONNECT")
+        with mail.connect() as conn:
+            print(conn)
+            msg = Message("Trade Approved!",
+                      sender="willpeterson76@gmail.com",
+                      recipients=["wcp7cp@virginia.edu"])
+            msg.body = "Congrats your order was approved"
+            msg.html = render_template('order_accepted.html', user=user, launch_url=app.config['launch_url'])
+            conn.send(msg)
+
+        return (jsonify(trade_offer.json_rep()), 201)
+    return (jsonify({"error":"No trade offer found!"}), 404)
+
+@app.route('/api/deny_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
+def deny_offer(trade_offer_id, token):
+    user = User.verify_auth_token(token)
+    trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
+
+    if(user is not None and trade_offer is not None):
+        trade_offer.status = "denied"
+        poster_user = User.query.filter_by(id=trade_offer.recipient_id, username=trade_offer.recipient_username).first()
+        poster_trades = list(poster_user.trades_in)
+        for i, offer in enumerate(poster_trades):
+            if (offer.id == trade_offer.id):
+                poster_trades.pop(i)
+
+        poster_user.trades_in = poster_trades
+        user_trades = list(user.trades_out)
+        for i, offer in enumerate(user_trades):
+            if (offer.id == trade_offer.id):
+                user_trades.pop(i)
+        user.trades_out = user_trades
+
+        db.session.delete(trade_offer)
+        db.session.commit()
+        return get_user_info(token)
+    return (jsonify({"error":"No trade offer found!"}), 404)
+
+
+
 
 
 
@@ -599,13 +748,6 @@ def login():
     return (jsonify({"error":"User not found!"}), 401)
 
 
-@app.route('/api/users/<token>')
-def get_user_info(token):
-    user = User.verify_auth_token(token)
-    if(user is not None):
-        return (jsonify({'id':user.id, 'username': user.username, 'trades_in':[offer.json_rep() for offer in user.trades_in], \
-                                'trades_out': [offer.json_rep() for offer in user.trades_out]}),201)
-    return (jsonify({"error":"User not found!"}), 401)
 
 @app.route('/api/users/signup', methods=['POST'])
 def new_user():
