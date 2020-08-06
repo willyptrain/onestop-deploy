@@ -54,7 +54,7 @@ class Notifications extends Component {
         let token = localStorage.access_token;
         axios.get(`/api/accept_trade_offer/${event.currentTarget.value}/${token}`)
         .then(res => {
-            console.log(res.data)
+            // console.log(res.data)
             this.setState({...this.state, 
                 'redirectUrl':`/confirmation/${res.data.id}`
             })

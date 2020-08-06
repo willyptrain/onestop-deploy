@@ -13,7 +13,7 @@ import boto3
 import numpy as np
 from flask_mail import Mail, Message
 from .email_settings import mail_server, mail_port, mail_username, mail_password
-
+from .shipping_settings import shipping_address, shipping_zip, shipping_city, shipping_state
 
 # initialization
 app = Flask(__name__)
@@ -46,6 +46,15 @@ app.config['MAIL_USE_TLS'] = 1
 app.config['launch_url'] = "http://localhost:3000"
 
 
+#SHIPPING
+app.config['SHIP_ADDRESS'] = shipping_address
+app.config['SHIP_CITY'] = shipping_city
+app.config['SHIP_STATE'] = shipping_state
+app.config['SHIP_ZIP'] = shipping_zip
+        # shipping_address = db.Column(db.String, index=True)
+        # shipping_city = db.Column(db.String, index=True)
+        # shipping_state = db.Column(db.String, index=True)
+        # shipping_zip = db.Column(db.String, index=True)
 
 
 
@@ -129,6 +138,44 @@ class Sale(db.Model):
         print(self.id)
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
+
+class SaleOrder(db.Model):
+    __tablename__ = 'sale_orders'
+    id = db.Column(db.Integer, primary_key=True)
+    card_being_sent = db.Column(db.PickleType)
+    card_giver = db.Column(db.PickleType) #person who originally offered card, User object
+    card_recipient = db.Column(db.PickleType) #person who pays for card, User object
+    cash_amount = db.Column(db.Integer, index=True)
+    card_insurance = db.Column(db.Boolean, index=True)
+    shipping_address = db.Column(db.String, index=True)
+    shipping_city = db.Column(db.String, index=True)
+    shipping_state = db.Column(db.String, index=True)
+    shipping_zip = db.Column(db.String, index=True)
+    time = db.Column(db.Integer, index=True)
+
+
+class TradeOrder(db.Model):
+    __tablename__ = 'trade_orders'
+    id = db.Column(db.Integer, primary_key=True)
+    posted_card = db.Column(db.PickleType)
+    offered_cards = db.Column(db.PickleType)
+    card_poster = db.Column(db.PickleType) #person who originally offered card, User object
+    card_offerer = db.Column(db.PickleType) #person who offered their cards, User object
+    card_insurance = db.Column(db.Boolean, index=True) #should aways be true
+    shipping_address = db.Column(db.String, index=True)
+    shipping_city = db.Column(db.String, index=True)
+    shipping_state = db.Column(db.String, index=True)
+    shipping_zip = db.Column(db.String, index=True)
+    time = db.Column(db.Integer, index=True)
+
+    def json_rep(self):
+        print(self.id)
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+
+
 class WantedCard(db.Model):
     __tablename__ = 'wanted_cards'
     id = db.Column(db.Integer, primary_key=True)
@@ -167,17 +214,14 @@ class TradeOffer(db.Model):
     status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
 
     def json_rep(self):
-        print(self.id)
         return_dict = {}
         for c in self.__table__.columns:
-            print(c.name)
             if(c.name == "cards_to_be_traded"):
                 return_dict[c.name] = [trade.json_rep() for trade in getattr(self, c.name)]
             else:
                 return_dict[c.name] = getattr(self, c.name)
         return return_dict
     
-
 
 
 
@@ -192,12 +236,15 @@ class User(db.Model):
     sales = db.Column(db.PickleType)
     wantedCards = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
-    trades_in = db.Column(db.PickleType)
-    trades_out = db.Column(db.PickleType)
+    trades_in = db.Column(db.PickleType) #when the user offers their cards for the posted card
+    trades_out = db.Column(db.PickleType) #when the user is the card poster
+    completed_trades = db.Column(db.PickleType)
+    completed_sales = db.Column(db.PickleType)
 
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
+
 
 
     def hash_password(self, password):
@@ -250,10 +297,8 @@ def get_user_info(token):
 
 @app.route('/api/get_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
 def get_trade_offer(trade_offer_id, token):
-    print(trade_offer_id, token)
     user = User.verify_auth_token(token)
     if(user is not None):
-        print(user)
         for offer in user.trades_in:
             if(offer.id == int(trade_offer_id)):
                 return (jsonify(offer.json_rep()),201)
@@ -263,6 +308,16 @@ def get_trade_offer(trade_offer_id, token):
         return (jsonify({"error":"No trade offer found!"}), 404)
     return (jsonify({"error":"User not found!"}), 401)
 
+@app.route('/api/get_trade_order/<trade_order_id>/<token>', methods=['GET'])
+def get_trade_order(trade_order_id, token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        for order in user.completed_trades:
+            if(order.id == int(trade_order_id)):
+                return (jsonify(order.json_rep()),201)
+
+        return (jsonify({"error":"Order not found!"}), 404)
+    return (jsonify({"error":"User not found!"}), 401)
 
 
 
@@ -277,8 +332,6 @@ def get_trade_offer(trade_offer_id, token):
 def accept_offer(trade_offer_id, token):
     user = User.verify_auth_token(token)
     trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
-    print(user, token)
-    print(trade_offer)
     if(user is not None and trade_offer is not None):
         trade_offer.status = "accepted"
         poster_user = User.query.filter_by(id=trade_offer.recipient_id, username=trade_offer.recipient_username).first()
@@ -293,13 +346,37 @@ def accept_offer(trade_offer_id, token):
             if (offer.id == trade_offer.id):
                 user_trades[i] = trade_offer
         user.trades_out = user_trades
+
+
+        user_info = {'username':user.username, 'id':user.id, 'email':user.email}
+        poster_user_info = {'username':poster_user.username, 'id':poster_user.id, 'email':poster_user.email}
+        
+        order = TradeOrder(posted_card=trade_offer.wanted_trade_card, 
+            offered_cards=[card.json_rep() for card in trade_offer.cards_to_be_traded], card_poster=poster_user_info,
+            card_offerer=user_info, card_insurance=True, shipping_address=app.config['SHIP_ADDRESS'],
+            shipping_state=app.config['SHIP_STATE'], shipping_zip=app.config['SHIP_ZIP'],
+            shipping_city=app.config['SHIP_CITY'], time=datetime.datetime.now())
+        
+        db.session.add(order)
+        db.session.flush()
+
+        completed_trades = list(user.completed_trades)
+        completed_trades.append(order)
+        user.completed_trades = completed_trades
+
+        completed_trades = list(poster_user.completed_trades)
+        completed_trades.append(order)
+        poster_user.completed_trades = completed_trades
+
         db.session.commit()
 
+        print("ID CHECK!!!!!")
+        print(order.id)
 
-        #send email
-        print("CONNECT")
+
+
         with mail.connect() as conn:
-            print(conn)
+            # print(conn)
             msg = Message("Trade Approved!",
                       sender="willpeterson76@gmail.com",
                       recipients=["wcp7cp@virginia.edu"])
@@ -307,7 +384,7 @@ def accept_offer(trade_offer_id, token):
             msg.html = render_template('order_accepted.html', user=user, launch_url=app.config['launch_url'])
             conn.send(msg)
 
-        return (jsonify(trade_offer.json_rep()), 201)
+        return (jsonify(order.json_rep()), 201)
     return (jsonify({"error":"No trade offer found!"}), 404)
 
 @app.route('/api/deny_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
@@ -758,7 +835,7 @@ def new_user():
         return (jsonify({"error":"User not found!"}), 401)
     if User.query.filter_by(username=username).first() is not None:
         return (jsonify({"error":"User already exists!"}), 409)
-    user = User(username=username, email=email,wantedCards=[], trades=[], sales=[], trades_out=[], trades_in=[])
+    user = User(username=username, email=email,wantedCards=[], trades=[], sales=[], trades_out=[], trades_in=[], completed_trades=[], completed_sales=[])
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()

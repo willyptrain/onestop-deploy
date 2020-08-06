@@ -189,7 +189,7 @@ class App extends React.Component {
                 
                 <div>
                   <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
-                  <ConfirmationPage {...this.state} offer_id={props.match.params.id} userInfo={this.state['userInfo']} />
+                  <ConfirmationPage {...this.state} order_id={props.match.params.id} userInfo={this.state['userInfo']} />
                 </div>
                 )}/>
 
