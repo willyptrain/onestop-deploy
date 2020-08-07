@@ -6,6 +6,27 @@
     margin-bottom: 10vh;
 }
 
+.margin-adjust {
+    margin-left: 1% !important;
+}
+.tabs-notif {
+    color: black !important;
+}
+
+.offer-img {
+    height: 0;
+    padding-top: 56.25%;
+}
+
+.order-card {
+    width: 80% !important;
+    margin-top: 3vh !important;
+}
+.past-order-grid-container {
+    width: 95% !important;
+}
+
+
 .trade-in-notif-paper {
     
 }
@@ -72,19 +93,15 @@
     margin-right: 100px !important;
 }
 .wanted-card-confirm {
-    height: 20vh;
+    /* height: 20vh; */
     width: 100%;
     display: inline-block;
     text-align: left;
-    margin-top: 4vh !important;
+    margin-top: 1vh !important;
+    margin-bottom: 1vh !important;
     margin-left: 50px !important;
 }
-.wanted-card-confirm-img {
-    /* top: 4vh !important; */
-    margin-left: 4%;
-    border: 2px solid black;
-    /* border-radius: 2% !important; */
-}
+
 .wanted-card-confirm-name {
     /* margin-top: 5vh !important; */
     margin-left: 5% !important;
@@ -92,4 +109,25 @@
 }
 .mont-text {
     font-family: Montserrat !important;
+}
+.to-be-traded-text {
+    float: left;
+    margin-left: 4% !important;
+    margin-top: 1vh !important;
+    font-weight: 600 !important;
+}
+.generic-divider {
+    /* width: 95%; */
+    margin-right: 2.5% !important;
+    margin-left: 2.5% !important;
+}
+.cards-offered-confirm {
+    /* margin-left: 4%; */
+    width: 100%;
+    display: inline-block;
+    text-align: left;
+    margin-top: 1vh !important;
+    margin-bottom: 1vh !important;
+    margin-left: 50px !important;
+    
 }

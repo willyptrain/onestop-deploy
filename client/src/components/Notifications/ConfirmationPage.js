@@ -132,7 +132,7 @@ class Notifications extends Component {
 
 
                                 <List className="wanted-card-confirm">
-                                    <ListItem role={undefined} dense className="wanted-cotainer">
+                                    <ListItem role={undefined} dense className="wanted-container">
 
                                                 <ListItemAvatar>
                                                             {/* <Avatar className="wanted-card-confirm-img" variant={"rounded"}
@@ -150,6 +150,30 @@ class Notifications extends Component {
                                                 secondary={this.state['card_poster']['username']} />
  
                                             </ListItem>
+                                </List>
+                                <Divider className="generic-divider" />
+
+
+                                <Typography className="to-be-traded-text mont-text" variant="h6">
+                                        To be traded with...
+                                    </Typography>
+                                <List className="cards-offered-confirm">
+                                    { this.state['offered_cards'].map((card,index) =>
+                                        <ListItem role={undefined} dense className="cards-offered-container">
+                                            <ListItemAvatar>
+                                                <ImageAvatar image={card['img_paths'][0]} />
+                                            </ListItemAvatar>
+                                            <ListText
+                                                primary={card['year']+ " " + card['manufacturer'] + " " + card['cardSeries'] + " " + card['player_name']}
+                                                secondary={this.state['card_offerer']['username']} />
+                             
+                                        </ListItem>
+                                    
+                                    
+                                    
+                                    
+                                    )
+                                    }
                                 </List>
 
                             </Box>

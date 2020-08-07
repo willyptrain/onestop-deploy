@@ -25,21 +25,13 @@ import Avatar from '@material-ui/core/Avatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Badge from '@material-ui/core/Badge';
 import MailIcon from '@material-ui/icons/Mail';
+import Drawer from '@material-ui/core/Drawer';
+import MenuIcon from '@material-ui/icons/Menu';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 
 
 
-
-
-{/* <MenuItem component={Link} href={`/${pageOption}/all`}>View All</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/baseball`}>Baseball</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/basketball`}>Basketball</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/football`}>Football</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/hockey`}>Hockey</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/wrestling`}>Wrestling/Fighting</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/soccer`}>Soccer</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/racing`}>Racing</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/other`}>Other/Gaming</MenuItem> */}
 
 export function MenuDropdown(props) {
     return (
@@ -90,123 +82,23 @@ export function NavBar(data) {
 
 
 
-  
-  console.log(data)
-
-    const useStyles = makeStyles((theme) => ({
-      root: {
-        padding: '2px 4px',
-        display: 'flex',
-        alignItems: 'center',
-        width: 400,
-        float: 'right',
-        marginRight: '3%'
-          },
-        button: {
-          color: 'white',
-          height: '4vh',
-          position: 'relative',
-          top: '0em',
-          background: '#141518',
-          border: '2px solid white',
-          left: '30px',
+      const useStyles = makeStyles({
+        list: {
+          width: 450,
+          background: '#141518'
         },
-        logo: {
-          maxWidth: 160,
+        fullList: {
+          width: 'auto',
         },
-        input: {
-          marginLeft: theme.spacing(1),
-          flex: 1,
-        },
-        search: {
-          position: 'absolute',
-          height: '2.9vh',
-          float: 'right',
-          borderRadius: theme.shape.borderRadius,
-          border: '2px solid white',
-          top: '0.5em',
-          background: 'white'
-        },
-        searchIcon: {
-          padding: theme.spacing(0, 2),
-          height: '100%',
-          position: 'absolute',
-          pointerEvents: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white'
-        },
-        inputRoot: {
-          color: 'black',
-        },
-        inputInput: {
-          padding: theme.spacing(1, 1, 1, 0),
-          paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-          transition: theme.transitions.create('width'),
-          width: '100%',
-          [theme.breakpoints.up('md')]: {
-            width: '20ch',
-          },
-        }
-      }));
-
-      const classes = useStyles()
+      });
       const [searchResults, setSearchResults] = React.useState([]);
-      // const [saleSearch, setSaleSearch] = React.useState([]);
       const [hideDropdown, setHideDropdown] = React.useState(true);
 
+      const [open, setOpen] = React.useState(false)
     
-      // const mouseEnterButton = (event) => {
-      //   // setTimeout(() => {
-      //     setOnButton(true);
-      //     setOpen(true);
-      //     setAnchor(event.currentTarget);
-      //     console.log(event.target.id)
-      //     setPageOption(event.target.id);
 
 
-      //   // }, 300);
-      // }
-      // const mouseLeaveButton = () => {
-      //   setTimeout(() => {
-      //     setOnButton(false);
-      //     setOpen(onMenu);
-      //   }, 300);
-      // }
-      // const mouseEnterMenu = () => {
-      //   // setTimeout(() => {
-      //     setOnMenu(true);
-      //     setOpen(true);
-      //   // }, 300);
-      // }
-      // const mouseLeaveMenu = () => {
-      //   setTimeout(() => {
-      //     setOnMenu(false);
-      //     setOpen(onButton);
-      //   }, 300);
-      // }
-
-      // const launchModal = () => {
-
-      // }
-
-      // useEffect(() => {
-      //   let token = localStorage.access_token;
-      //   axios.get(`/api/users/${token}`)
-      //   .then(res => {          
-      //       console.log(res);
-      //   })
-      //   .catch(err =>  {
-      //     console.log(err);
-
-      //   })
-      // });
-
-
-
-
-
+      const classes = useStyles();
 
 
       const searchChange = (event) => {
@@ -222,12 +114,76 @@ export function NavBar(data) {
           })
           .catch(err =>  {
               console.log(err)
-
           })
           setHideDropdown(false);
         }
       }
 
+      const toggleDrawer = (open) => (event) => {
+        if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+          return;
+        }
+    
+        setOpen(open)
+      };
+
+
+
+
+
+
+      return (
+        <div>
+           <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
+            <Toolbar>
+            <IconButton onClick={toggleDrawer(true)}>
+              <MenuIcon style={{color: 'white'}} />
+            </IconButton>
+
+
+
+
+            <div className="right-nav">
+                  <div className="search-bar">
+                <Paper component="form" className={classes.root}>
+                    <IconButton type="submit" aria-label="search">
+                            <SearchIcon />
+                        </IconButton>
+                          
+                            <InputBase
+                            placeholder="Search…"
+                            classes={classes.input}
+                            onChange={searchChange}
+                            inputProps={{ 'aria-label': 'search' }}
+                          />
+
+                </Paper>
+                <div style={{width: '100%', float: 'right', display: (!hideDropdown ? 'block' : 'none')}}>
+
+                          <div className="autocomplete">
+
+                            
+                                  <List>
+                                    {searchResults.map((res, index) =>
+                                            <ListItem divider={true} component="a">
+                                                <ListItemAvatar>
+                                                  <Avatar
+                                                    alt="Trade Image" 
+                                                    variant="rounded"
+                                                    src={res['img_paths'][0]}
+                                                  />
+                                                </ListItemAvatar>
+                                              <ListItemText className='search-primary' primary={res['player_name']} secondary={res['sport']} />
+                                            <Divider />
+                                            </ListItem>
+                                              )}
+
+                                </List>
+
+                            </div>
+                </div>
+                </div>
+                </div>
 
 
 
@@ -235,8 +191,67 @@ export function NavBar(data) {
 
 
 
-      return (<div className="navbar-container">
-        <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
+
+            </Toolbar>
+        </AppBar>
+
+
+
+        <div
+      className="sidebar-container"
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
+        <Drawer PaperProps={{className:"drawer"}} anchor='left' open={open}>
+          <div className="exit-drawer">
+            <IconButton className="drawer-exit-btn" onClick={toggleDrawer(false)}>
+                <ArrowBackIosIcon size="large" style={{color: 'white'}} />
+              </IconButton>
+          </div>
+          <List className="nav-menu">
+                    <ListItem alignItems="center" component="a" button href={`/for_trade/all`} className="nav-menu-item">
+                     For Trade
+                      <MenuDropdown type={"for_trade"} />
+                    </ListItem>
+                    
+
+                    <ListItem alignItems="center" component="a" button href={`/for_sale/all`} className="nav-menu-item">
+                     For Sale
+                      <MenuDropdown type={"for_sale"} />
+                    </ListItem>
+
+
+                    
+                    <ListItem alignItems="center" button href={`/wanted/all`} component="a" className="nav-menu-item">
+                      Wanted
+                      <MenuDropdown type={"wanted"} />
+                    </ListItem>
+                    <ListItem alignItems="center" button  href={`/my_listings`} component="a" className="nav-menu-item">
+                      My Listings
+                    </ListItem>
+                    <ListItem alignItems="center"  button href={`/create_listing`} component="a" className="nav-menu-item">
+                      Create A Listing
+                    </ListItem>
+                    <ListItem alignItems="center" button  href={`/about`} component="a" className="nav-menu-item">
+                      About Us
+                    </ListItem>
+                    <ListItem alignItems="center" button  href={`/notifications`} component="a" className="nav-menu-item">
+                            Orders
+
+                    </ListItem> 
+                  </List>
+          </Drawer>
+        
+          </div>
+        
+        
+        
+        
+        
+        
+        
+        {/* <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
             <Toolbar>
               {'status' in data && data.status == 'logged in' && 'userInfo' in data && data.userInfo && 
                 <div className="left-nav">
@@ -266,11 +281,8 @@ export function NavBar(data) {
                       <a href={`/about`}>About Us</a>
                     </li>
                     <li className="nav-menu-item">
-                        {/* <IconButton> */}
-                          {/* <Badge badgeContent={'userInfo' in data ? data.userInfo.pending_trades_in.length : null} color="secondary"> */}
                             <a href={`/notifications`}>Orders</a>
-                          {/* </Badge> */}
-                        {/* </IconButton> */}
+
                     </li> 
                   </ul>
                 </nav>
@@ -281,53 +293,12 @@ export function NavBar(data) {
               </div>}
 
 
-                    {/* <Button aria-owns={open ? 'simple-menu' : null} id="for_trade" aria-haspopup="true" href={`/for_trade/all`} onMouseEnter={mouseEnterButton} 
-                                                            onMouseLeave={mouseLeaveButton}  className="nav-link" variant="h6">
-                    For Trade
-                    </Button>
-                    <Button aria-owns={open ? 'simple-menu' : null} id="for_sale" aria-haspopup="true" href={`/for_sale/all`} onMouseEnter={mouseEnterButton} 
-                                                            onMouseLeave={mouseLeaveButton} className="nav-link" variant="h6">
-                    For Sale
-                    </Button>
-                    <Button aria-owns={open ? 'simple-menu' : null} id="wanted" aria-haspopup="true" href={`/wanted/all`}  onMouseEnter={mouseEnterButton} 
-                                                            onMouseLeave={mouseLeaveButton}  className="nav-link" variant="h6">
-                    Wanted
-                    </Button>
-                    <Button href={`/create_listing`} className="nav-link" variant="h6">
-                    Create A Listing
-                    </Button>
-                    <Button className="nav-link" variant="h6">
-                    About Us
-                    </Button>
-                </div>
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchor}
-                  open={open}
-                  MenuListProps={{
-                    onMouseEnter: mouseEnterMenu,
-                    onMouseLeave: mouseLeaveMenu,
-                  }}
-                  onMouseEnter={mouseEnterMenu} 
-                                                            onMouseLeave={mouseLeaveMenu}
-                >
-                  <MenuItem component={Link} href={`/${pageOption}/all`}>View All</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/baseball`}>Baseball</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/basketball`}>Basketball</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/football`}>Football</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/hockey`}>Hockey</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/wrestling`}>Wrestling/Fighting</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/soccer`}>Soccer</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/racing`}>Racing</MenuItem>
-                  <MenuItem component={Link} href={`/${pageOption}/other`}>Other/Gaming</MenuItem>
-
-                </Menu> */}
+                    
                 
                 
                 <div className="right-nav">
                   <div className="search-bar">
                 <Paper component="form" className={classes.root}>
-                    {/* <div className={classes.search}> */}
                     <IconButton type="submit" aria-label="search">
                             <SearchIcon />
                         </IconButton>
@@ -345,7 +316,6 @@ export function NavBar(data) {
                           <div className="autocomplete">
 
                             
-                              {/* <Paper className="dropdown-container"> */}
                                   <List>
                                     {searchResults.map((res, index) =>
                                             <ListItem divider={true} component="a">
@@ -362,8 +332,6 @@ export function NavBar(data) {
                                               )}
 
                                 </List>
-                              {/* </Paper> */}
-                            {/* } */}
 
                             </div>
 
@@ -374,7 +342,6 @@ export function NavBar(data) {
 
                     
                   
-                    {/* </div> */}
 
                     {!data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Login</Button>}
                     {data.loggedIn && <Button value={true} className={classes.button} onClick={data.setModal} variant="outlined">Logout</Button>}
@@ -384,7 +351,7 @@ export function NavBar(data) {
 
                   
             </Toolbar>
-            </AppBar>
+            </AppBar> */}
 
       </div>);
 

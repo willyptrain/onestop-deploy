@@ -12,8 +12,14 @@
 
 }
 .right-nav {
-    width: 30%;
+    width: 400px;
     display: flex;
+    float: right;
+    margin-right: 10px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    margin-top: 0px;
 }
 // .nav-link {
 //     float: left;
@@ -22,16 +28,21 @@
 //     font-family: Montserrat !important;
 // }
 
+.drawer {
+  background: #141518 !important;
+  width: 275px !important;
+  text-align: center;
+}
+
 .autocomplete {
   width: 400px;
   // height: 40vh;
-  margin-right: 3%;
+  // margin-right: 3%;
   right: 0;
   position: absolute;
   z-index:4;
   overflow: scroll;
   background: white;
-  border: 2px solid blue;
 
 }
 .dropdown-container {
@@ -40,7 +51,8 @@
 .search-bar {
     width: 100%;
     position: relative;
-    top: 2vh;
+    top: 1vh;
+    text-align: left;
 }
 
 
@@ -54,11 +66,7 @@
     z-index: 10000000;
   }
   
-  .nav-menu-item:hover {
-    .submenu-container {
-      display: block;
-    }
-  }
+  
   ul {
     list-style: none;
     padding-left: 0;
@@ -88,18 +96,33 @@
   }
   .nav-menu {
     // line-height: 45px;
+    text-align: center;
+    margin-top: 10vh !important;
   }
   .nav-menu-item {
     display: inline-block;
     position: relative;
-  
-    &:hover {
-      background-color: #141518;  
-      .submenu-container {
-        display: block;
-      }
-    }
+    justify-content: center !important;
+    text-align: center !important;
+    align-items: center !important;
+    font-size: 1.4rem;
+    color: white !important;
+    margin-bottom: 2vh !important;
+    
   }
+
+.exit-drawer {
+  color: white;
+  text-align: right;
+
+}
+.drawer-exit-btn {
+  margin-right: 10px !important;
+  margin-top: 20px !important;
+}
+
+
+
   .submenu-container {
     font-weight: 300;
     text-transform: none;

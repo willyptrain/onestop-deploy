@@ -15,6 +15,10 @@ from flask_mail import Mail, Message
 from .email_settings import mail_server, mail_port, mail_username, mail_password
 from .shipping_settings import shipping_address, shipping_zip, shipping_city, shipping_state
 
+
+
+
+
 # initialization
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy dog'
@@ -26,24 +30,14 @@ app.config['TESTING'] = False
 app.config['MAIL_SUPPRESS_SEND'] = False
 app.config['MAIL_DEBUG'] = True
 
-#Flask Mail
-# MAIL_SERVER : default ‘localhost’
-# MAIL_PORT : default 25
-# MAIL_USE_TLS : default False
-# MAIL_USE_SSL : default False
-# MAIL_DEBUG : default app.debug
-# MAIL_USERNAME : default None
-# MAIL_PASSWORD : default None
-# MAIL_DEFAULT_SENDER : default None
-# MAIL_MAX_EMAILS : default None
-# MAIL_SUPPRESS_SEND : default app.testing
-# MAIL_ASCII_ATTACHMENTS : default False
+
 app.config['MAIL_SERVER'] = mail_server
 app.config['MAIL_PORT'] = mail_port
 app.config['MAIL_USERNAME'] = mail_username
 app.config['MAIL_PASSWORD'] = mail_password
 app.config['MAIL_USE_TLS'] = 1
 app.config['launch_url'] = "http://localhost:3000"
+app.config['REDIRECT_URI']="http://localhost:3000"
 
 
 #SHIPPING
@@ -51,10 +45,8 @@ app.config['SHIP_ADDRESS'] = shipping_address
 app.config['SHIP_CITY'] = shipping_city
 app.config['SHIP_STATE'] = shipping_state
 app.config['SHIP_ZIP'] = shipping_zip
-        # shipping_address = db.Column(db.String, index=True)
-        # shipping_city = db.Column(db.String, index=True)
-        # shipping_state = db.Column(db.String, index=True)
-        # shipping_zip = db.Column(db.String, index=True)
+
+
 
 
 
@@ -72,7 +64,6 @@ s3_resource = boto3.resource('s3',
     aws_access_key_id=access_key_id,
     aws_secret_access_key=secret_access_key)
 image_bucket = s3_resource.Bucket(name=bucket_name)
-print(image_bucket)
 
 
 
@@ -80,12 +71,12 @@ print(image_bucket)
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
 mail = Mail(app)
-REDIRECT_URI="http://localhost:3000"
 
 
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+
+
+
+
 
 class Trade(db.Model):
     __tablename__ = 'tradings'
@@ -137,6 +128,9 @@ class Sale(db.Model):
     def json_rep(self):
         print(self.id)
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+
 
 
 
@@ -266,6 +260,46 @@ class User(db.Model):
         except:
             return
         return User.query.get(data['id'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route('/api/users/<token>')
@@ -820,7 +854,7 @@ def login():
     if user is not None:
         if(verify_password(user.username, password)):
             access_token = user.generate_auth_token()
-            return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':REDIRECT_URI}),201)
+            return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':app.config['REDIRECT_URI']}),201)
         return (jsonify({"error":"Incorrect username or password!"}), 401)
     return (jsonify({"error":"User not found!"}), 401)
 
@@ -841,7 +875,7 @@ def new_user():
     db.session.commit()
     access_token = user.generate_auth_token()
     g.user = user
-    return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':REDIRECT_URI}),201)
+    return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':app.config['REDIRECT_URI']}),201)
 
 
 
