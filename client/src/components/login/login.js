@@ -11,6 +11,8 @@ import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import logo from '../../images/logo_transparent.png';
+
 
 
 class Login extends Component {
@@ -52,7 +54,7 @@ class Login extends Component {
                 <div className="login">
                     <Card className="login-card">
                         <div className="login-form">
-                        <img src="./logo.png" style={{maxWidth: 160, marginTop: '2vh'}} />
+                        <img src={logo} style={{maxWidth: 160, marginTop: '2vh'}} />
                         <form onSubmit={this.handleSubmit}>
                             <FormGroup controlId="email" bsSize="large">
                             <p style={{fontWeight: '600'}}>Welcome Back!</p>
@@ -70,13 +72,6 @@ class Login extends Component {
                                 type="password"
                             />
                             </FormGroup>
-                            {/* {"error" in this.state &&
-                                <div>
-                                <Box display="flex" justifyContent="center" m={1} p={1} bgcolor="background.paper">
-                                <Alert className="login-alert" variant="filled" severity="error">Error loggin in</Alert>
-                                </Box>
-                                </div>
-                                } */}
                             <Button className="login-btn" variant="contained" color="primary" disabled={!this.validateForm()} type="submit">
                             Login
                             </Button>

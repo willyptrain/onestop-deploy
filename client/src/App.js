@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import './App.css';
 import Login from "./components/login/login.js";
@@ -35,7 +35,35 @@ class App extends React.Component {
     let token = localStorage.access_token;
         axios.get(`/api/users/${token}`)
         .then(res => {
-            console.log(res)
+            // if(localStorage.getItem('cart')) {
+            //   console.log("1")
+            //   this.setState({...this.state, 
+            //     launchModal: false, 
+            //     'status':"logged in",
+            //     'userInfo': res.data, 
+            //     'cart': JSON.parse(localStorage.getItem('cart'))
+            //   })
+            // }
+            // else {
+            //   console.log("2")
+            //   localStorage.setItem('cart', {})
+            //   this.setState({...this.state, 
+            //     launchModal: false, 
+            //     'status':"logged in",
+            //     'userInfo': res.data, 
+            //     'cart': {}
+            //   });
+            // }
+            // this.setState({...this.state, 
+            //   launchModal: false, 
+            //   'status':"logged in",
+            //   'userInfo': res.data, 
+            //   'cart': JSON.parse(localStorage.getItem('cart'))
+            // })
+            if(!localStorage.getItem('cart')) {
+              localStorage.setItem('cart', JSON.stringify({}))
+            }
+
             this.setState({...this.state, launchModal: false, 'status':"logged in",'userInfo': res.data})
         })
         .catch(err =>  {
@@ -44,6 +72,15 @@ class App extends React.Component {
 
         })
   }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -62,12 +99,10 @@ class App extends React.Component {
 
   render() {
     const { userInfo } = this.state;
-    // if(this.state['status'] == "Not logged in") {
-    //   return (<div  style={{height:'100%', width: '100%'}}>
-    //     <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-    //     <Home {...this.state} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
-    //   </div>);
-    // }
+    if('status' in this.state) {
+      console.log(this.state.status)
+    }
+
     if(!this.state['status']) {
       return (<div style={{"textAlign":"center", "position":"relative", "top":"30vh"}}>
         <CircularProgress />
@@ -163,7 +198,7 @@ class App extends React.Component {
               { this.state.status == 'Not logged in' && 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} redirectUrl={`/about`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Home {...this.state} redirectUrl={`/notifications`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 
               }

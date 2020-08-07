@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Button, FormGroup, FormControl } from "react-bootstrap";
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+
 import Redirect from '../redirect.js';
 import axios from 'axios';
 import carousel1 from '../../images/carousel1.png'
@@ -21,6 +23,105 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import CardHeader from '@material-ui/core/CardHeader';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import InputBase from '@material-ui/core/InputBase';
+
+
+
+const useStyles = makeStyles((theme) => ({
+    margin: {
+      margin: theme.spacing(1),
+    },
+  }));
+
+
+
+  const BootstrapInput = withStyles((theme) => ({
+    root: {
+      'label + &': {
+        marginTop: theme.spacing(3),
+      },
+    },
+    input: {
+      borderRadius: 4,
+      position: 'relative',
+      backgroundColor: theme.palette.background.paper,
+      border: '1px solid #ced4da',
+      fontSize: 16,
+      padding: '10px 26px 10px 12px',
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+      // Use the system font instead of the default Roboto font.
+      fontFamily: [
+        '-apple-system',
+        'BlinkMacSystemFont',
+        '"Segoe UI"',
+        'Roboto',
+        '"Helvetica Neue"',
+        'Arial',
+        'sans-serif',
+        '"Apple Color Emoji"',
+        '"Segoe UI Emoji"',
+        '"Segoe UI Symbol"',
+      ].join(','),
+      '&:focus': {
+        borderRadius: 4,
+        borderColor: '#80bdff',
+        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+      },
+    },
+  }))(InputBase);
+
+
+
+export function SelectSport(data) {
+    const classes = useStyles();
+    const [sport, setSport] = React.useState('');
+
+    const handleChange = (event) => {
+        setSport(event.target.value);
+        data.changeSport(event.target.value)
+      };
+
+
+    return (<div>
+        {/* <FormControl className={classes.margin}> */}
+        <InputLabel id="demo-customized-select-label">Filter by Sport</InputLabel>
+            <Select
+            labelId="demo-customized-select-label"
+            id="demo-customized-select"
+            value={sport}
+            onChange={handleChange}
+            >
+                <MenuItem value="all">
+                    <em>None</em>
+                </MenuItem>
+                <MenuItem value={"baseball"}>Baseball</MenuItem>
+                <MenuItem value={"basketball"}>Basketball</MenuItem>
+                <MenuItem value={"football"}>Football</MenuItem>
+                <MenuItem value={"hockey"}>Hockey</MenuItem>
+                <MenuItem value={"wrestling"}>Wrestling</MenuItem>
+                <MenuItem value={"soccer"}>Soccer</MenuItem>
+                <MenuItem value={"racing"}>Racing</MenuItem>
+                <MenuItem value={"gaming"}>Other/Gaming</MenuItem>
+            </Select>
+      {/* </FormControl> */}
+
+
+
+    </div>)
+}
+
+
+
+
+
+
+
+
+
 
 
 class ForTrade extends Component {
@@ -46,12 +147,35 @@ class ForTrade extends Component {
 
     }
 
+
+
+    changeSport = (sport) => {
+        let token = localStorage.access_token;
+        axios.get(`/api/all_listings/trades/${sport}/${token}`)
+        .then(res => {
+            console.log(res.data);
+            this.setState({...this.state, 'trades':res.data.trades,
+                                'favorite_trades': res.data.wantedCards})
+        })
+        .catch(err =>  {
+            console.log("error :(")
+            console.log(err);
+        })
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     addToFavorites = (event) => {
         let id = event.currentTarget.value;
-        console.log(id)
-        console.log(this.state['favorite_trades'])
-        console.log(1 in [1]);
-        console.log(id in this.state['favorite_trades']);
         let token = localStorage.access_token;
         axios.post(`/api/post_wanted/trades/${id}/${token}`)
         .then(res => {
@@ -67,16 +191,17 @@ class ForTrade extends Component {
     render() {
         if('trades' in this.state && this.state['trades']) {
             return (<div className="home-container">
+
+                <div className="filter-container">
+                    <SelectSport changeSport={this.changeSport} />
+
+                </div>
+
+
+
                               <Grid container className="grid-container"
                   alignItems="center"
                   justify="center" spacing={0}>
-                
-                
-
-
-
-
-
                 {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={6} sm={3} md={3} lg={3}>

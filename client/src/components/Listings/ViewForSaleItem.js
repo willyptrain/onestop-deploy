@@ -27,7 +27,7 @@ class ViewForSaleItem extends Component {
     constructor(props) {
         super(props);
         console.log(props); 
-        this.state = {'item_id':props.id.id, 'tab':'details'};
+        this.state = {'item_id':props.id.id, 'tab':'details'}
     }
 
     // 'username' 'id' 'sport' 'player_name' 'year' 'manufacturer' 'cardNumber'
@@ -51,6 +51,39 @@ class ViewForSaleItem extends Component {
     changeTab = (event, new_val) => {
         this.setState({...this.state, 'tab':new_val})
     }
+
+
+    addSaleToCart = (event) => {
+
+        let cart = JSON.parse(localStorage.cart);
+        let sale_id = event.currentTarget.value
+
+        if(!cart[sale_id]) {
+            cart[sale_id] = this.state['sale_info']
+            localStorage.setItem('cart', JSON.stringify(cart));
+        } else {
+            //throw error, not allowed
+            console.log("Already in cart !");
+            console.log(cart[sale_id]);
+            console.log(cart[sale_id].player_name);
+
+
+        }
+        
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     render() {
@@ -93,7 +126,7 @@ justify="center" >
 
 
             <div style={{top: '52vh'}} className="button-below-img">
-                <Button color="secondary" size="large" variant="contained" className="button-item">Add To Cart</Button>
+                <Button color="secondary" onClick={this.addSaleToCart} value={this.state.sale_info.id} size="large" variant="contained" className="button-item">Add To Cart</Button>
             </div>
             
             <div className="item-details-tabs">

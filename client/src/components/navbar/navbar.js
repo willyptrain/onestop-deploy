@@ -15,7 +15,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import NavDropdown from 'react-bootstrap/NavDropdown'
-// import {logo} from '../../images/logo.png';
+import logo from '../../images/logo_transparent.png';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';
@@ -139,6 +139,9 @@ export function NavBar(data) {
             <IconButton onClick={toggleDrawer(true)}>
               <MenuIcon style={{color: 'white'}} />
             </IconButton>
+            <a href={`/`} className="navbar-img">
+                  <img src={logo} className="nav-logo" />
+            </a>
 
 
 
@@ -152,7 +155,7 @@ export function NavBar(data) {
                           
                             <InputBase
                             placeholder="Search…"
-                            classes={classes.input}
+                            classes="search-input"
                             onChange={searchChange}
                             inputProps={{ 'aria-label': 'search' }}
                           />

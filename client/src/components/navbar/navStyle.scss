@@ -13,6 +13,7 @@
 }
 .right-nav {
     width: 400px;
+    max-width: 50%;
     display: flex;
     float: right;
     margin-right: 10px;
@@ -30,7 +31,8 @@
 
 .drawer {
   background: #141518 !important;
-  width: 275px !important;
+  width: 20rem !important;
+  margin-right: 5% !important;
   text-align: center;
 }
 
@@ -55,7 +57,17 @@
     text-align: left;
 }
 
+.nav-logo {
+  height: 5vh;
+  margin-top: 0.5vh !important;
+  margin-left: 1rem !important;
+}
+.search-input {
+  margin-top: 0px !important;
+  top: 0px !important;
+  width: 70%;
 
+}
 
 
 
