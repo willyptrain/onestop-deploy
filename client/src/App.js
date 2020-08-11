@@ -21,6 +21,8 @@ import MyListings from './components/Listings/MyListings.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Notifications from './components/Notifications/Notifications.js'
 import ConfirmationPage from './components/Notifications/ConfirmationPage.js'
+import ShoppingCart from './components/ShoppingCart/ShoppingCart.js';
+import Checkout from './components/ShoppingCart/Checkout.js';
 
 
 class App extends React.Component {
@@ -194,11 +196,28 @@ class App extends React.Component {
                 </div>
                 )}/>
 
+              <Route exact path="/shopping_cart">
+              { this.state.status == 'Not logged in' && 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} redirectUrl={`/shopping_cart`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+              }
+              { this.state.status != 'Not logged in' && 
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
+                  <ShoppingCart userInfo={this.state['userInfo']} />
+                </div>
+              } 
+
+              </Route>
+
               <Route exact path="/notifications">
               { this.state.status == 'Not logged in' && 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} redirectUrl={`/notifications`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Home {...this.state} redirectUrl={`/shopping_cart`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 
               }
@@ -209,8 +228,45 @@ class App extends React.Component {
                 </div>
               } 
 
-
               </Route>
+
+
+
+              {/* <Route exact path="/checkout">
+              { this.state.status == 'Not logged in' && 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} redirectUrl={`/shopping_cart`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+              }
+              { this.state.status != 'Not logged in' && 
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
+                  <Checkout {...this.state} userInfo={this.state['userInfo']} />
+                </div>
+              } 
+
+              </Route> */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
               <Route exact path="/confirmation/:id" render={(props) =>
                 

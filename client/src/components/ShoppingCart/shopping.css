@@ -1,0 +1,475 @@
+.shopping-cart-list {
+        /* height: 20vh; */
+        width: 100%;
+        display: inline-block;
+        text-align: left;
+        margin-top: 1vh !important;
+        /* margin-bottom: 1vh !important; */
+        margin-left: 50px !important;
+        display: flex;
+}
+.cart-item {
+    /* height: 20vh; */
+    /* width: 100%; */
+    flex: 1;
+    display: flex;
+    text-align: left;
+    margin-top: 1vh !important;
+    margin-bottom: 1vh !important;
+    /* margin-left: 50px !important; */
+}
+.item-left {
+    flex: 2;
+    display: flex;
+}
+.checkbox-container {
+    flex: 1;
+}
+
+.cart-item-text {
+    margin-left: 50px !important;
+    font-family: Montserrat !important;
+}
+.shopping-cart-header {
+    float: left;
+    text-align: left;
+    margin-left: 50px !important;
+    margin-bottom: 1vh !important;
+}
+.cart-divider {
+    margin-right: 10% !important;
+    margin-left: 25px !important;
+}
+.price-container-cart {
+    flex: 1;
+    display: flex;
+}
+
+.price-tag {
+    font-family: Montserrat !important;
+    font-weight: 800 !important;
+    color: green;
+}
+
+.price-box {
+    width: 90%;
+    height: 20vh;
+    /* margin-right: 25px !important; */
+    /* float: left; */
+    text-align: right;
+    align-items: center;
+    justify-content: center;;
+    margin-left: 25px !important;
+    /* background: red; */
+
+}
+.insurance-box {
+    
+    /* margin-right: 8% !important; */
+    width: 100%;
+    margin-right: 10% !important;
+    /* text-align: right; */
+    justify-content: flex-end;
+    display: flex;   
+    margin-top: 1vh !important;  
+}
+
+.checkbox {
+    padding-top: 0px !important;
+}
+
+
+.subtotal {
+    margin-right: 10% !important;
+    margin-top: 1vh !important;
+}
+.service-fee {
+    margin-right: 10% !important;
+    margin-top: 1vh !important;
+    margin-bottom: 1vh !important
+}
+.total-price {
+    margin-right: 10% !important;
+    margin-top: 1vh !important;
+}
+.icon-check-insurance {
+    margin-left: 6% !important;
+}
+.checkout-btn {
+    background: #90caf9 !important;
+    color: black !important;
+    position: relative;
+    margin-top: 4vh !important;
+    height: 4vh;
+    min-width: 30%;
+    padding-right: 5% !important;
+    padding-left: 5% !important;
+    padding-top: 1.5vh !important;
+    padding-bottom: 1.5vh !important;
+    max-width: 95%;
+    /* align-content: center; */
+    margin-right: 5% !important;
+
+}
+
+.list-item {
+    flex: 2;
+}
+.checkbox-shop {
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    text-align: center;    
+}
+.price-divider {
+    width: 100%;
+    margin-right: 5% !important;
+    /* margin-left: calc(5% + 25px) !important; */
+}
+
+
+.delete-btn {
+    padding-top: 5px !important;
+}
+
+.list-header {
+    width: 90%;
+    /* height: 10px; */
+    margin-top: 2vh !important;
+    display: flex;
+    flex-direction: row;
+
+}
+.shopping-cart-right {
+    margin-top: 1vh !important;
+}
+
+.item-cart-text {
+    width: min-content;
+    flex-grow: 2;
+    text-align: left;
+    margin-left: 50px !important;
+}
+.insurance-cart-text {
+    width: min-content;
+    flex-grow: 1;
+}
+.price-cart-text {
+    width: min-content;
+    flex-grow: 1;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.checkout-card {
+    max-width: 100%;
+    max-width: 1250px;
+    min-width: 200px;
+    position: relative;
+    top: 10vh;
+    /* left: 25%; */
+    height: 80vh;
+    display: flex;
+}
+.checkout-form-container {
+    flex: 2;
+
+}
+.item-view-container {
+    flex: 1;
+    /* height: 20px; */
+    background: #c9c9c9;
+}
+.checkout-header {
+    margin-top: 5vh !important;
+    margin-left: 50px !important;
+}
+.tabs-checkout {
+    /* background: red; */
+    margin-bottom: 2vh !important;
+    margin-top: 1vh !important;
+}
+.tab-item-container {
+    /* background: red; */
+    height: 63vh;
+    margin-left: 30px !important;
+}
+.fullwidth-field-item {
+    /* flex-grow: 8; */
+    width: 80%;
+    margin-top: 0.5vh !important;
+}
+.fullwidth-field-container {
+    width: 100%;
+    /* background: red; */
+    margin-top: 1vh !important;
+}
+.phone-field-checkout {
+    width: 40%;
+    margin-top: 0.5vh !important;
+}
+.country-select {
+    margin-top: 0.5vh !important;
+
+}
+.address-field-checkout {
+    width: 80%;
+    margin-top: 0.5vh !important;
+}
+.city-field-checkout {
+    width: 40%;
+    margin-top: 0.5vh !important;
+}
+.state-select {
+    width: 20%;
+    margin-top: 0.5vh !important;
+    margin-left: 25px !important;
+}
+.city-state-container {
+    display: flex;
+}
+.zip-field-checkout {
+    margin-top: 0.5vh !important;
+    width: 50%;
+}
+.card-number-checkout {
+    width: 90%;
+    margin-top: 0.5vh !important;
+    margin-bottom: 2vh !important;
+}
+.exp-checkout {
+    width: 40%;
+    margin-top: 0.5vh !important;
+    margin-bottom: 2vh !important;
+}
+.cvc-checkout {
+    width: 30%;
+    margin-top: 0.5vh !important;
+    margin-left: 40px !important;
+    margin-bottom: 2vh !important;
+}
+.card-name-checkout {
+    width: 80%;
+    margin-top: 0.5vh !important;
+    margin-bottom: 2vh !important;
+}
+.zip-checkout {
+    width: 40%;
+    margin-top: 0.5vh !important;
+    margin-bottom: 2vh !important;
+}
+.checkout-form-container {
+    overflow: scroll;
+    height: 75vh;
+}
+.order-button {
+    width: 80%;
+    background: #90caf9 !important;
+    height: 4vh;
+    margin-bottom: 3vh !important;
+}
+.stepper-footer {
+    align-items: flex-end;
+    float: right;
+    margin-right: 10px !important;
+    margin-bottom: 1vh !important;
+}
+.generic-btn {
+    background: #90caf9 !important;
+}
+.step-container {
+    height: 5vh;
+    margin-bottom: 0vh !important;
+}
+
+
+
+
+
+
+
+
+
+/* SOURCE: https://github.com/stripe/react-stripe-js
+    Big Thanks !
+*/
+.FormGroup {
+  margin: 0px 16px 20px;
+  padding: 0px;
+  border-style: none;
+  /* background-color: #7795f8; */
+  will-change: opacity, transform;
+  /* box-shadow: 0 6px 9px rgba(50, 50, 93, 0.06), 0 2px 5px rgba(0, 0, 0, 0.08), */
+    /* inset 0 1px 0 #829fff; */
+  border-radius: 4px;
+}
+
+.FormRow {
+    padding: 10px 0px 0px 0px;
+    border-style: none;
+    /* background-color: #7795f8; */
+    will-change: opacity, transform;
+    /* box-shadow: 0 6px 9px rgba(50, 50, 93, 0.06), 0 2px 5px rgba(0, 0, 0, 0.08), inset 0 1px 0 #829fff; */
+    background: #e8e8e8;
+    border-radius: 4px;
+    height: 4vh;
+    text-align: center;
+    margin-top: 1vh !important;
+    margin-right: 20%;
+
+}
+
+.FormRow:first-child {
+  border-top: none;
+}
+
+.FormRowLabel {
+  width: 15%;
+  min-width: 70px;
+  padding: 11px 0;
+  color: #c4f0ff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes void-animation-out {
+  0%,
+  to {
+    opacity: 1;
+  }
+}
+.FormRowInput:-webkit-autofill {
+  -webkit-text-fill-color: #fce883;
+  /* Hack to hide the default webkit autofill */
+  transition: background-color 100000000s;
+  animation: 1ms void-animation-out;
+}
+
+.FormRowInput {
+  font-size: 16px;
+  width: 100%;
+  padding: 11px 15px 11px 0;
+  color: #fff;
+  background-color: transparent;
+  animation: 1ms void-animation-out;
+}
+
+.FormRowInput::placeholder {
+  color: #87bbfd;
+}
+
+.StripeElement--webkit-autofill {
+  background: transparent !important;
+}
+
+.StripeElement {
+  width: 100%;
+  padding: 11px 15px 11px 0;
+}
+
+.SubmitButton {
+  display: block;
+  font-size: 16px;
+  width: calc(100% - 30px);
+  height: 40px;
+  margin: 40px 15px 0;
+  background-color: #f6a4eb;
+  box-shadow: 0 6px 9px rgba(50, 50, 93, 0.06), 0 2px 5px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 #ffb9f6;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 100ms ease-in-out;
+  will-change: transform, background-color, box-shadow;
+}
+
+.SubmitButton:active {
+  background-color: #d782d9;
+  box-shadow: 0 6px 9px rgba(50, 50, 93, 0.06), 0 2px 5px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 #e298d8;
+  transform: scale(0.99);
+}
+
+.SubmitButton.SubmitButton--error {
+  transform: translateY(15px);
+}
+.SubmitButton.SubmitButton--error:active {
+  transform: scale(0.99) translateY(15px);
+}
+
+.SubmitButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+  background-color: #7795f8;
+  box-shadow: none;
+}
+
+.ErrorMessage {
+  color: #fff;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  padding: 0 15px;
+  font-size: 13px;
+  margin-top: 0px;
+  width: 100%;
+  transform: translateY(-15px);
+  opacity: 0;
+  animation: fade 150ms ease-out;
+  animation-delay: 50ms;
+  animation-fill-mode: forwards;
+  will-change: opacity, transform;
+}
+
+.ErrorMessage svg {
+  margin-right: 10px;
+}
+
+.Result {
+  margin-top: 50px;
+  text-align: center;
+  animation: fade 200ms ease-out;
+}
+
+.ResultTitle {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 17px;
+  text-align: center;
+}
+
+.ResultMessage {
+  color: #9cdbff;
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 25px;
+  line-height: 1.6em;
+  text-align: center;
+}
+
+.ResetButton {
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}

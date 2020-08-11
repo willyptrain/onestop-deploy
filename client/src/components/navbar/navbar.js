@@ -28,6 +28,7 @@ import MailIcon from '@material-ui/icons/Mail';
 import Drawer from '@material-ui/core/Drawer';
 import MenuIcon from '@material-ui/icons/Menu';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 
 
@@ -186,6 +187,13 @@ export function NavBar(data) {
                             </div>
                 </div>
                 </div>
+
+
+                <IconButton className="drawer-exit-btn" href="/shopping_cart">
+                  <ShoppingCartIcon size="large" style={{color: 'white'}} />
+                </IconButton>
+
+
                 </div>
 
 
@@ -241,7 +249,6 @@ export function NavBar(data) {
                     </ListItem>
                     <ListItem alignItems="center" button  href={`/notifications`} component="a" className="nav-menu-item">
                             Orders
-
                     </ListItem> 
                   </List>
           </Drawer>
