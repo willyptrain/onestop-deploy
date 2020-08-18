@@ -1,21 +1,24 @@
 .listing-container {
     height: 80vh;
     position: relative;
-    top: 4vh;
-
+    background: #e1e2e4;
+    width: 97.5%;
+    margin-left: 1.25%;
+    margin-top: 0vh !important;
+    top: 0vh !important;
 }
 
 .listing-header {
     position: relative;
-    top: 8vh;
 
 }
 .form-root {
-    display: flex;
-    flex-wrap: wrap;
+    /* display: flex; */
+    /* flex-wrap: wrap; */
+    margin-left: 10px !important;
 }
-.listing-full-label {
-    width: 25ch,
+.listing-field-helper {
+    text-align: left;
 }
 .form-control-trade {
     min-width: 150px;
@@ -25,4 +28,15 @@
 }
 .right-hand-panel {
     height: 65vh;
+}
+.fullwidth-field-item {
+    /* flex-grow: 8; */
+    width: 80% !important;
+    float: left;
+    margin-top: 0.5vh !important;
+}
+.fullwidth-field-container {
+    width: 100%;
+    /* background: red; */
+    margin-top: 20vh !important;
 }

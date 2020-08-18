@@ -78,6 +78,34 @@ mail = Mail(app)
 
 
 
+wanted_trades = db.Table('wanted_trades',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('trade_id', db.Integer, db.ForeignKey('tradings.id'))    
+)
+
+wanted_sales = db.Table('wanted_sales',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('sale_id', db.Integer, db.ForeignKey('sales.id'))    
+)
+
+# trade_offers = db.Table('trade_offers',
+#     db.Column('poster_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('offerer_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('trade_offer_id', db.Integer, db.ForeignKey('trade_offers.id'))    
+# )
+
+# sale_orders = db.Table('sale_orders',
+#     db.Column('poster_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('buyer_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('sale_order_id', db.Integer, db.ForeignKey('sale_orders.id'))    
+# )
+# trade_orders = db.Table('trade_orders',
+#     db.Column('poster_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('offerer_id', db.Integer, db.ForeignKey('users.id')),
+#     db.Column('trade_orders', db.Integer, db.ForeignKey('trade_orders.id'))    
+# )
+
+
 
 
 
@@ -97,6 +125,9 @@ class Trade(db.Model):
     img_paths = db.Column(db.PickleType) #array of strings (file names)
     for_trade = db.Column(db.Boolean, index=True)
     offers = db.Column(db.PickleType)
+
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    wanted_trades = db.relationship('User', secondary=wanted_trades, backref=db.backref('wanted_trades', lazy='dynamic'))
 
     def add_to_db(self):
         db.session.add(self)
@@ -122,6 +153,9 @@ class Sale(db.Model):
     img_paths = db.Column(db.PickleType) #array of strings (file names)
     for_sale = db.Column(db.Boolean, index=True)
 
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    wanted_sales = db.relationship('User', secondary=wanted_sales, backref=db.backref('wanted_sales', lazy='dynamic'))
+
 
     def add_to_db(self):
         db.session.add(self)
@@ -146,6 +180,9 @@ class SaleOrder(db.Model):
     shipping_info = db.Column(db.PickleType) 
     billing_info = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
+
+    # sale_orders = db.relationship('User', secondary=sale_orders, backref=db.backref('sale_orders', lazy='dynamic'))
+
 
     def json_rep(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -175,45 +212,41 @@ class TradeOrder(db.Model):
     shipping_zip = db.Column(db.String, index=True)
     time = db.Column(db.Integer, index=True)
 
+
+    # trade_orders = db.relationship('User', secondary=trade_orders, backref=db.backref('trade_orders', lazy='dynamic'))
+
+
     def json_rep(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 
-
-class WantedCard(db.Model):
-    __tablename__ = 'wanted_cards'
-    id = db.Column(db.Integer, primary_key=True)
-    item_id = db.Column(db.Integer, index=True)
-    username = db.Column(db.String(32), index=True)
-    type = db.Column(db.String(32), index=True) #trade or sale
-    sport = db.Column(db.String(32), index=True) 
-    time = db.Column(db.Integer, index=True)
-
-    def __eq__(self, other):
-        return (self.item_id == other.item_id and
-                self.type == other.type)
-
-    def add_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def json_rep(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 
 class TradeOffer(db.Model):
     __tablename__ = 'trade_offers'
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, index=True) #SENDER = USER
-    sender_username = db.Column(db.String(32), index=True)
-    recipient_id = db.Column(db.Integer, index=True) # RECIPIENT = POSTER USER
-    recipient_username = db.Column(db.String(32), index=True)
+    # sender_id = db.Column(db.Integer, index=True) #SENDER = USER
+    # recipient_id = db.Column(db.Integer, index=True) # RECIPIENT = POSTER USER
+    # recipient_username = db.Column(db.String(32), index=True)
     wanted_trade_card = db.Column(db.PickleType)
     cards_to_be_traded = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
     status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
+
+    poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    # poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # poster = db.relationship("User", back_populates="trades_posted")
+
+    # offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # offerer = db.relationship("User", back_populates="trades_offered")
+
+    # trade_offers = db.relationship('User', secondary=trade_offers, backref=db.backref('trade_offers', lazy='dynamic'))
+
+
 
     def json_rep(self):
         return_dict = {}
@@ -236,15 +269,16 @@ class User(db.Model):
     username = db.Column(db.String(32), index=True)
     email = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(64))
-    trades = db.Column(db.PickleType)
-    sales = db.Column(db.PickleType)
-    wantedCards = db.Column(db.PickleType)
+
+    trades = db.relationship('Trade', backref="trader")
+    sales = db.relationship('Sale', backref="seller")
+
+    trades_posted = db.relationship('TradeOffer', backref="posted_trades")
+    trades_offered = db.relationship('TradeOffer', backref="offered_trades")
+
+
     time = db.Column(db.Integer, index=True)
-    trades_in = db.Column(db.PickleType) #when the user offers their cards for the posted card
-    trades_out = db.Column(db.PickleType) #when the user is the card poster
-    completed_trades = db.Column(db.PickleType)
-    completed_sales = db.Column(db.PickleType) #same as purchased sales, can get own listed sales using sales array field
-    
+
 
     def save_to_db(self):
         db.session.add(self)
@@ -358,33 +392,8 @@ def create_sale_order(token):
 def get_user_info(token):
     user = User.verify_auth_token(token)
     if(user is not None):
-        pending_trades_in = []
-        accepted_trades_in = []
-        pending_trades_out = []
-        accepted_trades_out = []
-        for offer in user.trades_in:
-            if(offer.status == "pending"):
-                pending_trades_in.append(offer.json_rep())
-            elif(offer.status == "accepted"):
-                accepted_trades_in.append(offer.json_rep())
-        
-        for offer in user.trades_out:
-            if(offer.status == "pending"):
-                pending_trades_out.append(offer.json_rep())
-            elif(offer.status == "accepted"):
-                accepted_trades_out.append(offer.json_rep())
 
-        
-        user_sold_sales = []
-        for sale in user.sales:
-            print(sale.json_rep())
-            if(not sale.for_sale):
-                user_sold_sales.append(sale)
-        print(user_sold_sales)
-        
-        return (jsonify({'id':user.id, 'username': user.username, 'pending_trades_in':pending_trades_in, 'accepted_trades_in':accepted_trades_in, \
-                                'pending_trades_out':pending_trades_out, 'accepted_trades_out':accepted_trades_out, \
-                                'purchased_items': [sale.json_rep() for sale in user.completed_sales], 'sold_items':user_sold_sales}),201)
+        return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 'sales':[sale.json_rep() for sale in user.sales]}),201)
     return (jsonify({"error":"User not found!"}), 401)
 
 
@@ -469,7 +478,6 @@ def accept_offer(trade_offer_id, token):
         db.session.commit()
 
         with mail.connect() as conn:
-            # print(conn)
             msg = Message("Trade Approved!",
                       sender="willpeterson76@gmail.com",
                       recipients=["wcp7cp@virginia.edu"])
@@ -516,12 +524,12 @@ def make_offer(card_id, offer_ids, poster_username, token):
     user = User.verify_auth_token(token)
     if(user is not None):
         trades = user.trades
-        trade_list = []
-        offer_id_split = offer_ids.split(",")
-        for trade in trades:
-            trade_json = trade.json_rep()
-            if(str(trade_json['id']) in offer_id_split):
-                trade_list.append(trade)
+        # trade_list = []
+        # offer_id_split = offer_ids.split(",")
+        # for trade in trades:
+        #     trade_json = trade.json_rep()
+        #     if(str(trade_json['id']) in offer_id_split):
+        #         trade_list.append(trade)
 
         card = Trade.query.filter_by(id=card_id).first()
         poster_user = User.query.filter_by(username=poster_username).first()
@@ -531,11 +539,9 @@ def make_offer(card_id, offer_ids, poster_username, token):
             status="pending", sender_username=user.username, recipient_username=poster_user.username)
             db.session.add(trade_offer)
             db.session.flush()
-            poster_trades = list(poster_user.trades_in)
-            poster_trades.append(trade_offer)
-            poster_user.trades_in = poster_trades
-            user_trades = list(user.trades_out)
-            user_trades.append(trade_offer)
+
+            user.trade_offers
+
             user.trades_out = user_trades
             db.session.commit()
             return (jsonify(trade_offer.json_rep()),201)
@@ -576,28 +582,16 @@ def create_listing(token):
             trade = Trade(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
                         comments=comments, tradeOrSell=tradeOrSell, img_paths=img_paths, time=datetime.datetime.now(),
-                        for_trade=True, offers=[])
-            # print(trade.json_rep())
+                        for_trade=True, offers=[], trader=user)
             db.session.add(trade)
-            # print(trade.json_rep())
-            db.session.flush()
-            # print(trade.json_rep())
-            print(trade.id)
-            user_trades = list(user.trades)
-            user_trades.append(trade)
-            user.trades = user_trades
             db.session.commit()
             return (jsonify(trade.json_rep()),201)
         elif(tradeOrSell == "Sell"):
             sale = Sale(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
-                        comments=comments, tradeOrSell=tradeOrSell, price=price, img_paths=img_paths, time=datetime.datetime.now(),
+                        comments=comments, tradeOrSell=tradeOrSell, price=price, img_paths=img_paths, seller=user,time=datetime.datetime.now(),
                         for_sale=True)
             db.session.add(sale)
-            db.session.flush()
-            user_sales = list(user.sales)
-            user_sales.append(sale)
-            user.sales = user_sales
             db.session.commit()
 
             return (jsonify(sale.json_rep()),201)
@@ -661,30 +655,9 @@ def get_wanted_trades(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
         return (jsonify({"error":"User not found!"}), 401)
-    if(sport.lower() != "all"):
-        user_wanted = list(user.wantedCards)
-        trade_wanted = []
-        for item in user_wanted:
-            if(item.type == "Trade" and item.sport.lower() == sport.lower()):
-                item_id = item.item_id
-                trade = Trade.query.filter_by(id=item_id).first()
-                if(trade is not None):
-                    trade_wanted.append(trade.json_rep())
-        # trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
-        # if(trades is not None):
-        return (jsonify({'trades': trade_wanted}),201)
-    else:
-        user_wanted = list(user.wantedCards)
-        trade_wanted = []
-        for item in user_wanted:
-            if(item.type == "Trade"):
-                item_id = item.item_id
-                trade = Trade.query.filter_by(id=item_id).first()
-                if(trade is not None):
-                    trade_wanted.append(trade.json_rep())
-        # trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
-        # if(trades is not None):
-        return (jsonify({'trades': trade_wanted}),201)
+
+
+    return (jsonify({'trades': [trade.json_rep() for trade in user.wanted_trades]}),201)
 
 @app.route('/api/post_wanted/trades/<item_id>/<token>', methods=['POST'])
 def post_wanted_trade(item_id, token):
@@ -696,22 +669,13 @@ def post_wanted_trade(item_id, token):
         return (jsonify({"error":"Trade not found!"}), 404)
 
 
-    wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
-                type=card_lookup.tradeOrSell, sport=card_lookup.sport, time=datetime.datetime.now())
-    user_wanted = list(user.wantedCards)
-    if(not any((card.item_id == wanted.item_id and card.type == wanted.type) for card in user_wanted)):
-        user_wanted.append(wanted)
-        user.wantedCards = user_wanted
+    if(card_lookup not in user.wanted_trades.all()):
+        user.wanted_trades.append(card_lookup)
     else:
-        user_wanted.remove(wanted)
-        user.wantedCards = user_wanted
-    # db.session.add(wanted)
-    db.session.commit()
-    item_ids = []
-    for item in user_wanted:
-        if(item.type == "Trade"):
-            item_ids.append(item.item_id)
-    return jsonify(item_ids, 201)
+        user.wanted_trades.remove(card_lookup)
+
+
+    return jsonify([trade.id for trade in user.wanted_trades], 201)
 
 
 
@@ -720,29 +684,9 @@ def get_wanted_sales(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
         return (jsonify({"error":"User not found!"}), 401)
-    if(sport.lower() != "all"):
-        user_wanted = list(user.wantedCards)
-        sale_wanted = []
-        for item in user_wanted:
-            if(item.type == "Sell" and item.sport.lower() == sport.lower()):
-                item_id = item.item_id
-                sale = Sale.query.filter_by(id=item_id).first()
-                if(sale is not None):
-                    sale_wanted.append(sale.json_rep())
-        
-        return (jsonify({'sales': sale_wanted}),201)
-        
-    else:
-        user_wanted = list(user.wantedCards)
-        sale_wanted = []
-        for item in user_wanted:
-            if(item.type == "Sell"):
-                item_id = item.item_id
-                sale = Sale.query.filter_by(id=item_id).first()
-                if(sale is not None):
-                    sale_wanted.append(sale.json_rep())
-        
-        return (jsonify({'sales': sale_wanted}),201)
+
+    return (jsonify({'sales': [sale.json_rep() for sale in user.wanted_sales]}),201)
+
 
 @app.route('/api/post_wanted/sales/<item_id>/<token>', methods=['POST'])
 def post_wanted_sale(item_id, token):
@@ -752,24 +696,14 @@ def post_wanted_sale(item_id, token):
     card_lookup = Sale.query.filter_by(id=item_id).first()
     if(card_lookup is None):
         return (jsonify({"error":"Sale not found!"}), 404)
-
-    wanted = WantedCard(item_id=card_lookup.id, username=card_lookup.username, 
-                type=card_lookup.tradeOrSell, sport=card_lookup.sport, time=datetime.datetime.now() )
-    user_wanted = list(user.wantedCards)
-    print(user_wanted)
-    if(not any(card == wanted for card in user_wanted)):
-        user_wanted.append(wanted)
-        user.wantedCards = user_wanted
-    else:
-        user_wanted.remove(wanted)
-        user.wantedCards = user_wanted
-    db.session.commit()
-    item_ids = []
-    for item in user_wanted:
-        if(item.type == "Sell"):
-            item_ids.append(item.item_id)
     
-    return jsonify(item_ids, 201)
+    if(card_lookup not in user.wanted_sales.all()):
+        user.wanted_sales.append(card_lookup)
+    else:
+        user.wanted_sales.remove(card_lookup)
+    
+    return jsonify([sale.id for sale in user.wanted_sales], 201)
+
 
 
 
@@ -786,22 +720,22 @@ def get_all_sales(sport, token):
         return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
         sales = Sale.query.filter(Sale.for_sale==True, Sale.sport.ilike("%"+sport.lower()+"%")).all()
-        user_wanted = list(user.wantedCards)
+        user_wanted = list(user.wanted_sales)
         sale_wanted = []
         for item in user_wanted:
-            if(item.type == "Sell"):
-                sale_wanted.append(item.item_id)
+            if(item.tradeOrSell == "Sell"):
+                sale_wanted.append(item.id)
         if(sales is not None):
             return (jsonify({'sales': [sale.json_rep() for sale in sales],
                             'wantedCards': sale_wanted}),201)
         return (jsonify({"error":"Sales not found!"}), 404)
     else:
         sales = Sale.query.filter_by(for_sale=True).all()
-        user_wanted = list(user.wantedCards)
+        user_wanted = list(user.wanted_sales)
         sale_wanted = []
         for item in user_wanted:
-            if(item.type == "Sell"):
-                sale_wanted.append(item.item_id)
+            if(item.tradeOrSell == "Sell"):
+                sale_wanted.append(item.id)
         if(sales is not None):
             return (jsonify({'sales': [sale.json_rep() for sale in sales],
                         'wantedCards': sale_wanted}),201)
@@ -815,23 +749,21 @@ def get_all_trades(sport, token):
         return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
         trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
-        user_wanted = list(user.wantedCards)
+        user_wanted = list(user.wanted_trades)
         trade_wanted = []
         for item in user_wanted:
-            if(item.type == "Trade"):
-                trade_wanted.append(item.item_id)
+            if(item.sport.lower() == sport.lower()):
+                trade_wanted.append(item.id)
         if(trades is not None):
             return (jsonify({'trades': [trade.json_rep() for trade in trades],
                                 'wantedCards': trade_wanted}),201)
         return (jsonify({"error":"Trades not found!"}), 404)
     else:
         trades = Trade.query.all()
-        user_wanted = list(user.wantedCards)
+        user_wanted = list(user.wanted_trades)
         trade_wanted = []
         for item in user_wanted:
-            print(item)
-            if(item.type == "Trade"):
-                trade_wanted.append(item.item_id)
+            trade_wanted.append(item.id)
         if(trades is not None):
             return (jsonify({'trades': [trade.json_rep() for trade in trades],
                             'wantedCards': trade_wanted}),201)
@@ -919,7 +851,7 @@ def new_user():
         return (jsonify({"error":"User not found!"}), 401)
     if User.query.filter_by(username=username).first() is not None:
         return (jsonify({"error":"User already exists!"}), 409)
-    user = User(username=username, email=email,wantedCards=[], trades=[], sales=[], trades_out=[], trades_in=[], completed_trades=[], completed_sales=[])
+    user = User(username=username, email=email, time=datetime.datetime.now())
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
@@ -947,5 +879,6 @@ def get_auth_token():
 
 
 if not os.path.exists('db.sqlite'):
+    print("CREATED_DB")
     db.create_all()
 app.run(debug=True)

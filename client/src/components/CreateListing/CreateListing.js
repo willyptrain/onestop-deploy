@@ -154,28 +154,34 @@ class CreateListing extends Component {
         if(this.state.error && this.state.userInfo == "Not logged in") {
             return <Redirect {...this.state} url={`/`} />
         }
-    return (<div className="listing-container">
-            <h2 className="listing-header">Create A Listing</h2>
+    return (<div className="home-container">
+    <div className="listing-container">
+            <h2 className="listing-header mont-text">Create A Listing</h2>
             <div className="form-root">    
-               {/* <form onSubmit={this.createAListing} id="listing-form"> */}
-                <TextField required form="listing-form" className="listing-full-label"
-                    error={!this.state.player_name || this.state.player_name == ""}
+                
+                
+            <div className="fullwidth-field-container">
+                <Typography variant="body1" className="listing-field-helper mont-text">Player Name</Typography>
+                <TextField required form="listing-form"
                     id="standard-adornment-amount"
-                    label="Player Name"
-                    style={{ margin: 8 }}
                     placeholder="Johnny Doe"
                     fullWidth
                     margin="normal"
                     variant="filled"
                     value={this.state.player_name}
+                    className="fullwidth-field-item"
                     InputLabelProps={{
                         shrink: true,
                     }}
                     onChange={this.typePlayer}
                     />
+            </div>
+
+                
+                
             <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['sport']} 
-            label="Sport" select placeholder="Placeholder" onChange={this.selectSport} 
-                style={{ margin: 8, textAlign: 'left', width: '20%' }} variant="filled" InputLabelProps={{
+             select placeholder="Placeholder" onChange={this.selectSport} 
+                style={{textAlign: 'left', width: '20%' }} variant="filled" InputLabelProps={{
                     shrink: true,
                 }}>
                 {this.sportList.map((sport) => 
@@ -187,8 +193,8 @@ class CreateListing extends Component {
             </TextField>
         
             <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['tradeOrSell']} 
-            label="Trade Or Sell" select onChange={this.tradeOrSell} 
-                style={{ margin: 8, minWidth: 150, textAlign: 'left' }} variant="filled" InputLabelProps={{
+             select onChange={this.tradeOrSell} 
+                style={{ minWidth: 150, textAlign: 'left' }} variant="filled" InputLabelProps={{
                     shrink: true,
                 }}>
                     <MenuItem key={"Trade"} value={"Trade"}>
@@ -201,8 +207,8 @@ class CreateListing extends Component {
             </TextField>
 
             <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['year']} 
-            label="Year" select placeholder="Placeholder" onChange={this.selectYear}
-                style={{ margin: 8 }} variant="filled" InputLabelProps={{
+             select placeholder="Placeholder" onChange={this.selectYear}
+            variant="filled" InputLabelProps={{
                     shrink: true,
                 }}>
                 {this.yearList.map((year) => 
@@ -218,10 +224,8 @@ class CreateListing extends Component {
             form="listing-form" error={this.state['tradeOrSell'] == "Sell" && (!this.state.price || this.state.price == "")}
                 id="filled-adornment-amount"
                 disabled={this.state['tradeOrSell'] != "Sell"}
-                label="(If for sale):"
                 value={this.state['price']}
                 onChange={this.setPrice}
-                style={{ margin: 8 }} 
                 startAdornment={<InputAdornment variant="filled" position="start">$</InputAdornment>}
             />
 
@@ -231,8 +235,8 @@ class CreateListing extends Component {
             </div>
 
             <TextField required form="listing-form" id="standard-select-currency-native" value={this.state['manufacturer']} 
-            label="Card Manufacturer" select placeholder="Placeholder" onChange={this.selectManufacturer}
-                style={{ margin: 8 }} variant="filled" InputLabelProps={{
+             select placeholder="Placeholder" onChange={this.selectManufacturer}
+             variant="filled" InputLabelProps={{
                     shrink: true,
                 }}>
                 {this.cardManufacturers.map((manufacturer) => 
@@ -247,8 +251,6 @@ class CreateListing extends Component {
                     required
                     form="listing-form"
                     id="standard-adornment-amount"
-                    label="Card Number"
-                    style={{ margin: 8 }}
                     fullWidth
                     margin="normal"
                     variant="filled"
@@ -265,8 +267,6 @@ class CreateListing extends Component {
                     variant="subtitle2" align="left">Example: Update Series, Series 2, etc. </Typography>
                 <TextField required className="listing-full-label"
                     id="standard-adornment-amount"
-                    label="Card Series/Set"
-                    style={{ margin: 8 }}
                     fullWidth
                     margin="normal"
                     variant="filled"
@@ -302,7 +302,7 @@ class CreateListing extends Component {
             {/* </form> */}
 
             </div>
-
+        </div>
 
         </div>)
        
