@@ -90,7 +90,6 @@ wanted_sales = db.Table('wanted_sales',
 
 offered_trades = db.Table('offered_trades',
     db.Column('trade_id', db.Integer, db.ForeignKey('tradings.id')),
-    db.Column('offerer_id', db.Integer, db.ForeignKey('users.id')),
     db.Column('trade_offer_id', db.Integer, db.ForeignKey('trade_offers.id'))    
 )
 
@@ -116,8 +115,9 @@ class TradeOffer(db.Model):
     # offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # trade_id = db.Column(db.Integer, db.ForeignKey('tradings.id'))
     
+    offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     offers = db.relationship('Trade', secondary=offered_trades, backref=db.backref('offered_trades', lazy='dynamic'))
-    made_offers = db.relationship('User', secondary=offered_trades, backref=db.backref('made_offers', lazy='dynamic'))
+    
     
 
     def json_rep(self):
@@ -181,6 +181,58 @@ class Sale(db.Model):
 
     def json_rep(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(32), index=True)
+    email = db.Column(db.String(32), index=True)
+    password_hash = db.Column(db.String(64))
+
+    trades = db.relationship('Trade', backref="trader")
+    sales = db.relationship('Sale', backref="seller")
+
+    made_offers = db.relationship('TradeOffer', backref="offerer")
+
+    # trades_posted = db.relationship('TradeOffer', backref="posted_trades")
+    # trades_offered = db.relationship('TradeOffer', backref="offered_trades")
+
+
+    time = db.Column(db.Integer, index=True)
+
+
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def json_rep(self):
+        return {
+            'username':self.username,
+            'email':self.email,
+        }
+
+    def hash_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def generate_auth_token(self, expires_in=600):
+        return jwt.encode(
+            {'id': self.id, 'exp': time.time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_auth_token(token):
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'],
+                              algorithms=['HS256'])
+        except:
+            return
+        return User.query.get(data['id'])
 
 
 
@@ -258,53 +310,6 @@ class TradeOrder(db.Model):
 
 
 
-
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(32), index=True)
-    email = db.Column(db.String(32), index=True)
-    password_hash = db.Column(db.String(64))
-
-    trades = db.relationship('Trade', backref="trader")
-    sales = db.relationship('Sale', backref="seller")
-
-    # trades_posted = db.relationship('TradeOffer', backref="posted_trades")
-    # trades_offered = db.relationship('TradeOffer', backref="offered_trades")
-
-
-    time = db.Column(db.Integer, index=True)
-
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def json_rep(self):
-        return {
-            'username':self.username,
-            'email':self.email,
-        }
-
-    def hash_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def generate_auth_token(self, expires_in=600):
-        return jwt.encode(
-            {'id': self.id, 'exp': time.time() + expires_in},
-            app.config['SECRET_KEY'], algorithm='HS256')
-
-    @staticmethod
-    def verify_auth_token(token):
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'],
-                              algorithms=['HS256'])
-        except:
-            return
-        return User.query.get(data['id'])
 
 
 
@@ -520,37 +525,24 @@ def make_offer(card_id, offer_ids, poster_username, token):
     user = User.verify_auth_token(token)
     if(user is not None):
         trades = user.trades
-
-
         original_trade = Trade.query.filter_by(id=card_id).first()
         poster_user = User.query.filter_by(username=poster_username).first()
         if(poster_user is not None and original_trade is not None):
 
-            # id = db.Column(db.Integer, primary_key=True)
-            # offered_card_ids = db.Column(db.PickleType)
-            # time = db.Column(db.Integer, index=True)
-            # status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
-            # offers = db.relationship('Trade', secondary=offered_trades, backref=db.backref('offered_trades', lazy='dynamic'))
 
-
-            trade_offer = TradeOffer(offered_card_ids=offer_ids,time=datetime.datetime.now(), status="pending")
+            trade_offer = TradeOffer(offered_card_ids=offer_ids,time=datetime.datetime.now(), status="pending", offerer=poster_user)
             db.session.add(trade_offer)
             db.session.flush()
 
             if(trade_offer not in original_trade.offered_trades.all()):
                 original_trade.offered_trades.append(trade_offer)
-                user.made_offers.append(trade_offer)
             else:
                 original_trade.offered_trades.remove(trade_offer)
-                user.made_offers.remove(trade_offer)
 
             print(original_trade.json_rep())
             print(original_trade.offered_trades.all())
 
-            print(user.json_rep())
-            print(user.made_offers.all())
             
-            # db.session.commit()
             return (jsonify(trade_offer.json_rep()),201)
 
     return (jsonify({"error":"No trades found!"}), 404)
