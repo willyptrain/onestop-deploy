@@ -88,11 +88,11 @@ wanted_sales = db.Table('wanted_sales',
     db.Column('sale_id', db.Integer, db.ForeignKey('sales.id'))    
 )
 
-# trade_offers = db.Table('trade_offers',
-#     db.Column('poster_id', db.Integer, db.ForeignKey('users.id')),
-#     db.Column('offerer_id', db.Integer, db.ForeignKey('users.id')),
-#     db.Column('trade_offer_id', db.Integer, db.ForeignKey('trade_offers.id'))    
-# )
+offered_trades = db.Table('offered_trades',
+    db.Column('trade_id', db.Integer, db.ForeignKey('tradings.id')),
+    db.Column('offerer_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('trade_offer_id', db.Integer, db.ForeignKey('trade_offers.id'))    
+)
 
 # sale_orders = db.Table('sale_orders',
 #     db.Column('poster_id', db.Integer, db.ForeignKey('users.id')),
@@ -106,6 +106,22 @@ wanted_sales = db.Table('wanted_sales',
 # )
 
 
+class TradeOffer(db.Model):
+    __tablename__ = 'trade_offers'
+    id = db.Column(db.Integer, primary_key=True)
+    
+    offered_card_ids = db.Column(db.PickleType)
+    time = db.Column(db.Integer, index=True)
+    status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
+    # offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # trade_id = db.Column(db.Integer, db.ForeignKey('tradings.id'))
+    
+    offers = db.relationship('Trade', secondary=offered_trades, backref=db.backref('offered_trades', lazy='dynamic'))
+    made_offers = db.relationship('User', secondary=offered_trades, backref=db.backref('made_offers', lazy='dynamic'))
+    
+
+    def json_rep(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 
@@ -124,10 +140,12 @@ class Trade(db.Model):
     time = db.Column(db.Integer, index=True)
     img_paths = db.Column(db.PickleType) #array of strings (file names)
     for_trade = db.Column(db.Boolean, index=True)
-    offers = db.Column(db.PickleType)
 
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     wanted_trades = db.relationship('User', secondary=wanted_trades, backref=db.backref('wanted_trades', lazy='dynamic'))
+    # offers = db.relationship('TradeOffer', backref="offers")
+
+
 
     def add_to_db(self):
         db.session.add(self)
@@ -224,28 +242,6 @@ class TradeOrder(db.Model):
 
 
 
-class TradeOffer(db.Model):
-    __tablename__ = 'trade_offers'
-    id = db.Column(db.Integer, primary_key=True)
-    # sender_id = db.Column(db.Integer, index=True) #SENDER = USER
-    # recipient_id = db.Column(db.Integer, index=True) # RECIPIENT = POSTER USER
-    # recipient_username = db.Column(db.String(32), index=True)
-    wanted_trade_card = db.Column(db.PickleType)
-    cards_to_be_traded = db.Column(db.PickleType)
-    time = db.Column(db.Integer, index=True)
-    status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
-
-    poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-    # poster_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    # poster = db.relationship("User", back_populates="trades_posted")
-
-    # offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    # offerer = db.relationship("User", back_populates="trades_offered")
-
-    # trade_offers = db.relationship('User', secondary=trade_offers, backref=db.backref('trade_offers', lazy='dynamic'))
-
 
 
     def json_rep(self):
@@ -273,8 +269,8 @@ class User(db.Model):
     trades = db.relationship('Trade', backref="trader")
     sales = db.relationship('Sale', backref="seller")
 
-    trades_posted = db.relationship('TradeOffer', backref="posted_trades")
-    trades_offered = db.relationship('TradeOffer', backref="offered_trades")
+    # trades_posted = db.relationship('TradeOffer', backref="posted_trades")
+    # trades_offered = db.relationship('TradeOffer', backref="offered_trades")
 
 
     time = db.Column(db.Integer, index=True)
@@ -524,26 +520,37 @@ def make_offer(card_id, offer_ids, poster_username, token):
     user = User.verify_auth_token(token)
     if(user is not None):
         trades = user.trades
-        # trade_list = []
-        # offer_id_split = offer_ids.split(",")
-        # for trade in trades:
-        #     trade_json = trade.json_rep()
-        #     if(str(trade_json['id']) in offer_id_split):
-        #         trade_list.append(trade)
 
-        card = Trade.query.filter_by(id=card_id).first()
+
+        original_trade = Trade.query.filter_by(id=card_id).first()
         poster_user = User.query.filter_by(username=poster_username).first()
-        if(poster_user is not None and card is not None):
-            trade_offer = TradeOffer(sender_id=user.id, recipient_id=poster_user.id,
-            wanted_trade_card=card.json_rep(), cards_to_be_traded=trade_list,time=datetime.datetime.now(), 
-            status="pending", sender_username=user.username, recipient_username=poster_user.username)
+        if(poster_user is not None and original_trade is not None):
+
+            # id = db.Column(db.Integer, primary_key=True)
+            # offered_card_ids = db.Column(db.PickleType)
+            # time = db.Column(db.Integer, index=True)
+            # status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
+            # offers = db.relationship('Trade', secondary=offered_trades, backref=db.backref('offered_trades', lazy='dynamic'))
+
+
+            trade_offer = TradeOffer(offered_card_ids=offer_ids,time=datetime.datetime.now(), status="pending")
             db.session.add(trade_offer)
             db.session.flush()
 
-            user.trade_offers
+            if(trade_offer not in original_trade.offered_trades.all()):
+                original_trade.offered_trades.append(trade_offer)
+                user.made_offers.append(trade_offer)
+            else:
+                original_trade.offered_trades.remove(trade_offer)
+                user.made_offers.remove(trade_offer)
 
-            user.trades_out = user_trades
-            db.session.commit()
+            print(original_trade.json_rep())
+            print(original_trade.offered_trades.all())
+
+            print(user.json_rep())
+            print(user.made_offers.all())
+            
+            # db.session.commit()
             return (jsonify(trade_offer.json_rep()),201)
 
     return (jsonify({"error":"No trades found!"}), 404)
@@ -582,7 +589,7 @@ def create_listing(token):
             trade = Trade(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
                         comments=comments, tradeOrSell=tradeOrSell, img_paths=img_paths, time=datetime.datetime.now(),
-                        for_trade=True, offers=[], trader=user)
+                        for_trade=True, trader=user)
             db.session.add(trade)
             db.session.commit()
             return (jsonify(trade.json_rep()),201)
