@@ -108,20 +108,44 @@ offered_trades = db.Table('offered_trades',
 class TradeOffer(db.Model):
     __tablename__ = 'trade_offers'
     id = db.Column(db.Integer, primary_key=True)
-    
     offered_card_ids = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
     status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
     # offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # trade_id = db.Column(db.Integer, db.ForeignKey('tradings.id'))
     
+    original_poster = db.Column(db.PickleType)
     offerer_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     offers = db.relationship('Trade', secondary=offered_trades, backref=db.backref('offered_trades', lazy='dynamic'))
-    
+    original_trade_id = db.Column(db.Integer, db.ForeignKey('tradings.id'))
+
+
+    accepted_orders = db.relationship('TradeOrder', backref="original_trade_offer")
     
 
     def json_rep(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return_dict = {}
+        for c in self.__table__.columns:
+            if(c.name == "original_trade_id"):
+                temp_id = getattr(self, c.name)
+                trade = Trade.query.filter_by(id=temp_id).first()
+                if(trade is not None):
+                    return_dict["original_trade"] = trade.json_rep()
+
+            elif(c.name == "original_poster"):
+                return_dict[c.name] = getattr(self, c.name).json_rep()
+
+            elif(c.name == "offered_card_ids"):
+                return_dict[c.name] = getattr(self, c.name)
+                return_dict["offered_cards"] = []
+                for id in getattr(self, c.name):
+                    card_lookup = Trade.query.filter_by(id=id).first()
+                    if(card_lookup is not None):
+                        return_dict["offered_cards"].append(card_lookup.json_rep())
+            else:
+                return_dict[c.name] = getattr(self, c.name)
+
+        return return_dict
 
 
 
@@ -143,6 +167,10 @@ class Trade(db.Model):
 
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     wanted_trades = db.relationship('User', secondary=wanted_trades, backref=db.backref('wanted_trades', lazy='dynamic'))
+    trade_offers = db.relationship('TradeOffer', backref="original_trade")
+
+
+
     # offers = db.relationship('TradeOffer', backref="offers")
 
 
@@ -171,6 +199,8 @@ class Sale(db.Model):
     img_paths = db.Column(db.PickleType) #array of strings (file names)
     for_sale = db.Column(db.Boolean, index=True)
 
+
+
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     wanted_sales = db.relationship('User', secondary=wanted_sales, backref=db.backref('wanted_sales', lazy='dynamic'))
 
@@ -196,6 +226,7 @@ class User(db.Model):
     sales = db.relationship('Sale', backref="seller")
 
     made_offers = db.relationship('TradeOffer', backref="offerer")
+    # accepted_trade_offers = db.relationship('TradeOffer', backref="offerer")
 
     # trades_posted = db.relationship('TradeOffer', backref="posted_trades")
     # trades_offered = db.relationship('TradeOffer', backref="offered_trades")
@@ -271,17 +302,18 @@ class SaleOrder(db.Model):
 class TradeOrder(db.Model):
     __tablename__ = 'trade_orders'
     id = db.Column(db.Integer, primary_key=True)
-    posted_card = db.Column(db.PickleType)
-    offered_cards = db.Column(db.PickleType)
-    card_poster = db.Column(db.PickleType) #person who originally offered card, User object
-    card_offerer = db.Column(db.PickleType) #person who offered their cards, User object
+    #SHOULD JUST CHANGE TO REFERENCE TRADE_ORDER !!!!!!!!
+    # posted_card = db.Column(db.PickleType)
+    # offered_cards = db.Column(db.PickleType)
+    # card_poster = db.Column(db.PickleType) #person who originally offered card, User object
+    # card_offerer = db.Column(db.PickleType) #person who offered their cards, User object
     card_insurance = db.Column(db.Boolean, index=True) #should aways be true
     shipping_address = db.Column(db.String, index=True)
     shipping_city = db.Column(db.String, index=True)
     shipping_state = db.Column(db.String, index=True)
     shipping_zip = db.Column(db.String, index=True)
+    trade_offer_id = db.Column(db.Integer, db.ForeignKey('trade_offers.id'))
     time = db.Column(db.Integer, index=True)
-
 
     # trade_orders = db.relationship('User', secondary=trade_orders, backref=db.backref('trade_orders', lazy='dynamic'))
 
@@ -291,19 +323,6 @@ class TradeOrder(db.Model):
 
 
 
-
-
-
-
-
-    def json_rep(self):
-        return_dict = {}
-        for c in self.__table__.columns:
-            if(c.name == "cards_to_be_traded"):
-                return_dict[c.name] = [trade.json_rep() for trade in getattr(self, c.name)]
-            else:
-                return_dict[c.name] = getattr(self, c.name)
-        return return_dict
 
 
     
@@ -394,7 +413,19 @@ def get_user_info(token):
     user = User.verify_auth_token(token)
     if(user is not None):
 
-        return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 'sales':[sale.json_rep() for sale in user.sales]}),201)
+        pending_trades_out = []
+
+        pending_trades_out = []
+        accepted_trades_out = []
+        for offer in user.made_offers:
+            if(offer.status == "pending"):
+                pending_trades_out.append(offer.json_rep())
+
+            if(offer.status == "accepted"):
+                accepted_trades_out.append(offer.json_rep())
+        return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 
+        'sales':[sale.json_rep() for sale in user.sales], 'accepted_trades_out':accepted_trades_out,
+        'pending_trades_out': pending_trades_out}),201)
     return (jsonify({"error":"User not found!"}), 401)
 
 
@@ -412,13 +443,20 @@ def get_trade_offer(trade_offer_id, token):
         return (jsonify({"error":"No trade offer found!"}), 404)
     return (jsonify({"error":"User not found!"}), 401)
 
+
+
+
 @app.route('/api/get_trade_order/<trade_order_id>/<token>', methods=['GET'])
 def get_trade_order(trade_order_id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
-        for order in user.completed_trades:
-            if(order.id == int(trade_order_id)):
-                return (jsonify(order.json_rep()),201)
+        order = TradeOrder.query.filter_by(id=trade_order_id).first()
+        offer = TradeOffer.query.filter_by(id=order.trade_offer_id).first()
+        original_trade = Trade.query.filter_by(id=offer.original_trade_id).first()
+
+        # for order in user.completed_trades:
+        #     if(order.id == int(trade_order_id)):
+        return (jsonify({"order_info":order.json_rep(), "offer_info":offer.json_rep(), "trade_info":original_trade.json_rep()}),201)
 
         return (jsonify({"error":"Order not found!"}), 404)
     return (jsonify({"error":"User not found!"}), 401)
@@ -442,41 +480,13 @@ def accept_offer(trade_offer_id, token):
     trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
     if(user is not None and trade_offer is not None):
         trade_offer.status = "accepted"
-        poster_user = User.query.filter_by(id=trade_offer.recipient_id, username=trade_offer.recipient_username).first()
-        poster_trades = list(poster_user.trades_in)
-        for i, offer in enumerate(poster_trades):
-            if (offer.id == trade_offer.id):
-                poster_trades[i] = trade_offer
-
-        poster_user.trades_in = poster_trades
-        user_trades = list(user.trades_out)
-        for i, offer in enumerate(user_trades):
-            if (offer.id == trade_offer.id):
-                user_trades[i] = trade_offer
-        user.trades_out = user_trades
-
-
-        user_info = {'username':user.username, 'id':user.id, 'email':user.email}
-        poster_user_info = {'username':poster_user.username, 'id':poster_user.id, 'email':poster_user.email}
-        
-        order = TradeOrder(posted_card=trade_offer.wanted_trade_card, 
-            offered_cards=[card.json_rep() for card in trade_offer.cards_to_be_traded], card_poster=poster_user_info,
-            card_offerer=user_info, card_insurance=True, shipping_address=app.config['SHIP_ADDRESS'],
-            shipping_state=app.config['SHIP_STATE'], shipping_zip=app.config['SHIP_ZIP'],
-            shipping_city=app.config['SHIP_CITY'], time=datetime.datetime.now())
-        
-        db.session.add(order)
-        db.session.flush()
-
-        completed_trades = list(user.completed_trades)
-        completed_trades.append(order)
-        user.completed_trades = completed_trades
-
-        completed_trades = list(poster_user.completed_trades)
-        completed_trades.append(order)
-        poster_user.completed_trades = completed_trades
-
+        trade_order = TradeOrder(original_trade_offer=trade_offer, card_insurance=True, shipping_address=app.config['SHIP_ADDRESS'],
+        shipping_state=app.config['SHIP_STATE'], shipping_zip=app.config['SHIP_ZIP'],
+        shipping_city=app.config['SHIP_CITY'], time=datetime.datetime.now())
+        db.session.add(trade_order)
         db.session.commit()
+
+
 
         with mail.connect() as conn:
             msg = Message("Trade Approved!",
@@ -486,7 +496,7 @@ def accept_offer(trade_offer_id, token):
             msg.html = render_template('order_accepted.html', user=user, launch_url=app.config['launch_url'])
             conn.send(msg)
 
-        return (jsonify(order.json_rep()), 201)
+        return (jsonify(trade_order.json_rep()), 201)
     return (jsonify({"error":"No trade offer found!"}), 404)
 
 @app.route('/api/deny_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
@@ -530,9 +540,15 @@ def make_offer(card_id, offer_ids, poster_username, token):
         if(poster_user is not None and original_trade is not None):
 
 
-            trade_offer = TradeOffer(offered_card_ids=offer_ids,time=datetime.datetime.now(), status="pending", offerer=poster_user)
+            trade_offer = TradeOffer(offered_card_ids=offer_ids,time=datetime.datetime.now(), status="pending", offerer=user, 
+            original_poster=poster_user, original_trade=original_trade)
             db.session.add(trade_offer)
             db.session.flush()
+
+
+            print(offered_trades)
+
+
 
             if(trade_offer not in original_trade.offered_trades.all()):
                 original_trade.offered_trades.append(trade_offer)

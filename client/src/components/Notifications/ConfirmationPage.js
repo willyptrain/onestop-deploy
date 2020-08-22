@@ -76,8 +76,8 @@ export function ListText(data) {
 
 }
 
-// {this.state['posted_card']['year']+ " " + this.state['posted_card']['manufacturer'] + " " + this.state['posted_card']['cardSeries'] + " " + this.state['posted_card']['player_name']}
-//this.state['card_poster']['username']
+// {this.state['trade_info']['year']+ " " + this.state['trade_info']['manufacturer'] + " " + this.state['trade_info']['cardSeries'] + " " + this.state['trade_info']['player_name']}
+//this.state['trade_info']['username']
 
 class Notifications extends Component {
 
@@ -110,7 +110,7 @@ class Notifications extends Component {
 
 
     render() {
-        if('card_insurance' in this.state) {
+        if('offer_info' in this.state) {
             return (<div className="home-container">
                 
                 <Grid container spacing={3} alignItems="center"
@@ -137,17 +137,17 @@ class Notifications extends Component {
                                                 <ListItemAvatar>
                                                             {/* <Avatar className="wanted-card-confirm-img" variant={"rounded"}
                                                                 alt={`Card Image`}
-                                                                src={this.state['posted_card']['img_paths'][0]}
+                                                                src={this.state['trade_info']['img_paths'][0]}
                                                             /> */}
-                                                            <ImageAvatar image={this.state['posted_card']['img_paths'][0]} />
+                                                            <ImageAvatar image={this.state['trade_info']['img_paths'][0]} />
                                                 </ListItemAvatar>
                                                 
                                     
 
 
                                                 <ListText
-                                                primary={this.state['posted_card']['year']+ " " + this.state['posted_card']['manufacturer'] + " " + this.state['posted_card']['cardSeries'] + " " + this.state['posted_card']['player_name']}
-                                                secondary={this.state['card_poster']['username']} />
+                                                primary={this.state['trade_info']['year']+ " " + this.state['trade_info']['manufacturer'] + " " + this.state['trade_info']['cardSeries'] + " " + this.state['trade_info']['player_name']}
+                                                secondary={this.state['trade_info']['username']} />
  
                                             </ListItem>
                                 </List>
@@ -158,14 +158,14 @@ class Notifications extends Component {
                                         To be traded with...
                                     </Typography>
                                 <List className="cards-offered-confirm">
-                                    { this.state['offered_cards'].map((card,index) =>
+                                    { this.state['offer_info']['offered_cards'].map((card,index) =>
                                         <ListItem role={undefined} dense className="cards-offered-container">
                                             <ListItemAvatar>
                                                 <ImageAvatar image={card['img_paths'][0]} />
                                             </ListItemAvatar>
                                             <ListText
                                                 primary={card['year']+ " " + card['manufacturer'] + " " + card['cardSeries'] + " " + card['player_name']}
-                                                secondary={this.state['card_offerer']['username']} />
+                                                secondary={card['username']} />
                              
                                         </ListItem>
                                     
@@ -190,11 +190,11 @@ class Notifications extends Component {
 {/* <Box display="flex" alignItems="flex-start" className="wanted-card-confirm"> */}
                                         {/* <Box className="confirm-order-box" component="div" display="inline"> */}
                                             {/* <p>Hello</p> */}
-                                            {/* <img alt="Card Image" className="wanted-card-confirm-img" src={this.state['posted_card']['img_paths'][0]} /> */}
+                                            {/* <img alt="Card Image" className="wanted-card-confirm-img" src={this.state['trade_info']['img_paths'][0]} /> */}
                                         {/* </Box> */}
                                         {/* <Box component="div" display="inline"> */}
                                             {/* <Typography className="wanted-card-confirm-name mont-text" variant="h6">
-                                                {this.state['posted_card']['year']+ " " + this.state['posted_card']['manufacturer'] + " " + this.state['posted_card']['cardSeries'] + " " + this.state['posted_card']['player_name']}
+                                                {this.state['trade_info']['year']+ " " + this.state['trade_info']['manufacturer'] + " " + this.state['trade_info']['cardSeries'] + " " + this.state['trade_info']['player_name']}
                                             </Typography>
                                         </Box> */}
                                     {/* </div> */}

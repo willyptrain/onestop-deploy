@@ -45,8 +45,9 @@ class Notifications extends Component {
         console.log(token);
         axios.get(`/api/users/${token}`)
         .then(res => {
-            console.log(res)
-            this.setState({...this.state, ...res.data})
+            console.log(res.data)
+            this.setState({...this.state, 
+                ...res.data})
         })
         .catch(err =>  {
             console.log(err);
@@ -138,8 +139,8 @@ class Notifications extends Component {
                                             <ListItem key={`notif-trade-${index}`} dense>
                                             
                                             <Typography className="list-item-text">
-                                                You offered <b>{offer.cards_to_be_traded.map(x => x.player_name).join(", ")} </b>
-                                                    to <b>{offer.recipient_username} </b> for <b>{offer.wanted_trade_card.player_name}</b>
+                                                You offered <b>{offer.offered_cards.map(x => x.player_name).join(", ")} </b>
+                                                    to <b>{offer.original_trade.username} </b> for <b>{offer.original_trade.player_name}</b>
                                             </Typography>
 
                                             <Button variant="contained" onClick={this.acceptOffer} value={offer.id} className="accept-button" color="primary">Accept</Button>
@@ -149,8 +150,8 @@ class Notifications extends Component {
                                             <Divider />
                                         </div>
                                     )}
-                                    {!this.state['pending_trades_in'].length > 0 &&
-                                    <h6>No Pending Offers at this time</h6>
+                                    {!this.state['pending_trades_out'].length > 0 &&
+                                    <h6>You have made 0 Offers</h6>
                                 }
                                     
                                         </List>
@@ -159,7 +160,7 @@ class Notifications extends Component {
                             </Grid>
                     </div>
 
-                    <div className="trade-in-notif-container">
+                    {/* <div className="trade-in-notif-container">
                         <Typography className="notif-header" variant="h4">Your Listings</Typography>
                         <Grid container className="notif-grid-container"
                     alignItems="center"
@@ -194,7 +195,7 @@ class Notifications extends Component {
                                 </Paper>}
                             </Grid>
                         </Grid>
-                    </div>
+                    </div> */}
 
 
 

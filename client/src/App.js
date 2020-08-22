@@ -217,7 +217,7 @@ class App extends React.Component {
               { this.state.status == 'Not logged in' && 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} redirectUrl={`/shopping_cart`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Home {...this.state} redirectUrl={`/notifications`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 
               }
