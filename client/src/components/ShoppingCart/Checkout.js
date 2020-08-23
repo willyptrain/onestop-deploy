@@ -502,7 +502,7 @@ class Checkout extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {'step':0, 'placeOrder':props.placeOrder}
+        this.state = {'step':0, 'placeOrder':props.placeOrder, 'shipping_info':props.shipping_info}
     }
 
 
@@ -552,10 +552,10 @@ class Checkout extends Component {
           case 0:
             return <ShippingTab updateShipping={this.updateShipping} {...this.state} />;
           case 1:
-             
+             console.log(this.state);
             return (<div>
                 <Elements stripe={stripePromise}>
-                    <PaymentTab placeOrder={this.state['placeOrder']} {...this.state} />
+                    <PaymentTab placeOrder={this.state['placeOrder']} shipping_info={this.state['shipping_info']} {...this.state} />
                 </Elements>
             </div>);
           

@@ -76,8 +76,9 @@ class Login extends Component {
                             Login
                             </Button>
                         </form>
+                        <a href={'/signup'}>Signup?</a>
+
                         </div>
-                        
                     </Card>
                 </div>
 

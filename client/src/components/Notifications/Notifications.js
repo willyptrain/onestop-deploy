@@ -175,7 +175,7 @@ class Notifications extends Component {
                                         
                                         <Typography className="list-item-text mont-text">
                                             You offered <b>{offer.cards_to_be_traded.map(x => x.player_name).join(", ")} </b>
-                                                to <b>{offer.recipient_username} </b> for <b>{offer.wanted_trade_card.player_name}</b>
+                                                to <b>{offer.recipient_username} </b> for <b>{offer.original_trade.player_name}</b>
                                         </Typography>
 
                                         <Typography className="list-item-status mont-text">
@@ -233,14 +233,14 @@ class Notifications extends Component {
                                             <Card className="order-card" key={`notif-trade-card-${index}`}>
                                                 <CardMedia
                                                     className="offer-img"
-                                                    image={offer.wanted_trade_card['img_paths'][0]}
+                                                    image={offer.original_trade['img_paths'][0]}
                                                     title="Paella dish"
                                                 />
 
 
                                                 <CardContent>
                                                     <Typography variant="h6" className="mont-text">
-                                                        {offer.wanted_trade_card['year']+ " " + offer.wanted_trade_card['manufacturer'] + " " + offer.wanted_trade_card['cardSeries'] + " " + offer.wanted_trade_card['player_name']}
+                                                        {offer.original_trade['year']+ " " + offer.original_trade['manufacturer'] + " " + offer.original_trade['cardSeries'] + " " + offer.original_trade['player_name']}
                                                     </Typography>
                                                 </CardContent>
 
@@ -265,14 +265,14 @@ class Notifications extends Component {
                                             <Card className="order-card" key={`notif-trade-card-${index}`}>
                                                 <CardMedia
                                                     className="offer-img"
-                                                    image={offer.wanted_trade_card['img_paths'][0]}
+                                                    image={offer.original_trade['img_paths'][0]}
                                                     title="Paella dish"
                                                 />
 
 
                                                 <CardContent>
                                                     <Typography variant="h6" className="mont-text">
-                                                        {offer.wanted_trade_card['year']+ " " + offer.wanted_trade_card['manufacturer'] + " " + offer.wanted_trade_card['cardSeries'] + " " + offer.wanted_trade_card['player_name']}
+                                                        {offer.original_trade['year']+ " " + offer.original_trade['manufacturer'] + " " + offer.original_trade['cardSeries'] + " " + offer.original_trade['player_name']}
                                                     </Typography>
                                                 </CardContent>
 

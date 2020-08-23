@@ -205,6 +205,7 @@ class Sale(db.Model):
     wanted_sales = db.relationship('User', secondary=wanted_sales, backref=db.backref('wanted_sales', lazy='dynamic'))
 
 
+
     def add_to_db(self):
         db.session.add(self)
         db.session.commit()
@@ -226,6 +227,7 @@ class User(db.Model):
     sales = db.relationship('Sale', backref="seller")
 
     made_offers = db.relationship('TradeOffer', backref="offerer")
+    purchased_cards = db.relationship('SaleOrder', backref="buyer")
     # accepted_trade_offers = db.relationship('TradeOffer', backref="offerer")
 
     # trades_posted = db.relationship('TradeOffer', backref="posted_trades")
@@ -273,26 +275,25 @@ class User(db.Model):
 class SaleOrder(db.Model):
     __tablename__ = 'sale_orders'
     id = db.Column(db.Integer, primary_key=True)
-    cards_being_sent = db.Column(db.PickleType)
-    card_givers = db.Column(db.PickleType) #person who originally offered card, User object
-    card_buyer = db.Column(db.PickleType) #person who pays for card, User object
+    # cards_being_sent = db.Column(db.PickleType)
+    # card_givers = db.Column(db.PickleType) #person who originally offered card, User object
+    # card_buyer = db.Column(db.PickleType) #person who pays for card, User object
     subtotal = db.Column(db.Integer, index=True)
-    with_card_insurance = db.Column(db.Boolean, index=True)
+    card_insurance = db.Column(db.Boolean, index=True)
     shipping_info = db.Column(db.PickleType) 
     billing_info = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
 
-    # sale_orders = db.relationship('User', secondary=sale_orders, backref=db.backref('sale_orders', lazy='dynamic'))
+    item_ids = db.Column(db.PickleType)
+    item_owner_ids = db.Column(db.PickleType)
+    buyer_id = db.Column(db.Integer, db.ForeignKey('users.id')) #REFERENCE WITH 'buyer' param
+
 
 
     def json_rep(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-    # shipping_info = request.json.get("shipping_info")
-    # payment_info = request.json.get("paymentMethod")
-    # needs_insurance = request.json.get("insurance")
-    # subtotal = request.json.get("subtotal")
-    # items_ordered = request.json.get("cart")
+
 
 
 
@@ -344,23 +345,25 @@ def create_sale_order(token):
         needs_insurance = request.json.get("insurance")
         subtotal = request.json.get("subtotal")
         items_ordered = request.json.get("cart")
-        card_givers = [User.query.filter_by(username=card['username']).first().json_rep() for card in items_ordered]
-        card_buyer = user.json_rep()
-        order = SaleOrder(cards_being_sent=items_ordered, card_givers=card_givers,card_buyer=card_buyer,
-        subtotal=subtotal, with_card_insurance=needs_insurance,shipping_info=shipping_info,billing_info=payment_info,
-        time=datetime.datetime.now())
+        item_owner_ids = [User.query.filter_by(username=card['username']).first().id for card in items_ordered]
+
+        item_ids = [card['id'] for card in items_ordered]
+        
+
+
+        order = SaleOrder(subtotal=subtotal, card_insurance=needs_insurance,shipping_info=shipping_info,billing_info=payment_info,
+        time=datetime.datetime.now(), item_ids=item_ids, item_owner_ids=item_owner_ids, buyer=user)
+
         
         db.session.add(order)
         db.session.flush()
 
-        user_sales = list(user.completed_sales)
-        user_sales.append(order)
-        user.completed_sales = user_sales
 
         for card in items_ordered:
             lookup = Sale.query.filter_by(id=card['id']).first()
-            lookup.for_sale = False 
-            print(lookup.for_sale)
+            if(lookup):
+                lookup.for_sale = False 
+
 
             
 
@@ -371,7 +374,7 @@ def create_sale_order(token):
 
 
 
-        return jsonify(order.json_rep(), 201)
+        return (jsonify(order.json_rep()), 201)
     return (jsonify({"error":"User not found!"}), 401)
     
 
@@ -389,6 +392,23 @@ def create_sale_order(token):
 
 
 
+
+
+@app.route('/api/sale_order_lookup/<id>/<token>')
+def sale_order_lookup(id, token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        sale_order = SaleOrder.query.filter_by(id=id).first()
+        if(sale_order is not None):
+            item_ids = sale_order.item_ids
+            ordered_items = []
+            for id in item_ids:
+                sale = Sale.query.filter_by(id=id).first()
+                if(sale is not None):
+                    ordered_items.append(sale.json_rep())
+            return (jsonify({'order_details':sale_order.json_rep(), 'ordered_items':ordered_items}), 201)
+        return (jsonify({"error":"No sale order found!"}), 404)
+    return (jsonify({"error":"User not found!"}), 401)
 
 
 
@@ -505,19 +525,19 @@ def deny_offer(trade_offer_id, token):
     trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
 
     if(user is not None and trade_offer is not None):
-        trade_offer.status = "denied"
-        poster_user = User.query.filter_by(id=trade_offer.recipient_id, username=trade_offer.recipient_username).first()
-        poster_trades = list(poster_user.trades_in)
-        for i, offer in enumerate(poster_trades):
-            if (offer.id == trade_offer.id):
-                poster_trades.pop(i)
+        # trade_offer.status = "denied"
+        # poster_user = User.query.filter_by(id=trade_offer.recipient_id, username=trade_offer.recipient_username).first()
+        # poster_trades = list(poster_user.trades_in)
+        # for i, offer in enumerate(poster_trades):
+        #     if (offer.id == trade_offer.id):
+        #         poster_trades.pop(i)
 
-        poster_user.trades_in = poster_trades
-        user_trades = list(user.trades_out)
-        for i, offer in enumerate(user_trades):
-            if (offer.id == trade_offer.id):
-                user_trades.pop(i)
-        user.trades_out = user_trades
+        # poster_user.trades_in = poster_trades
+        # user_trades = list(user.trades_out)
+        # for i, offer in enumerate(user_trades):
+        #     if (offer.id == trade_offer.id):
+        #         user_trades.pop(i)
+        # user.trades_out = user_trades
 
         db.session.delete(trade_offer)
         db.session.commit()

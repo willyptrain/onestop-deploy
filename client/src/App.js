@@ -23,7 +23,7 @@ import Notifications from './components/Notifications/Notifications.js'
 import ConfirmationPage from './components/Notifications/ConfirmationPage.js'
 import ShoppingCart from './components/ShoppingCart/ShoppingCart.js';
 import Checkout from './components/ShoppingCart/Checkout.js';
-
+import ConfirmationSale from './components/ShoppingCart/ConfirmationSale.js'
 
 class App extends React.Component {
   constructor(props) {
@@ -195,6 +195,26 @@ class App extends React.Component {
                   <CreateListing {...this.state} edit={true} type={"sale"} id={props.match.params} userInfo={this.state['userInfo']} />
                 </div>
                 )}/>
+
+
+                <Route exact path="/confirmation/sale/:id" render={(props) =>
+                
+                (this.state.status == 'Not logged in' ? 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} launchModal={this.state['launchModal']} redirectUrl={`/confirmation/sale/${props.match.params.id}`}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+                :
+                
+                
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <ConfirmationSale {...this.state} id={props.match.params.id} userInfo={this.state['userInfo']} />
+                </div>
+                )}/>
+
+
 
               <Route exact path="/shopping_cart">
               { this.state.status == 'Not logged in' && 
