@@ -5,7 +5,7 @@ import axios from 'axios';
 import carousel1 from '../../images/carousel1.png'
 import carousel2 from '../../images/carousel2.png'
 import carousel3 from '../../images/carousel3.png'
-import Carousel from 'react-material-ui-carousel'
+import Carousel from 'react-material-ui-carousel';
 import Paper from '@material-ui/core/Paper';
 import Modal from '@material-ui/core/Modal';
 import Login from '../login/login.js'

@@ -347,6 +347,13 @@ def create_sale_order(token):
         items_ordered = request.json.get("cart")
         item_owner_ids = [User.query.filter_by(username=card['username']).first().id for card in items_ordered]
 
+
+        # owner_emails = [User.query.filter_by(username=id).first().email for id in item_owner_ids]
+        owner_infos = [User.query.filter_by(id=item_id).first().json_rep() for item_id in item_owner_ids]
+
+
+
+
         item_ids = [card['id'] for card in items_ordered]
         
 
@@ -358,6 +365,8 @@ def create_sale_order(token):
         db.session.add(order)
         db.session.flush()
 
+        
+
 
         for card in items_ordered:
             lookup = Sale.query.filter_by(id=card['id']).first()
@@ -368,6 +377,30 @@ def create_sale_order(token):
             
 
         db.session.commit()
+
+
+
+        with mail.connect() as conn:
+
+            #SENDING CONFIRMATION EMAIL TO BUYER:
+            msg = Message("Order Successful!",
+                      sender="willpeterson76@gmail.com",
+                      recipients=["wcp7cp@virginia.edu"])
+            msg.body = "Congrats your order was approved"
+            msg.html = render_template('card_purchased_bidder_email.html', user=user, 
+            launch_url=(app.config['launch_url']+'confirmation/sale/'+str(order.id)), cards=items_ordered, len=len(items_ordered))
+            conn.send(msg)
+
+            #SENDING CONFIRMATION EMAIL TO OWNER OF CARDS:
+            for i in range(0, len(items_ordered)):
+                msg = Message("Your card was purchased!",
+                          sender="willpeterson76@gmail.com",
+                          recipients=["wcp7cp@virginia.edu"])
+                msg.body = "Congrats your card was purchased"
+                msg.html = render_template('card_purchased_owner_email.html', user=owner_infos[i], 
+                launch_url=(app.config['launch_url']+'notifications'), card=items_ordered[i], buyer=user)
+                conn.send(msg)
+
 
 
 
@@ -399,7 +432,7 @@ def sale_order_lookup(id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
         sale_order = SaleOrder.query.filter_by(id=id).first()
-        if(sale_order is not None):
+        if(sale_order is not None and sale_order.buyer_id == user.id):
             item_ids = sale_order.item_ids
             ordered_items = []
             for id in item_ids:
@@ -566,7 +599,6 @@ def make_offer(card_id, offer_ids, poster_username, token):
             db.session.flush()
 
 
-            print(offered_trades)
 
 
 
@@ -575,8 +607,6 @@ def make_offer(card_id, offer_ids, poster_username, token):
             else:
                 original_trade.offered_trades.remove(trade_offer)
 
-            print(original_trade.json_rep())
-            print(original_trade.offered_trades.all())
 
             
             return (jsonify(trade_offer.json_rep()),201)
@@ -639,17 +669,18 @@ def create_listing(token):
 def search(keyword, token):
     trade_results = Trade.query.filter(Trade.player_name.ilike("%"+keyword.lower()+"%")).all()
     sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
-    np_trades = np.array([trade.json_rep() for trade in trade_results])
-    np_sales = np.array([sale.json_rep() for sale in sale_results])
-    if(np_trades.shape[0] == 0):
-        return (jsonify({"results":[sale.json_rep() for sale in sale_results]}), 201)
-    if(np_sales.shape[0] == 0):
-        return (jsonify({"results":[trade.json_rep() for trade in trade_results]}), 201)
-    all_results = np.empty((np_trades.size + np_sales.size,), dtype=np_trades.dtype)
-    all_results[0::2] = np_trades
-    all_results[1::2] = np_sales
-    print(all_results)
-    return (jsonify({"results":list(all_results)}), 201)
+    all_results = trade_results + sale_results
+    # np_trades = np.array([trade.json_rep() for trade in trade_results])
+    # np_sales = np.array([sale.json_rep() for sale in sale_results])
+    # if(np_trades.shape[0] == 0):
+    #     return (jsonify({"results":[sale.json_rep() for sale in sale_results]}), 201)
+    # if(np_sales.shape[0] == 0):
+    #     return (jsonify({"results":[trade.json_rep() for trade in trade_results]}), 201)
+    # all_results = np.empty((np_trades.size + np_sales.size,), dtype=np_trades.dtype)
+    # all_results[0::2] = np_trades
+    # all_results[1::2] = np_sales
+    # print(all_results)
+    return (jsonify({"results":[result.json_rep() for result in all_results]}), 201)
 
 
 

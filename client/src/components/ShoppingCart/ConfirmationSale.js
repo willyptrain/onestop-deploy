@@ -1,23 +1,17 @@
 import React, { Component } from 'react';
+import { FormGroup, FormControl } from "react-bootstrap";
 import Redirect from '../redirect.js';
 import axios from 'axios';
-import './shopping.css';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Input from '@material-ui/core/Input';
-import FilledInput from '@material-ui/core/FilledInput';
-import Typography from '@material-ui/core/Typography';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import carousel1 from '../../images/carousel1.png'
+import carousel2 from '../../images/carousel2.png'
+import carousel3 from '../../images/carousel3.png'
+import Carousel from 'react-material-ui-carousel';
 import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import { Carousel } from 'react-responsive-carousel';
+import Modal from '@material-ui/core/Modal';
+import Login from '../login/login.js'
+import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -25,17 +19,61 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Avatar from '@material-ui/core/Avatar';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Divider from '@material-ui/core/Divider';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import Checkbox from '@material-ui/core/Checkbox';
-import ClearIcon from '@material-ui/icons/Clear';
-import IconButton from '@material-ui/core/IconButton';
-import Checkout from './Checkout.js';
-import Modal from '@material-ui/core/Modal';
-// import StripeCheckout from 'react-stripe-checkout';
-import {Elements} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
-import StripeCheckout from "./StripeCheckout.js"
+import Divider from '@material-ui/core/Divider';
+import CloudDoneIcon from '@material-ui/icons/CloudDone';
+import Box from '@material-ui/core/Box';
+import { makeStyles } from '@material-ui/core/styles';
+
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+      display: 'flex',
+      '& > *': {
+        margin: theme.spacing(1),
+      },
+    },
+    small: {
+      width: theme.spacing(3),
+      height: theme.spacing(3),
+    },
+    large: {
+      width: theme.spacing(20),
+      height: theme.spacing(20),
+      borderRadius: '2% !important',
+      border: '2px solid black'
+    },
+  }));
+
+
+
+  const useTextStyles = makeStyles((theme) => ({
+    
+  }));
+
+
+
+
+export function ImageAvatar(data) {
+    const classes = useStyles();
+
+    return (<div>
+        <Avatar variant="square" src={data.image} className={classes.large} />
+
+    </div>)
+
+}
+
+
+export function ListText(data) {
+    const classes = useTextStyles();
+
+    return (<div className="wanted-card-confirm-name">
+        <ListItemText className="" primaryTypographyProps={{variant: 'h5', className:"mont-text"}}
+        secondaryTypographyProps={{variant: 'h6', className:"mont-text"}} primary={data.primary} secondary={data.secondary} />
+    </div>)
+
+}
 
 
 
@@ -76,9 +114,53 @@ class ConfirmationSale extends Component {
         }
 
 
-        if('id' in this.state) {
+        if('ordered_items' in this.state && this.state['ordered_items'].length > 0) {
                 return (<div className="home-container">
+                    <Grid container spacing={3} alignItems="center"
+            justify="center" >
+                <Grid item xs={12} sm={12} md={12} lg={12} className="confirmation-grid">
+                    <div>
+                        <Paper className="confirmation-paper">
+                            <Box mx="auto">
+                                        <CloudDoneIcon style={{fontSize: 80}} className="cloud-icon" />
+                                    <Typography className="order-success-confirm-text mont-text" variant="h3">
+                                        Order Successful!
+                                    </Typography>
+                                    <Typography className="order-number-text mont-text" variant="h6">
+                                        Order Number: {this.state['id']}
+                                    </Typography>
+                                    <Divider className="order-number-divider" />
 
+
+
+                                <Typography className="to-be-traded-text mont-text" variant="h6">
+                                        You have purchased:
+                                    </Typography>
+                                <List className="cards-offered-confirm">
+                                    { this.state['ordered_items'].map((card,index) =>
+                                        <ListItem role={undefined} dense className="cards-offered-container">
+                                            <ListItemAvatar>
+                                                <ImageAvatar image={card['img_paths'][0]} />
+                                            </ListItemAvatar>
+                                            <ListText
+                                                primary={card['year']+ " " + card['manufacturer'] + " " + card['cardSeries'] + " " + card['player_name']}
+                                                secondary={card['username']} />
+                             
+                                        </ListItem>
+                                    
+                                    
+                                    
+                                    
+                                    )
+                                    }
+                                </List>
+
+                            </Box>
+                    
+                        </Paper>
+                    </div>
+                </Grid>
+            </Grid>
                     
                     
                     </div>);

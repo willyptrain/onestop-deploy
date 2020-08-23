@@ -111,12 +111,15 @@ export function NavBar(data) {
           axios.get(`/api/search/${event.currentTarget.value}/${token}`)
           .then(res => {
               setSearchResults(res.data.results);
+              if(res.data.results.length > 0) {
+                setHideDropdown(false);
+              }
               console.log(res.data)
           })
           .catch(err =>  {
               console.log(err)
           })
-          setHideDropdown(false);
+
         }
       }
 
@@ -169,7 +172,7 @@ export function NavBar(data) {
                             
                                   <List>
                                     {searchResults.map((res, index) =>
-                                            <ListItem divider={true} component="a">
+                                            <ListItem divider={true} component="a" href={`/${res.tradeOrSell == "Trade" ? 'for_trade' : 'for_sale'}/item/${res.id}`}>
                                                 <ListItemAvatar>
                                                   <Avatar
                                                     alt="Trade Image" 

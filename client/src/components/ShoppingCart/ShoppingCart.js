@@ -197,7 +197,8 @@ class ShoppingCart extends Component {
         axios.post(`/api/create_sale_order/stripe/${token}`, params)
         .then(res => {
             console.log(res.data);
-            this.setState({...this.state, 'redirectUrl':`/confirmation/sale/${res.data['id']}`})
+            this.setState({...this.state, 'redirectUrl':`/confirmation/sale/${res.data['id']}`});
+            localStorage.setItem('cart', JSON.stringify({}))
         })
         .catch(err =>  {
             console.log("error")
@@ -206,11 +207,6 @@ class ShoppingCart extends Component {
         })
 
     }
-
-
-    // handleToken = (token, addresses) {
-    //     console.log({token, addresses});
-    // }
 
 
 
