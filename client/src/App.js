@@ -24,6 +24,13 @@ import ConfirmationPage from './components/Notifications/ConfirmationPage.js'
 import ShoppingCart from './components/ShoppingCart/ShoppingCart.js';
 import Checkout from './components/ShoppingCart/Checkout.js';
 import ConfirmationSale from './components/ShoppingCart/ConfirmationSale.js'
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
 
 class App extends React.Component {
   constructor(props) {
@@ -115,6 +122,7 @@ class App extends React.Component {
 
     return (
       <div style={{background: 'white'}} className="App">
+        <BrowserView>
         <header className="App-header">
         <Router>
           <div style={{height:'100%', width: '100%'}}>
@@ -461,6 +469,14 @@ class App extends React.Component {
         </Router>
   
         </header>
+        </BrowserView>
+        <MobileView>
+        <div style={{height: '20vh'}}>
+        <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
+        </div>
+        
+        <h4 className="mont-text">Mobile Support Currently Not Supported</h4>
+        </MobileView>
       </div>
     );
           }

@@ -115,8 +115,8 @@ class Notifications extends Component {
                             onChange={this.handleChange}
                             aria-label="disabled tabs example"
                         >
-                            <Tab value="pending" className="tabs-notif" label="Pending Orders" />
-                            <Tab value="past" className="tabs-notif" label="Completed Orders" />
+                            <Tab value="pending" className="tabs-notif" label="Posted Offers and Cards" />
+                            <Tab value="past" className="tabs-notif" label="Accepted Trades and Sales" />
                         </Tabs>
 
                     </div>
@@ -160,8 +160,8 @@ class Notifications extends Component {
                             </Grid>
                     </div>
 
-                    {/* <div className="trade-in-notif-container">
-                        <Typography className="notif-header" variant="h4">Your Listings</Typography>
+                    <div className="trade-in-notif-container">
+                        <Typography className="notif-header" variant="h4">Your Trade Listings</Typography>
                         <Grid container className="notif-grid-container"
                     alignItems="center"
                     justify="center" spacing={2} >
@@ -174,8 +174,8 @@ class Notifications extends Component {
                                         <ListItem key={`notif-trade-${index}`} dense>
                                         
                                         <Typography className="list-item-text mont-text">
-                                            You offered <b>{offer.cards_to_be_traded.map(x => x.player_name).join(", ")} </b>
-                                                to <b>{offer.recipient_username} </b> for <b>{offer.original_trade.player_name}</b>
+                                        {offer.offered_cards[0].username} offered <b>{offer.offered_cards.map(x => x.player_name).join(", ")} </b>
+                                                for your <b>{offer.original_trade.player_name}</b>
                                         </Typography>
 
                                         <Typography className="list-item-status mont-text">
@@ -195,7 +195,7 @@ class Notifications extends Component {
                                 </Paper>}
                             </Grid>
                         </Grid>
-                    </div> */}
+                    </div>
 
 
 
@@ -212,8 +212,8 @@ class Notifications extends Component {
                                 onChange={this.handleChange}
                                 aria-label="disabled tabs example"
                             >
-                                <Tab value="pending" className="tabs-notif" label="Pending Orders" />
-                                <Tab value="past" className="tabs-notif" label="Completed Orders" />
+                                <Tab value="pending" className="tabs-notif" label="Posted Offers and Cards" />
+                                <Tab value="past" className="tabs-notif" label="Accepted Trades and Sales" />
                             </Tabs>
                         </div>
 

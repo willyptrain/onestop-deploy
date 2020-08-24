@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Button, FormGroup, FormControl } from "react-bootstrap";
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 import Redirect from '../redirect.js';
@@ -28,6 +27,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import InputBase from '@material-ui/core/InputBase';
+import ListItem from '@material-ui/core/ListItem';
+import Collapse from '@material-ui/core/Collapse';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import SearchIcon from '@material-ui/icons/Search';
+import Radio from '@material-ui/core/Radio';
+import Button from '@material-ui/core/Button';
 
 
 
@@ -77,37 +83,114 @@ const useStyles = makeStyles((theme) => ({
 
 
 export function SelectSport(data) {
+
+    
+
     const classes = useStyles();
-    const [sport, setSport] = React.useState('');
+    const [sport, setSport] = React.useState(data.selectedSport);
+    const [checked, setChecked] = React.useState(false);
+
+    
 
     const handleChange = (event) => {
+        console.log(event.target.value)
         setSport(event.target.value);
         data.changeSport(event.target.value)
       };
 
+    const toggleCollapse = (event) => {
+        setChecked(!checked);
+    }
+
 
     return (<div>
-        {/* <FormControl className={classes.margin}> */}
-        <InputLabel id="demo-customized-select-label">Filter by Sport</InputLabel>
-            <Select
-            labelId="demo-customized-select-label"
-            id="demo-customized-select"
-            value={sport}
-            onChange={handleChange}
-            >
-                <MenuItem value="all">
-                    <em>None</em>
-                </MenuItem>
-                <MenuItem value={"baseball"}>Baseball</MenuItem>
-                <MenuItem value={"basketball"}>Basketball</MenuItem>
-                <MenuItem value={"football"}>Football</MenuItem>
-                <MenuItem value={"hockey"}>Hockey</MenuItem>
-                <MenuItem value={"wrestling"}>Wrestling</MenuItem>
-                <MenuItem value={"soccer"}>Soccer</MenuItem>
-                <MenuItem value={"racing"}>Racing</MenuItem>
-                <MenuItem value={"gaming"}>Other/Gaming</MenuItem>
-            </Select>
-      {/* </FormControl> */}
+
+
+
+        <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "all"} />}
+            // disabled={sport != "all"}
+            label="View All"
+            value="all"
+          />
+        <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "baseball"} />}
+            // disabled={sport != "baseball"}
+            label="Baseball"
+            value="baseball"
+          />
+          <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "basketball"} />}
+            // disabled={sport != "basketball"}
+            label="Basketball"
+            value="basketball"
+          />
+          <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "football"} />}
+            // disabled={sport != "football"}
+            label="Football"
+            value="football"
+          />
+          <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "hockey"} />}
+            // disabled={sport != "hockey"}
+            label="Hockey"
+            value="hockey"
+          />
+          <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "wrestling"} />}
+            // disabled={sport != "wrestling"}
+            label="Wrestling"
+            value="wrestling"
+          />
+          <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "soccer"} />}
+            // disabled={sport != "soccer"}
+            label="Soccer"
+            value="soccer"
+          />
+                    <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "racing"} />}
+            // disabled={sport != "racing"}
+            label="Racing"
+            value="racing"
+          />
+                    <FormControlLabel
+            aria-label="Acknowledge"
+            onClick={handleChange}
+            onFocus={handleChange}
+            control={<Radio checked={sport == "gaming"} />}
+            // disabled={sport != "gaming"}
+            label="Other/Gaming"
+            value="gaming"
+          />
+
+        {/* </Collapse> */}
+
 
 
 
@@ -155,7 +238,8 @@ class ForTrade extends Component {
         .then(res => {
             console.log(res.data);
             this.setState({...this.state, 'trades':res.data.trades,
-                                'favorite_trades': res.data.wantedCards})
+                                'favorite_trades': res.data.wantedCards,
+                            'selectedSport':sport})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -187,26 +271,67 @@ class ForTrade extends Component {
         })
     }
 
+   searchChange = (event) => {
+        if(event.currentTarget.value == "") {
+            let token = localStorage.access_token;
+            axios.get(`/api/all_listings/trades/${this.state['sport']}/${token}`)
+            .then(res => {
+                console.log(res.data);
+                this.setState({...this.state, 'trades':res.data.trades,
+                                    'favorite_trades': res.data.wantedCards})
+            })
+            .catch(err =>  {
+                console.log("error :(")
+                console.log(err);
+            }) 
+        } 
+        else {
+          let token = localStorage.access_token;
+          axios.get(`/api/search/${event.currentTarget.value}/${token}`)
+          .then(res => {
+              this.setState({...this.state, 'trades':res.data.trades});
+          })
+          .catch(err =>  {
+              console.log(err)
+          })
+
+        }
+    }
+
 
     render() {
-        if('trades' in this.state && this.state['trades']) {
-            return (<div className="home-container">
+        
+            return (<div className="home-container flex-container">
+
 
                 <div className="filter-container">
-                    <SelectSport changeSport={this.changeSport} />
+                <Paper component="form" className="search-bar">
+                    <IconButton type="submit" aria-label="search">
+                            <SearchIcon />
+                        </IconButton>
+                          
+                            <InputBase
+                            placeholder="Search…"
+                            classes="search-input"
+                            onChange={this.searchChange}
+                            inputProps={{ 'aria-label': 'search' }}
+                          />
+
+                </Paper>
+                    <SelectSport selectedSport={this.state['sport']} changeSport={this.changeSport} />
 
                 </div>
-
-
+                {('trades' in this.state && this.state['trades']) &&
+                <div className="right-side-listing">
 
                               <Grid container className="grid-container"
                   alignItems="center"
-                  justify="center" spacing={0}>
+                  justify="center" spacing={5}>
                 {
                     this.state['trades'].map((trade, index) => 
-                    <Grid item xs={6} sm={3} md={3} lg={3}>
+                    <Grid item xs={12} sm={4} md={4} lg={4}>
 
-                    <Card className="track-card">
+                    <Card className="listing-card">
                                 <CardActionArea href={`/for_trade/item/${trade['id']}`}>
                                     <CardHeader 
                                         title={trade['player_name']}
@@ -231,16 +356,14 @@ class ForTrade extends Component {
                     
                     )}
                     </Grid>
+                    </div>
+            } {!('trades' in this.state && this.state['trades']) && 
+            <div className="right-side-listing">
+                <CircularProgress style={{position: 'absolute', top: '40vh'}} />
+            </div>
+            }
             </div>);
-        }
-        else {
-            return (<div className="home-container">
-                        <CircularProgress style={{position: 'absolute', top: '40vh'}} />
 
-                
-
-            </div>);
-        }
        
     }
 

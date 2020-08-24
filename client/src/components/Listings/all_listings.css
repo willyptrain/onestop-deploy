@@ -206,3 +206,29 @@
     font-family: Montserrat !important;
     margin-left: 20px !important;
 }
+
+
+
+
+
+.filter-container {
+    width: 90%;
+
+    
+    height: 100%;
+    margin-top: 0px !important;
+    
+    display: block;
+    text-align: left;
+    flex: 1;
+
+}
+.flex-container {
+    display: flex;
+}
+.right-side-listing {
+    flex: 5;
+    margin-left: 5rem !important;
+    margin-right: 2rem !important;
+    overflow-y:scroll
+}

@@ -34,7 +34,7 @@ class ViewForTradeItem extends Component {
     constructor(props) {
         super(props);
         console.log(props); 
-        this.state = {'item_id':props.id.id, 'tab':'details', 'open':true, 'tradeSent':false};
+        this.state = {'item_id':props.id.id, 'tab':'details', 'open':false, 'tradeSent':false};
     }
 
     async componentDidMount() {

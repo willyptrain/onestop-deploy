@@ -253,7 +253,7 @@ class User(db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def generate_auth_token(self, expires_in=600):
+    def generate_auth_token(self, expires_in=600*120):
         return jwt.encode(
             {'id': self.id, 'exp': time.time() + expires_in},
             app.config['SECRET_KEY'], algorithm='HS256')
@@ -460,13 +460,25 @@ def sale_order_lookup(id, token):
 
 
 
-
+#SHOULD CHANGE FUNCTION NAME AND HAVE SEPARATE, MORE SIMPLE GET_USER FUNC
 @app.route('/api/users/<token>')
 def get_user_info(token):
     user = User.verify_auth_token(token)
     if(user is not None):
 
         pending_trades_out = []
+        user_pending_sales = []
+        for sale in user.sales:
+            if(sale.for_sale):
+                user_pending_sales.append(sale.json_rep())
+
+        
+
+        pending_trades_in = []
+        for trade in user.trades:
+            if(trade.trade_offers):
+                print(trade.trade_offers[0].json_rep())
+                pending_trades_in += [offer.json_rep() for offer in trade.trade_offers]
 
         pending_trades_out = []
         accepted_trades_out = []
@@ -478,7 +490,8 @@ def get_user_info(token):
                 accepted_trades_out.append(offer.json_rep())
         return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 
         'sales':[sale.json_rep() for sale in user.sales], 'accepted_trades_out':accepted_trades_out,
-        'pending_trades_out': pending_trades_out}),201)
+        'pending_trades_out': pending_trades_out, 'user_pending_sales':user_pending_sales,'purchased_sales': [order.json_rep() for order in user.purchased_cards],
+        'pending_trades_in':pending_trades_in}),201)
     return (jsonify({"error":"User not found!"}), 401)
 
 
@@ -670,16 +683,7 @@ def search(keyword, token):
     trade_results = Trade.query.filter(Trade.player_name.ilike("%"+keyword.lower()+"%")).all()
     sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
     all_results = trade_results + sale_results
-    # np_trades = np.array([trade.json_rep() for trade in trade_results])
-    # np_sales = np.array([sale.json_rep() for sale in sale_results])
-    # if(np_trades.shape[0] == 0):
-    #     return (jsonify({"results":[sale.json_rep() for sale in sale_results]}), 201)
-    # if(np_sales.shape[0] == 0):
-    #     return (jsonify({"results":[trade.json_rep() for trade in trade_results]}), 201)
-    # all_results = np.empty((np_trades.size + np_sales.size,), dtype=np_trades.dtype)
-    # all_results[0::2] = np_trades
-    # all_results[1::2] = np_sales
-    # print(all_results)
+
     return (jsonify({"results":[result.json_rep() for result in all_results]}), 201)
 
 
