@@ -1,0 +1,40 @@
+.signup-container {
+    height: 100vh;
+    width: 101%;
+    background: #2e3252 !important;
+    font-family: Montserrat !important;
+    background-size: 100% 100%;
+}
+.signup-box {
+    height: 40vh;
+    width: 100%;
+}
+.signup-card {
+    display: flex;
+    height: 50vh !important;
+}
+.signup-left {
+    flex: 1;
+    background: #5b6dff;
+    height: inherit;
+    z-index: 2;
+}
+.signup-right {
+    flex: 2;
+}
+.logged-in-logo {
+    height: 4vh;
+    margin-top: 0.5vh !important;
+}
+.have-account-text {
+    color: #f8f7f3;
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+    margin-top: 10vh !important;
+}
+.have-account-login-btn {
+    color: #f8f7f3 !important;
+    border-color: #f8f7f3 !important;
+    width: 70%;
+    margin-top: 2vh !important; 
+}
