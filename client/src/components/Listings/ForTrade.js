@@ -339,9 +339,11 @@ class ForTrade extends Component {
                                     />
                                     <CardMedia className="track-img" image={trade['img_paths'][0]}></CardMedia>
                                     <CardContent>
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                    {`Sport: ${trade['sport']} \n ${trade['comments']}`}
+                                    
+                                    <Typography variant="h6" color="textSecondary" component="p">
+                                        {trade['year']+ " " + trade['manufacturer'] + " " + trade['cardSeries'] + " " + trade['player_name']}
                                     </Typography>
+
                                     </CardContent>
                                 </CardActionArea>
                                 <CardActions disableSpacing>

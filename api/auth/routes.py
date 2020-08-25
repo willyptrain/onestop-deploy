@@ -910,7 +910,37 @@ def post_wanted_sale(item_id, token):
 
 
 
+@app.route('/api/all_listings/sales/<sport>/<price>/<token>', methods=['GET'])
+def get_all_sales_by_price(sport, price, token):
+    user = User.verify_auth_token(token)
+    min_price = int(price.split(",")[0])
+    max_price = int(price.split(",")[1])
 
+
+    if(user is None):
+        return (jsonify({"error":"User not found!"}), 401)
+    if(sport.lower() != "all"):
+        sales = Sale.query.filter(Sale.for_sale==True, Sale.sport.ilike("%"+sport.lower()+"%"), Sale.price.between(min_price,max_price)).all()
+        user_wanted = list(user.wanted_sales)
+        sale_wanted = []
+        for item in user_wanted:
+            if(item.tradeOrSell == "Sell"):
+                sale_wanted.append(item.id)
+        if(sales is not None):
+            return (jsonify({'sales': [sale.json_rep() for sale in sales],
+                            'wantedCards': sale_wanted}),201)
+        return (jsonify({"error":"Sales not found!"}), 404)
+    else:
+        sales = Sale.query.filter(Sale.for_sale==True, Sale.price.between(min_price,max_price)).all()
+        user_wanted = list(user.wanted_sales)
+        sale_wanted = []
+        for item in user_wanted:
+            if(item.tradeOrSell == "Sell"):
+                sale_wanted.append(item.id)
+        if(sales is not None):
+            return (jsonify({'sales': [sale.json_rep() for sale in sales],
+                        'wantedCards': sale_wanted}),201)
+        return (jsonify({"error":"Sales not found!"}), 404)
 
 
     

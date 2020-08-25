@@ -212,12 +212,10 @@
 
 
 .filter-container {
-    width: 90%;
-
-    
+    width: 100%;
     height: 100%;
     margin-top: 0px !important;
-    
+    background: #ffffff;
     display: block;
     text-align: left;
     flex: 1;
@@ -225,10 +223,25 @@
 }
 .flex-container {
     display: flex;
+
 }
 .right-side-listing {
     flex: 5;
     margin-left: 5rem !important;
     margin-right: 2rem !important;
     overflow-y:scroll
+}
+
+.price-range-filter {
+    display: flex;
+
+}
+.min-price-filter {
+    flex: 2;
+}
+.max-price-filter {
+    flex: 2;
+}
+.price-range-filter-btn {
+    flex: 1;
 }

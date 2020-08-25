@@ -34,7 +34,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import SearchIcon from '@material-ui/icons/Search';
 import Radio from '@material-ui/core/Radio';
 import Button from '@material-ui/core/Button';
-
+import TextField from '@material-ui/core/TextField';
 
 
 
@@ -214,7 +214,7 @@ class ForSale extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {"sport": props.sport.sport, 'favorite_sales': []};
+        this.state = {"sport": props.sport.sport, 'favorite_sales': [], 'maxPrice':null, 'minPrice':null};
 
     }
 
@@ -295,14 +295,32 @@ class ForSale extends Component {
         }
     }
 
+    setMin = (event) => {
+        this.setState({...this.state, 'minPrice': event.currentTarget.value})
+    }
+    setMax = (event) => {
+        this.setState({...this.state, 'maxPrice': event.currentTarget.value})
+    }
 
-
-
+    filterByPrice = (event) => {
+        if(this.state['minPrice'] != "" && this.state['minPrice'] && this.state['maxPrice'] != "" && this.state['maxPrice']) {
+            let token = localStorage.access_token;
+            axios.get(`/api/all_listings/sales/${this.state['sport']}/${[this.state['minPrice'],this.state['maxPrice']]}/${token}`)
+            .then(res => {
+                console.log(res.data);
+                this.setState({...this.state, 'sales':res.data.sales,
+                                    'favorite_sales': res.data.wantedCards})
+            })
+            .catch(err =>  {
+                console.log("error :(")
+                console.log(err);
+            }) 
+        }
+    }
 
 
 
     render() {
-        console.log(this.loggedIn)
         
             return (<div className="home-container flex-container">
                               
@@ -323,7 +341,9 @@ class ForSale extends Component {
                     <SelectSport selectedSport={this.state['sport']} changeSport={this.changeSport} />
 
                     <div className="price-range-filter">
-
+                        <TextField onChange={this.setMin} variant="filled" className="min-price-filter" id="filled-required" label="Min Price" type="search" variant="outlined" />
+                        <TextField onChange={this.setMax} variant="filled" className="max-price-filter" id="filled-required" label="Max Price" type="search" variant="outlined" />
+                        <Button className="price-range-filter-btn" onClick={this.filterByPrice}>Go</Button>
                     </div>
 
 
@@ -344,9 +364,9 @@ class ForSale extends Component {
                 
                 {
                     this.state['sales'].map((sale, index) => 
-                    <Grid item xs={6} sm={3} md={3} lg={3}>
+                    <Grid item xs={12} sm={4} md={4} lg={4}>
 
-                        <Card className="track-card">
+                        <Card className="listing-card">
                                 <CardActionArea href={`/for_sale/item/${sale['id']}`}>
                                     {/* <CardHeader 
                                         title={sale['player_name']}
