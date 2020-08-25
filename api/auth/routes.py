@@ -646,8 +646,13 @@ def edit_sale(item_id, token):
         img_paths = []
         for file in images:
             img = images[file]
-            if(img and allowed_file(img.filename)):
-                filename = secure_filename(img.filename)
+            new_filename = ""
+            if(img):
+                name, extension = os.path.splitext(img.filename)
+                print(name, extension)
+                new_filename = str(datetime.datetime.now()).replace(" ", "_") + extension
+            if(len(new_filename) > 0 and allowed_file(new_filename)):
+                filename = secure_filename(new_filename)
                 image_bucket.Object(filename).put(Body=img)
                 img_paths.append(app.config['UPLOAD_URL']+filename)
         sale = Sale.query.filter_by(id=item_id, tradeOrSell="Sell", username=user.username).first()
@@ -705,8 +710,13 @@ def edit_trade(item_id, token):
         img_paths = []
         for file in images:
             img = images[file]
-            if(img and allowed_file(img.filename)):
-                filename = secure_filename(img.filename)
+            new_filename = ""
+            if(img):
+                name, extension = os.path.splitext(img.filename)
+                print(name, extension)
+                new_filename = str(datetime.datetime.now()).replace(" ", "_") + extension
+            if(len(new_filename) > 0 and allowed_file(new_filename)):
+                filename = secure_filename(new_filename)
                 image_bucket.Object(filename).put(Body=img)
                 img_paths.append(app.config['UPLOAD_URL']+filename)
         trade = Trade.query.filter_by(id=item_id, tradeOrSell="Trade", username=user.username).first()
@@ -769,8 +779,13 @@ def create_listing(token):
         img_paths = []
         for file in images:
             img = images[file]
-            if(img and allowed_file(img.filename)):
-                filename = secure_filename(img.filename)
+            new_filename = ""
+            if(img):
+                name, extension = os.path.splitext(img.filename)
+                print(name, extension)
+                new_filename = str(datetime.datetime.now()).replace(" ", "_") + extension
+            if(len(new_filename) > 0 and allowed_file(new_filename)):
+                filename = secure_filename(new_filename)
                 image_bucket.Object(filename).put(Body=img)
                 img_paths.append(app.config['UPLOAD_URL']+filename)
 
@@ -802,7 +817,8 @@ def search(keyword, token):
     sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
     all_results = trade_results + sale_results
 
-    return (jsonify({"results":[result.json_rep() for result in all_results]}), 201)
+    return (jsonify({"results":[result.json_rep() for result in all_results], "sales":[sale.json_rep() for sale in sale_results],
+    'trades':[trade.json_rep() for trade in trade_results]}), 201)
 
 
 
