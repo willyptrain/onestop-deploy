@@ -117,22 +117,63 @@ class CreateListing extends Component {
         this.state['images'].forEach(file => {
             form_data.append(file.name, file)
         })
-        axios.post(`/api/listing/create/${token}`, form_data, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
+        if(!this.state['edit']) {
+            axios.post(`/api/listing/create/${token}`, form_data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
+            .then(res => {
+                console.log(res.data);
+                this.setState({...res.data,  'submitted': true});
+            })
+            .catch(err =>  {
+                console.log("error")
+                console.log(err)
+                this.setState({'error':err,'userInfo': 'Not logged in'})
+
+            })
+        } else {
+            if(this.state['item_id'] != null) {
+                if(this.state['type'] == "trade") {
+                    axios.post(`/api/listing/edit/trade/${this.state['item_id']}/${token}`, form_data, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    )
+                    .then(res => {
+                        console.log(res.data);
+                        this.setState({...res.data,  'submitted': true});
+                    })
+                    .catch(err =>  {
+                        console.log("error")
+                        console.log(err)
+                        this.setState({'error':err,'userInfo': 'Not logged in'})
+
+                    })
+                }
+                else if(this.state['type'] == "sale") {
+                    axios.post(`/api/listing/edit/sale/${this.state['item_id']}/${token}`, form_data, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    )
+                    .then(res => {
+                        console.log(res.data);
+                        this.setState({...res.data,  'submitted': true});
+                    })
+                    .catch(err =>  {
+                        console.log("error")
+                        console.log(err)
+                        this.setState({'error':err,'userInfo': 'Not logged in'})
+
+                    })
                 }
             }
-        )
-        .then(res => {
-            console.log(res.data);
-            this.setState({...res.data,  'submitted': true});
-        })
-        .catch(err =>  {
-            console.log("error")
-            console.log(err)
-            this.setState({'error':err,'userInfo': 'Not logged in'})
-
-        })
+        }
     }
 
     addImages = (files, dataUrl) => {

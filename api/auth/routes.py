@@ -477,7 +477,6 @@ def get_user_info(token):
         pending_trades_in = []
         for trade in user.trades:
             if(trade.trade_offers):
-                print(trade.trade_offers[0].json_rep())
                 pending_trades_in += [offer.json_rep() for offer in trade.trade_offers]
 
         pending_trades_out = []
@@ -625,6 +624,125 @@ def make_offer(card_id, offer_ids, poster_username, token):
             return (jsonify(trade_offer.json_rep()),201)
 
     return (jsonify({"error":"No trades found!"}), 404)
+
+
+
+
+@app.route('/api/listing/edit/sale/<item_id>/<token>', methods=['POST'])
+def edit_sale(item_id, token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        username = user.username
+        sport = request.form.get('sport')
+        player_name = request.form.get('player_name')
+        year = request.form.get('year')
+        manufacturer = request.form.get('manufacturer')
+        cardNumber = request.form.get('cardNumber')
+        cardSeries = request.form.get('cardSeries')
+        comments = request.form.get('comments')
+        tradeOrSell = request.form.get('tradeOrSell')
+        price = request.form.get('price')
+        images = request.files
+        img_paths = []
+        for file in images:
+            img = images[file]
+            if(img and allowed_file(img.filename)):
+                filename = secure_filename(img.filename)
+                image_bucket.Object(filename).put(Body=img)
+                img_paths.append(app.config['UPLOAD_URL']+filename)
+        sale = Sale.query.filter_by(id=item_id, tradeOrSell="Sell", username=user.username).first()
+        if(tradeOrSell == "Sell" and sale is not None):
+            sale.username = username
+            sale.sport = sport
+            sale.player_name = player_name
+            sale.year = year
+            sale.price = price
+            sale.manufacturer = manufacturer
+            sale.cardNumber = cardNumber
+            sale.cardSeries = cardSeries
+            sale.comments = comments
+            sale.tradeOrSell = tradeOrSell
+            sale.price = price
+            sale.images = images
+            sale.img_paths = img_paths
+            sale.time = datetime.datetime.now()
+            sale.for_sale = True
+            sale.seller = user
+
+            db.session.commit()
+            return (jsonify(sale.json_rep()),201)
+        if(tradeOrSell == "Trade" and sale is not None):
+            db.session.delete(sale)
+            trade = Trade(username=username, sport=sport,player_name=player_name,
+                        year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
+                        comments=comments, tradeOrSell=tradeOrSell, img_paths=img_paths, trader=user,time=datetime.datetime.now(),
+                        for_trade=True)
+            db.session.add(trade)
+            db.session.commit()
+            return (jsonify(trade.json_rep()),201)
+        # return (jsonify({"error":"User not authenticated"}), 401)
+        return (jsonify({"error":"Bad Request, Sale not found"}), 404)
+    return (jsonify({"error":"User not found!"}), 401)
+
+
+
+
+@app.route('/api/listing/edit/trade/<item_id>/<token>', methods=['POST'])
+def edit_trade(item_id, token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        username = user.username
+        sport = request.form.get('sport')
+        player_name = request.form.get('player_name')
+        year = request.form.get('year')
+        manufacturer = request.form.get('manufacturer')
+        cardNumber = request.form.get('cardNumber')
+        cardSeries = request.form.get('cardSeries')
+        comments = request.form.get('comments')
+        tradeOrSell = request.form.get('tradeOrSell')
+        price = request.form.get('price')
+        images = request.files
+        img_paths = []
+        for file in images:
+            img = images[file]
+            if(img and allowed_file(img.filename)):
+                filename = secure_filename(img.filename)
+                image_bucket.Object(filename).put(Body=img)
+                img_paths.append(app.config['UPLOAD_URL']+filename)
+        trade = Trade.query.filter_by(id=item_id, tradeOrSell="Trade", username=user.username).first()
+        if(tradeOrSell == "Trade" and trade is not None):
+            trade.username = username
+            trade.sport = sport
+            trade.player_name = player_name
+            trade.year = year
+            trade.price = price
+            trade.manufacturer = manufacturer
+            trade.cardNumber = cardNumber
+            trade.cardSeries = cardSeries
+            trade.comments = comments
+            trade.tradeOrSell = tradeOrSell
+            trade.price = price
+            trade.images = images
+            trade.img_paths = img_paths
+            trade.time = datetime.datetime.now()
+            trade.for_sale = True
+            trade.seller = user
+
+            db.session.commit()
+            return (jsonify(trade.json_rep()),201)
+        if(tradeOrSell == "Sell" and trade is not None):
+            db.session.delete(trade)
+            sale = Sale(username=username, sport=sport,player_name=player_name,
+                        year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
+                        comments=comments, tradeOrSell=tradeOrSell, price=price,img_paths=img_paths, seller=user,time=datetime.datetime.now(),
+                        for_sale=True)
+            db.session.add(sale)
+            db.session.commit()
+            return (jsonify(sale.json_rep()),201)
+        # return (jsonify({"error":"User not authenticated"}), 401)
+        return (jsonify({"error":"Bad Request, Sale not found"}), 404)
+    return (jsonify({"error":"User not found!"}), 401)
+
 
 
 
