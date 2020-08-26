@@ -17,3 +17,14 @@
     margin-top: 10vh !important;
 
 }
+.contact-us-container {
+    margin-top: 10vh !important;
+}
+.full-width-flex-input {
+    display: flex;
+    width: 100%;
+
+}
+.half-width-name {
+    flex: 1;
+}

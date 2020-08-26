@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Button, FormGroup, FormControl } from "react-bootstrap";
 import Redirect from '../redirect.js';
 import axios from 'axios';
 import carousel1 from '../../images/carousel1.png'
@@ -13,6 +12,10 @@ import Login from '../login/login.js'
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import Button from '@material-ui/core/Button';
+
 
 
 class AboutPage extends Component {
@@ -37,6 +40,9 @@ class AboutPage extends Component {
         // })
 
     }
+    submitContactUsForm = (event) => {
+
+    }
 
 
     render() {
@@ -59,8 +65,27 @@ class AboutPage extends Component {
                     <Typography variant="h5" paragraph gutterBottom className="about-us">
                     We’re just two guys who love buying, selling, and trading sports cards; together we have been doing it for several decades, but we noticed a problem in the card trading industry. We realized there was no insurance when trading cards, and specifically no site set up solely for the buying and selling of cards. Well we’re here to fix that!  Trading and selling through us is made easy and more importantly safe! We can guarantee that when making trades the cards you get are the cards you agreed upon. On top of that, our website is meant solely for trading cards. So forget selling through eBay or trading through reddit, we are here specifically for cards and specifically for you!
                     </Typography>
+                    <div className="divider-quote">
+                        <Divider />
+                    </div>
+                    <div className="contact-us-container">
+                        <form className="contact-us-form" noValidate autoComplete="off">
+                            <div className="full-width-flex-input">
+                                <TextField form="contact-us-form" className="half-width-name" id="filled-basic" label="Filled" variant="filled" />
+                                <TextField form="contact-us-form" className="half-width-name" id="filled-basic" label="Filled" variant="filled" />
+                            </div>
+                            <TextField fullWidth form="contact-us-form" id="standard-adornment-amount" label="Filled" variant="filled" />
+                            <TextField fullWidth form="contact-us-form" id="standard-adornment-amount" label="Outlined" variant="outlined" />
+                            <TextareaAutosize form="contact-us-form" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
+                    aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="" />
+                            <Button type="submit" onClick={this.submitContactUsForm} variant="contained">Submit</Button>
+
+                        </form>
+
+                    </div>
                 </Grid>
             </Grid>
+            
                 
 
         </div>)
