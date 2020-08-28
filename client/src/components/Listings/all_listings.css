@@ -62,6 +62,7 @@
 .tradeBox-paper-container {
     height: 75%;
     margin-left: 0px !important;
+    overflow-y: scroll;
 }
 
 

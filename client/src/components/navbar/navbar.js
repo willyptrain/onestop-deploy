@@ -96,7 +96,7 @@ export function NavBar(data) {
       const [hideDropdown, setHideDropdown] = React.useState(true);
 
       const [open, setOpen] = React.useState(false)
-    
+      const [redirectHome, setRedirectHome] = React.useState(false)
 
 
       const classes = useStyles();
@@ -131,13 +131,28 @@ export function NavBar(data) {
         setOpen(open)
       };
 
-
+      const signout = () => {
+        let token = localStorage.access_token;
+        axios.get('/api/users/signout/${token}')
+        .then(res => {
+          console.log(res.data)
+          setRedirectHome(true);
+        })
+        .catch(err =>  {
+            console.log(err)
+        })
+      }
 
 
 
 
       return (
         <div>
+        {redirectHome &&
+          <Redirect url={`/`}  />
+        }
+
+
            <AppBar position="fixed" style={{backgroundColor: '#141518'}}>
             <Toolbar>
             <IconButton onClick={toggleDrawer(true)}>
@@ -195,6 +210,7 @@ export function NavBar(data) {
                 <IconButton className="drawer-exit-btn" href="/shopping_cart">
                   <ShoppingCartIcon size="large" style={{color: 'white'}} />
                 </IconButton>
+                <Button className="signout-btn mont-text" onClick={signout} variant="filled">Signout</Button>
 
 
                 </div>

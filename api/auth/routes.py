@@ -16,7 +16,7 @@ from .email_settings import mail_server, mail_port, mail_username, mail_password
 from .shipping_settings import shipping_address, shipping_zip, shipping_city, shipping_state
 from .stripe_config import stripe_publishable, stripe_secret
 import stripe
-
+from flask_login import logout_user, login_user, LoginManager, login_required, UserMixin
 
 
 
@@ -57,6 +57,10 @@ stripe.api_key = stripe_secret
 
 
 
+
+
+
+
 ALLOWED_EXTENSIONS = {'jpg', 'gif', 'png', 'gif', 'jpeg'}
 s3_client = boto3.client('s3',
     region_name=bucket_region,
@@ -74,6 +78,13 @@ image_bucket = s3_resource.Bucket(name=bucket_name)
 db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
 mail = Mail(app)
+login_manager = LoginManager(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id).first()
+
 
 
 
@@ -216,7 +227,7 @@ class Sale(db.Model):
 
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
@@ -336,6 +347,7 @@ class TradeOrder(db.Model):
 
 
 @app.route('/api/create_sale_order/stripe/<token>', methods=['POST'])
+@login_required
 def create_sale_order(token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -428,6 +440,7 @@ def create_sale_order(token):
 
 
 @app.route('/api/sale_order_lookup/<id>/<token>')
+@login_required
 def sale_order_lookup(id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -462,6 +475,7 @@ def sale_order_lookup(id, token):
 
 #SHOULD CHANGE FUNCTION NAME AND HAVE SEPARATE, MORE SIMPLE GET_USER FUNC
 @app.route('/api/users/<token>')
+@login_required
 def get_user_info(token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -496,6 +510,7 @@ def get_user_info(token):
 
 
 @app.route('/api/get_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
+@login_required
 def get_trade_offer(trade_offer_id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -512,6 +527,7 @@ def get_trade_offer(trade_offer_id, token):
 
 
 @app.route('/api/get_trade_order/<trade_order_id>/<token>', methods=['GET'])
+@login_required
 def get_trade_order(trade_order_id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -540,6 +556,7 @@ def get_trade_order(trade_order_id, token):
 
 
 @app.route('/api/accept_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
+@login_required
 def accept_offer(trade_offer_id, token):
     user = User.verify_auth_token(token)
     trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
@@ -565,6 +582,7 @@ def accept_offer(trade_offer_id, token):
     return (jsonify({"error":"No trade offer found!"}), 404)
 
 @app.route('/api/deny_trade_offer/<trade_offer_id>/<token>', methods=['GET'])
+@login_required
 def deny_offer(trade_offer_id, token):
     user = User.verify_auth_token(token)
     trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
@@ -596,6 +614,7 @@ def deny_offer(trade_offer_id, token):
 
 
 @app.route('/api/make_trade_offer/<card_id>/<offer_ids>/<poster_username>/<token>', methods=['GET'])
+@login_required
 def make_offer(card_id, offer_ids, poster_username, token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -629,6 +648,7 @@ def make_offer(card_id, offer_ids, poster_username, token):
 
 
 @app.route('/api/listing/edit/sale/<item_id>/<token>', methods=['POST'])
+@login_required
 def edit_sale(item_id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -693,6 +713,7 @@ def edit_sale(item_id, token):
 
 
 @app.route('/api/listing/edit/trade/<item_id>/<token>', methods=['POST'])
+@login_required
 def edit_trade(item_id, token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -761,6 +782,7 @@ def edit_trade(item_id, token):
 
 
 @app.route('/api/listing/create/<token>', methods=['POST'])
+@login_required
 def create_listing(token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -812,6 +834,7 @@ def create_listing(token):
 
 
 @app.route('/api/search/<keyword>/<token>')
+@login_required
 def search(keyword, token):
     trade_results = Trade.query.filter(Trade.player_name.ilike("%"+keyword.lower()+"%")).all()
     sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
@@ -824,13 +847,17 @@ def search(keyword, token):
 
 
 @app.route('/api/trade_lookup/<id>/<token>')
+@login_required
 def get_trade_by_id(id, token):
     trade = Trade.query.filter_by(id=id).first()
     if(trade is not None):
         return (jsonify(trade.json_rep()),201)
     return (jsonify({"error": "Trade not found"}),404)
 
+
+
 @app.route('/api/sale_lookup/<id>/<token>')
+@login_required
 def get_sale_by_id(id, token):
     sale = Sale.query.filter_by(id=id).first()
     if(sale is not None):
@@ -855,6 +882,7 @@ def verify_password(username_or_token, password):
 
 
 @app.route('/api/wanted/trades/<sport>/<token>')
+@login_required
 def get_wanted_trades(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
@@ -864,6 +892,7 @@ def get_wanted_trades(sport, token):
     return (jsonify({'trades': [trade.json_rep() for trade in user.wanted_trades]}),201)
 
 @app.route('/api/post_wanted/trades/<item_id>/<token>', methods=['POST'])
+@login_required
 def post_wanted_trade(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
@@ -884,6 +913,7 @@ def post_wanted_trade(item_id, token):
 
 
 @app.route('/api/wanted/sales/<sport>/<token>')
+@login_required
 def get_wanted_sales(sport, token):
     user = User.verify_auth_token(token)
     if(user is None):
@@ -893,6 +923,7 @@ def get_wanted_sales(sport, token):
 
 
 @app.route('/api/post_wanted/sales/<item_id>/<token>', methods=['POST'])
+@login_required
 def post_wanted_sale(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
@@ -911,6 +942,7 @@ def post_wanted_sale(item_id, token):
 
 
 @app.route('/api/all_listings/sales/<sport>/<price>/<token>', methods=['GET'])
+@login_required
 def get_all_sales_by_price(sport, price, token):
     user = User.verify_auth_token(token)
     min_price = int(price.split(",")[0])
@@ -947,6 +979,7 @@ def get_all_sales_by_price(sport, price, token):
 
 
 @app.route('/api/all_listings/sales/<sport>/<token>', methods=['GET'])
+@login_required
 def get_all_sales(sport, token):
     user = User.verify_auth_token(token)
     
@@ -976,6 +1009,7 @@ def get_all_sales(sport, token):
         return (jsonify({"error":"Sales not found!"}), 404)
 
 @app.route('/api/all_listings/trades/<sport>/<token>', methods=['GET'])
+@login_required
 def get_all_trades(sport, token):
     user = User.verify_auth_token(token)
     
@@ -1010,6 +1044,7 @@ def get_all_trades(sport, token):
 
 
 @app.route('/api/users/listings/trades/<item_id>/<token>', methods=['GET'])
+@login_required
 def get_user_trade(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
@@ -1021,6 +1056,7 @@ def get_user_trade(item_id, token):
 
 
 @app.route('/api/users/listings/sales/<item_id>/<token>', methods=['GET'])
+@login_required
 def get_user_sale(item_id, token):
     user = User.verify_auth_token(token)
     if(user is None):
@@ -1033,6 +1069,7 @@ def get_user_sale(item_id, token):
 
 
 @app.route('/api/my_listings/trades/<token>', methods=['GET'])
+@login_required
 def get_my_trades(token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -1043,6 +1080,7 @@ def get_my_trades(token):
 
 
 @app.route('/api/my_listings/sales/<token>', methods=['GET'])
+@login_required
 def get_my_sales(token):
     user = User.verify_auth_token(token)
     if(user is not None):
@@ -1069,6 +1107,7 @@ def login():
     user = User.query.filter_by(username=username).first()
     if user is not None:
         if(verify_password(user.username, password)):
+            login_user(user)
             access_token = user.generate_auth_token()
             return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':app.config['REDIRECT_URI']}),201)
         return (jsonify({"error":"Incorrect username or password!"}), 401)
@@ -1083,7 +1122,7 @@ def new_user():
     password = request.json.get('password')
     if username is None or password is None:
         return (jsonify({"error":"User not found!"}), 401)
-    if User.query.filter_by(username=username).first() is not None:
+    if User.query.filter_by(username=username).first() is not None or User.query.filter_by(email=email).first() is not None:
         return (jsonify({"error":"User already exists!"}), 409)
     user = User(username=username, email=email, time=datetime.datetime.now())
     user.hash_password(password)
@@ -1096,7 +1135,21 @@ def new_user():
 
 
 
+
+@app.route('/api/users/signout/<token>')
+@login_required
+def signout(token):
+    user = User.verify_auth_token(token)
+    logout_user()
+    
+    return (jsonify({'logged_out': True}), 201)
+
+
+
+
+
 @app.route('/api/users/<id>')
+@login_required
 def get_user(id):
     user = User.query.get(id)
     if not user:
@@ -1105,6 +1158,7 @@ def get_user(id):
 
 
 @app.route('/api/token')
+@login_required
 @auth.login_required
 def get_auth_token():
     token = g.user.generate_auth_token(600)
