@@ -17,7 +17,7 @@ from .shipping_settings import shipping_address, shipping_zip, shipping_city, sh
 from .stripe_config import stripe_publishable, stripe_secret
 import stripe
 from flask_login import logout_user, login_user, LoginManager, login_required, UserMixin
-
+import json
 
 
 
@@ -135,7 +135,10 @@ class TradeOffer(db.Model):
     
 
     def json_rep(self):
-        return_dict = {}
+        return_dict = {'accepted_orders': [order.json_rep() for order in self.accepted_orders]}
+
+        # print(self.accepted_orders)
+
         for c in self.__table__.columns:
             if(c.name == "original_trade_id"):
                 temp_id = getattr(self, c.name)
@@ -497,9 +500,11 @@ def get_user_info(token):
         accepted_trades_out = []
         for offer in user.made_offers:
             if(offer.status == "pending"):
+                print("pending",offer.status)
                 pending_trades_out.append(offer.json_rep())
 
             if(offer.status == "accepted"):
+                print("accepted",offer.status)
                 accepted_trades_out.append(offer.json_rep())
         return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 
         'sales':[sale.json_rep() for sale in user.sales], 'accepted_trades_out':accepted_trades_out,
@@ -562,11 +567,32 @@ def accept_offer(trade_offer_id, token):
     trade_offer = TradeOffer.query.filter_by(id=trade_offer_id).first()
     if(user is not None and trade_offer is not None):
         trade_offer.status = "accepted"
+
+
+        print("")
+
+        print("")
+        print("")
+        print("")
+        print("")
+        print("")
+        print(trade_offer_id)
+        print("")
+
+
+
+
+
+
         trade_order = TradeOrder(original_trade_offer=trade_offer, card_insurance=True, shipping_address=app.config['SHIP_ADDRESS'],
         shipping_state=app.config['SHIP_STATE'], shipping_zip=app.config['SHIP_ZIP'],
         shipping_city=app.config['SHIP_CITY'], time=datetime.datetime.now())
         db.session.add(trade_order)
         db.session.commit()
+
+
+        print(json.dumps(trade_offer.json_rep(),indent=4))
+        print(json.dumps(trade_order.json_rep(),indent=4))
 
 
 
@@ -623,7 +649,10 @@ def make_offer(card_id, offer_ids, poster_username, token):
         poster_user = User.query.filter_by(username=poster_username).first()
         if(poster_user is not None and original_trade is not None):
 
-
+            print("OFFER-----------")
+            print(offer_ids.split(","))
+            offer_ids = offer_ids.split(",")
+            
             trade_offer = TradeOffer(offered_card_ids=offer_ids,time=datetime.datetime.now(), status="pending", offerer=user, 
             original_poster=poster_user, original_trade=original_trade)
             db.session.add(trade_offer)
@@ -638,6 +667,7 @@ def make_offer(card_id, offer_ids, poster_username, token):
             else:
                 original_trade.offered_trades.remove(trade_offer)
 
+            print(trade_offer.json_rep())
 
             
             return (jsonify(trade_offer.json_rep()),201)

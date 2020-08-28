@@ -139,20 +139,53 @@ class Notifications extends Component {
                                             <ListItem key={`notif-trade-${index}`} dense>
                                             
                                             <Typography className="list-item-text">
-                                                You offered <b>{offer.offered_cards.map(x => x.player_name).join(", ")} </b>
-                                                    to <b>{offer.original_trade.username} </b> for <b>{offer.original_trade.player_name}</b>
+                                                You offered <b>{offer.offered_cards.map(x => <a href={`/for_trade/item/${x.id}`}>{x.player_name}</a> )} </b>
+                                                    to <b>{offer.original_trade.username} </b> for <b><a href={`/for_trade/item/${offer.original_trade.id}`}>offer.original_trade.player_name</a></b>
                                             </Typography>
 
-                                            <Button variant="contained" onClick={this.acceptOffer} value={offer.id} className="accept-button" color="primary">Accept</Button>
-                                            <Button variant="contained" onClick={this.denyOffer} value={offer.id} className="deny-button" color="secondary">Decline</Button>    
-                                                
+                                            <Typography className="list-item-status mont-text">
+                                                Status: {offer.status}
+                                            </Typography>
+
+                                            
                                             </ListItem>
                                             <Divider />
                                         </div>
                                     )}
-                                    {!this.state['pending_trades_out'].length > 0 &&
-                                    <h6>You have made 0 Offers</h6>
-                                }
+
+                                    
+                                    {this.state['accepted_trades_out'].map((offer,index) => 
+                                        <div style={{width: '94%', marginLeft: '2rem'}}>
+                                            <ListItem key={`notif-trade-${index}`} dense>
+                                            
+                                            <Typography className="list-item-text">
+                                                You offered <b>{offer.offered_cards.map(x => <a href={`/for_trade/item/${x.id}`}>{x.player_name}</a> )} </b>
+                                                    to <b>{offer.original_trade.username} </b> for <b>{offer.original_trade.player_name}</b>
+                                            </Typography>
+
+                                            <Typography className="list-item-status mont-text">
+                                                Status: <b>{offer.status}</b>
+                                            </Typography>
+
+                                            
+                                            </ListItem>
+                                            <Divider />
+                                        </div>
+                                    )}
+                                        
+        
+                                   
+
+
+
+
+
+
+
+
+
+
+
                                     
                                         </List>
                                     </Paper>}
@@ -177,16 +210,22 @@ class Notifications extends Component {
                                         {offer.offered_cards[0].username} offered <b>{offer.offered_cards.map(x => x.player_name).join(", ")} </b>
                                                 for your <b>{offer.original_trade.player_name}</b>
                                         </Typography>
-
-                                        <Typography className="list-item-status mont-text">
-                                            Status: {offer.status}
-                                        </Typography>
+                                        
+                                        <Button variant="contained" onClick={this.acceptOffer} value={offer.id} className="accept-button" color="primary">Accept</Button>
+                                        <Button variant="contained" onClick={this.denyOffer} value={offer.id} className="deny-button" color="secondary">Decline</Button>    
+                                                
+                                        
 
 
                                         </ListItem>
                                         <Divider />
                                     </div>
                                 )}
+
+  
+
+
+
                                 {!this.state['pending_trades_in'].length > 0 &&
                                     <h6>No Pending Listings at this time</h6>
                                 }
