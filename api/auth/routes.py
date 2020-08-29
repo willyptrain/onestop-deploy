@@ -494,7 +494,7 @@ def get_user_info(token):
         pending_trades_in = []
         for trade in user.trades:
             if(trade.trade_offers):
-                pending_trades_in += [offer.json_rep() for offer in trade.trade_offers]
+                pending_trades_in += [offer.json_rep() for offer in trade.trade_offers if offer.status == "pending"]
 
         pending_trades_out = []
         accepted_trades_out = []
@@ -569,17 +569,6 @@ def accept_offer(trade_offer_id, token):
         trade_offer.status = "accepted"
 
 
-        print("")
-
-        print("")
-        print("")
-        print("")
-        print("")
-        print("")
-        print(trade_offer_id)
-        print("")
-
-
 
 
 
@@ -588,6 +577,30 @@ def accept_offer(trade_offer_id, token):
         shipping_state=app.config['SHIP_STATE'], shipping_zip=app.config['SHIP_ZIP'],
         shipping_city=app.config['SHIP_CITY'], time=datetime.datetime.now())
         db.session.add(trade_order)
+        db.session.flush()
+
+        # offered_card_ids, original_trade_id
+        for trade_id in trade_offer.offered_card_ids:
+            trade = Trade.query.filter_by(id=trade_id).first()
+            if(trade is not None):
+                trade.for_trade = False
+                #delete associated trade offers:
+                for assoc_offer in trade.trade_offers:
+                    if(assoc_offer.id != trade_offer.id):
+                        trade.trade_offers.remove(assoc_offer)
+                        db.session.delete(assoc_offer)
+                print(trade.trade_offers)
+                print()
+                print()
+                print()
+
+        
+
+            
+
+
+
+
         db.session.commit()
 
 
@@ -1046,7 +1059,7 @@ def get_all_trades(sport, token):
     if(user is None):
         return (jsonify({"error":"User not found!"}), 401)
     if(sport.lower() != "all"):
-        trades = Trade.query.filter(Trade.sport.ilike("%"+sport.lower()+"%")).all()
+        trades = Trade.query.filter(Trade.for_trade==True, Trade.sport.ilike("%"+sport.lower()+"%")).all()
         user_wanted = list(user.wanted_trades)
         trade_wanted = []
         for item in user_wanted:
@@ -1057,7 +1070,7 @@ def get_all_trades(sport, token):
                                 'wantedCards': trade_wanted}),201)
         return (jsonify({"error":"Trades not found!"}), 404)
     else:
-        trades = Trade.query.all()
+        trades = Trade.query.filter_by(for_trade=True).all()
         user_wanted = list(user.wanted_trades)
         trade_wanted = []
         for item in user_wanted:

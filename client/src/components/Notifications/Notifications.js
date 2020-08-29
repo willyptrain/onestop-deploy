@@ -144,7 +144,7 @@ class Notifications extends Component {
                                             </Typography>
 
                                             <Typography className="list-item-status mont-text">
-                                                Status: {offer.status}
+                                                Status: <a href={`/confirmation/${offer.id}`}>{offer.status}</a>
                                             </Typography>
 
                                             
