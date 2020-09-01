@@ -35,7 +35,7 @@ class TradeBox extends Component {
     async componentDidMount() {
 
         let token = localStorage.access_token;
-        axios.get(`/api/my_listings/trades/${token}`)
+        axios.get(`/api/my_listings/for_trade/trades/${token}`)
         .then(res => {
             this.setState({...this.state, 'my_trades':res.data.trades})
             console.log(res.data);

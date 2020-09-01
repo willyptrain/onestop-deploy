@@ -183,7 +183,7 @@ class Trade(db.Model):
     wanted_trades = db.relationship('User', secondary=wanted_trades, backref=db.backref('wanted_trades', lazy='dynamic'))
     trade_offers = db.relationship('TradeOffer', backref="original_trade")
 
-
+    wanted_in_return_card_ids = db.Column(db.PickleType)
 
     # offers = db.relationship('TradeOffer', backref="offers")
 
@@ -194,7 +194,9 @@ class Trade(db.Model):
         db.session.commit()
 
     def json_rep(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        return_dict = {'wanted_in_return_cards': [Trade.query.filter_by(id=int(item_id)).first().json_rep() for item_id in self.wanted_in_return_card_ids if (item_id != '' and len(item_id) > 0)]}
+        return_dict.update({c.name: getattr(self, c.name) for c in self.__table__.columns})
+        return return_dict
 
 class Sale(db.Model):
     __tablename__ = 'sales'
@@ -589,10 +591,12 @@ def accept_offer(trade_offer_id, token):
                     if(assoc_offer.id != trade_offer.id):
                         trade.trade_offers.remove(assoc_offer)
                         db.session.delete(assoc_offer)
-                print(trade.trade_offers)
-                print()
-                print()
-                print()
+
+        original_trade = Trade.query.filter_by(id=original_trade_id).first()
+        if(original_trade is not None):
+            original_trade.for_trade = False
+
+        
 
         
 
@@ -602,10 +606,6 @@ def accept_offer(trade_offer_id, token):
 
 
         db.session.commit()
-
-
-        print(json.dumps(trade_offer.json_rep(),indent=4))
-        print(json.dumps(trade_order.json_rep(),indent=4))
 
 
 
@@ -770,6 +770,7 @@ def edit_trade(item_id, token):
         comments = request.form.get('comments')
         tradeOrSell = request.form.get('tradeOrSell')
         price = request.form.get('price')
+        wanted_in_return_card_ids = request.form.get('checked').split(",")
         images = request.files
         img_paths = []
         for file in images:
@@ -801,6 +802,7 @@ def edit_trade(item_id, token):
             trade.time = datetime.datetime.now()
             trade.for_sale = True
             trade.seller = user
+            trade.wanted_in_return_card_ids = wanted_in_return_card_ids
 
             db.session.commit()
             return (jsonify(trade.json_rep()),201)
@@ -840,6 +842,10 @@ def create_listing(token):
         comments = request.form.get('comments')
         tradeOrSell = request.form.get('tradeOrSell')
         price = request.form.get('price')
+        wanted_in_return_card_ids = request.form.get('checked').split(",")
+
+        print(wanted_in_return_card_ids)
+
         images = request.files
         img_paths = []
         for file in images:
@@ -858,7 +864,7 @@ def create_listing(token):
             trade = Trade(username=username, sport=sport,player_name=player_name,
                         year=year, manufacturer=manufacturer, cardNumber=cardNumber, cardSeries=cardSeries,
                         comments=comments, tradeOrSell=tradeOrSell, img_paths=img_paths, time=datetime.datetime.now(),
-                        for_trade=True, trader=user)
+                        for_trade=True, trader=user, wanted_in_return_card_ids=wanted_in_return_card_ids)
             db.session.add(trade)
             db.session.commit()
             return (jsonify(trade.json_rep()),201)
@@ -931,8 +937,10 @@ def get_wanted_trades(sport, token):
     if(user is None):
         return (jsonify({"error":"User not found!"}), 401)
 
-
-    return (jsonify({'trades': [trade.json_rep() for trade in user.wanted_trades]}),201)
+    if(sport != "all"):
+        return (jsonify({'trades': [trade.json_rep() for trade in list(user.wanted_trades) if trade.for_trade and trade.sport == sport]}),201)
+    else: 
+        return (jsonify({'trades': [trade.json_rep() for trade in list(user.wanted_trades) if trade.for_trade]}),201)
 
 @app.route('/api/post_wanted/trades/<item_id>/<token>', methods=['POST'])
 @login_required
@@ -1117,6 +1125,15 @@ def get_my_trades(token):
     user = User.verify_auth_token(token)
     if(user is not None):
         return (jsonify({'trades':[trade.json_rep() for trade in user.trades]}),201)
+    return (jsonify({"error":"No trades found!"}), 404)
+
+
+@app.route('/api/my_listings/for_trade/trades/<token>', methods=['GET'])
+@login_required
+def get_my_trades_for_trade(token):
+    user = User.verify_auth_token(token)
+    if(user is not None):
+        return (jsonify({'trades':[trade.json_rep() for trade in user.trades if trade.for_trade]}),201)
     return (jsonify({"error":"No trades found!"}), 404)
 
 
