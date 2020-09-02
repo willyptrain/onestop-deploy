@@ -44,8 +44,8 @@ class CreateListing extends Component {
         this.yearList = [2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003, 2002, 2001, 2000, 1999, 1998, 1997, 1996, 1995, 1994, 1993, 1992, 1991, 1990, 1989, 1988, 1987, 1986, 1985, 1984, 1983, 1982, 1981, 1980, 1979, 1978, 1977, 1976, 1975, 1974, 1973, 1972, 1971, 1970, 1969, 1968, 1967, 1966, 1965, 1964, 1963, 1962, 1961, 1960, 1959, 1958, 1957, 1956, 1955, 1954, 1953, 1952, 1951, 1950, 1949, 1948, 1947, 1946, 1945, 1944, 1943, 1942, 1941, 1940, 1939, 1938, 1937, 1936, 1935, 1934, 1933, 1932, 1931, 1930, 1929, 1928, 1927, 1926, 1925, 1924, 1923, 1922, 1921, 1920, 1919, 1918, 1917, 1916, 1915, 1914, 1913, 1912, 1911, 1910, 1909, 1908, 1907, 1906, 1905, 1904, 1903, 1902, 1901, 1900];
         this.cardManufacturers = ['ACEO Reprint', 'Action Packed', 'American Caramel', 'American Tobacco', 'Baseball Card Magazine', 'Best', 'Big League Chew', 'Bowman', 'Classic', 'CMC', 'Collect-a-Card', 'Collectors Edge', 'Donruss', 'DuoCards', 'E98', 'Fleer', 'Fritsch', 'Front Row', 'Futera', 'Globe Imports', 'Goudey Gum Co.', 'Gum, Inc. ', 'Guyana', 'Hostess ', 'Hygrade', 'Impel', 'In the Game', 'Interlake', 'Jimmy Dean', 'Jumbo Sunflower Seeds', 'Just', "Kellogg's", 'Leaf', 'Lime Rock', 'Line Drive', "M&M's", 'Matallic Impressions', 'Maxx', 'Megacards ', 'Milk-Bone', 'MSA', 'National Caramel', 'National Chicle', 'NBA Hoops', 'O-Pee-Chee', 'Old Judge', 'Onyx', 'Other: List your Brand', 'Pacific', 'Panini', 'Parkins Parkhurst', 'Philadelphia Gum', 'Pinnacle', 'Playoff', 'Post', 'PressPass', 'Pro Mags', 'Pro Set', 'Quaker', 'Razor', 'Rembrandt', 'Renata Galasso', 'Royal Rookies', 'Sage', 'Score', 'Scoreboard', 'Semic', 'Signature Rookies', 'Skybox', 'Sportflics', 'Sporting News', 'Sports Illustrated', 'SSPC', 'Star', 'Star Pics', 'Starline', 'Superior Pix', 'TCMA', 'Team Best', 'Ted Williams Card Company', 'Tombstone Pizza', 'Topps', 'Triad', 'Tristar', 'Upper deck', 'Utz', 'Wheels', 'Wild Card', 'William Paterson', 'Wonder Bread'];
         this.state = {"player_name": null, 'sport': this.sportList[0], "tradeOrSell": "Trade", "year":this.yearList[0],
-                        "price": 0, 'submitted': false,'manufacturer':this.cardManufacturers[0], 'images': [], 'edit': 'edit' in props ? props.edit : null, 'item_id': 'id' in props ? props.id.id : null, 'type': 'type' in props ? props.type : null, 
-                    'checked': []}; 
+                        "price": 0, 'submitted': false,'manufacturer':this.cardManufacturers[0], 'images': [], 'edit': props.edit, 'item_id': 'id' in props ? props.id.id : null, 'type': props.type, 
+                    'checked': [], 'cardSeries': ''}; 
         this.addImages.bind(this);
     }
 
@@ -161,6 +161,18 @@ class CreateListing extends Component {
         this.setState({...this.state, 'cardSeries':event.target.value});
     }
 
+    validateForm() {
+        if(this.state['tradeOrSell'] == "Trade") {
+            return this.state['cardSeries'].length > 0 && this.state['sport'].length > 0 &&
+                    this.state['year'].length > 0 && this.state['manufacturer'].length > 0 && 
+                    this.state['player_name'].length > 0 && this.state['cardNumber'].length > 0;
+        } else {
+            return this.state['cardSeries'].length > 0 && this.state['sport'].length > 0 &&
+            this.state['year'].length > 0 && this.state['manufacturer'].length > 0 && 
+            this.state['player_name'].length > 0 && this.state['cardNumber'].length > 0 &&
+            this.state['price'].length > 0;
+        }
+    }
     createAListing = (event) => {
         let token = localStorage.access_token;
         console.log(this.state['images'])
@@ -314,20 +326,6 @@ class CreateListing extends Component {
 
                     </TextField>
 
-                    <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['year']} 
-                    select placeholder="Placeholder" onChange={this.selectYear}
-                    variant="filled" InputLabelProps={{
-                            shrink: true,
-                        }}>
-                        {this.yearList.map((year) => 
-                            <MenuItem key={year} value={year}>
-                                {year}
-                            </MenuItem>
-                        )}
-
-                    </TextField>
-                
-                
                     <FilledInput required={this.state['tradeOrSell'] != "Sell"}
                     form="listing-form" error={this.state['tradeOrSell'] == "Sell" && (!this.state.price || this.state.price == "")}
                         id="filled-adornment-amount"
@@ -337,11 +335,18 @@ class CreateListing extends Component {
                         startAdornment={<InputAdornment variant="filled" position="start">$</InputAdornment>}
                     />
 
+
+                  
+                
+                
+
                     
 
-
+                <div className="fullwidth-field-container flex-container">
+                    <div className="flex-left">
+                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Manufacturer</Typography>
                     <TextField required form="listing-form" id="standard-select-currency-native" value={this.state['manufacturer']} 
-                    select placeholder="Placeholder" onChange={this.selectManufacturer}
+                    select placeholder="Placeholder" style={{float: 'left'}} onChange={this.selectManufacturer}
                     variant="filled" InputLabelProps={{
                             shrink: true,
                         }}>
@@ -352,7 +357,30 @@ class CreateListing extends Component {
                         )}
 
                     </TextField>
+                    </div>
 
+                    <div className="flex-right">
+                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Year</Typography>
+                    <TextField style={{float: 'left'}} required form="listing-form" class="standard-select-currency-native" value={this.state['year']} 
+                    select onChange={this.selectYear}
+                    variant="filled" InputLabelProps={{
+                            shrink: true,
+                        }}>
+                        {this.yearList.map((year) => 
+                            <MenuItem key={year} value={year}>
+                                {year}
+                            </MenuItem>
+                        )}
+
+                    </TextField>
+                    </div>
+                
+                </div>
+
+                <div style={{width: '80%', textAlign: 'left'}}>
+                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Number</Typography>
+                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
+                            variant="subtitle2" align="left">Serial number written on card</Typography>
                     <TextField className="listing-full-label"
                             required
                             form="listing-form"
@@ -360,13 +388,14 @@ class CreateListing extends Component {
                             fullWidth
                             margin="normal"
                             variant="filled"
+                            placeholder="123456789"
                             InputLabelProps={{
                                 shrink: true,
                             }}
                             error={!this.state.cardNumber || this.state.cardNumber == ""}
                             onChange={this.setCardNumber}
                             />
-
+                </div>
                     <div style={{width: '80%', textAlign: 'left'}}>
                         <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Series/Set</Typography>
                         <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
@@ -375,6 +404,7 @@ class CreateListing extends Component {
                             id="standard-adornment-amount"
                             fullWidth
                             margin="normal"
+                            placeholder="Card Series or Set"
                             variant="filled"
                             InputLabelProps={{
                                 shrink: true,
@@ -384,14 +414,14 @@ class CreateListing extends Component {
                             />
 
                     </div>
-                    <div style={{width: '100%', textAlign: 'left', marginLeft: '8px'}}>
+                    <div style={{width: '100%', textAlign: 'left'}}>
                         <Typography style={{fontFamily: 'Montserrat !important'}} variant="subtitle1" align="left">Additional Details/Comments</Typography>
-                        <TextareaAutosize form="listing-form" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
+                        <TextareaAutosize form="listing-form" className="text-area" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
                             aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="" />
 
                     </div>
                     
-                <Button type="submit" onClick={this.createAListing} variant="contained">Submit</Button>
+                <Button type="submit" disabled={!this.validateForm()}  onClick={this.createAListing} variant="contained">Submit</Button>
 
             </div>
             </CardContent>
