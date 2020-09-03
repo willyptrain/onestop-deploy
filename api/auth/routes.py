@@ -457,7 +457,7 @@ def sale_order_lookup(id, token):
                 sale = Sale.query.filter_by(id=id).first()
                 if(sale is not None):
                     ordered_items.append(sale.json_rep())
-            return (jsonify({'order_details':sale_order.json_rep(), 'ordered_items':ordered_items}), 201)
+            return (jsonify({'order_info':sale_order.json_rep(), 'ordered_items':ordered_items}), 201)
         return (jsonify({"error":"No sale order found!"}), 404)
     return (jsonify({"error":"User not found!"}), 401)
 
@@ -1230,4 +1230,4 @@ def get_auth_token():
 if not os.path.exists('db.sqlite'):
     print("CREATED_DB")
     db.create_all()
-app.run(debug=True)
+app.run(debug=True, ssl_context='adhoc')

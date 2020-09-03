@@ -114,7 +114,7 @@ class ConfirmationSale extends Component {
         }
 
 
-        if('ordered_items' in this.state && this.state['ordered_items'].length > 0) {
+        if('ordered_items' in this.state) {
                 return (<div className="home-container">
                     <Grid container spacing={3} alignItems="center"
             justify="center" >
@@ -126,16 +126,18 @@ class ConfirmationSale extends Component {
                                     <Typography className="order-success-confirm-text mont-text" variant="h3">
                                         Order Successful!
                                     </Typography>
-                                    <Typography className="order-number-text mont-text" variant="h6">
-                                        Order Number: {this.state['id']}
-                                    </Typography>
+                                    <div style={{'width': '100%', height: '1rem'}}>
+                                        <Typography className="order-number-text mont-text" variant="h6">
+                                            Order #: {this.state['id']} ({this.state['order_info']['time'].split(" ")[0]})
+                                        </Typography>
+                                    </div>
                                     <Divider className="order-number-divider" />
 
 
 
                                 <Typography className="to-be-traded-text mont-text" variant="h6">
                                         You have purchased:
-                                    </Typography>
+                                </Typography>
                                 <List className="cards-offered-confirm">
                                     { this.state['ordered_items'].map((card,index) =>
                                         <ListItem role={undefined} dense className="cards-offered-container">
@@ -147,13 +149,27 @@ class ConfirmationSale extends Component {
                                                 secondary={card['username']} />
                              
                                         </ListItem>
-                                    
-                                    
-                                    
-                                    
                                     )
                                     }
                                 </List>
+                                <Divider className="order-number-divider" />
+                                <div>
+                                <div style={{'width': '100%', height: '3rem'}}>
+                                    <Typography className="to-be-traded-text mont-text" variant="h6">
+                                            Shipping Info:
+                                    </Typography>
+                                </div>
+                                <div className="insurance-shipping-info" style={{'width': '100%', height: 'max-content', textAlign: 'left'}}>
+                                    { this.state['order_info']['card_insurance'] && 
+                                      <Typography className="mont-text" variant="body1">
+                                            Insurance Shipping Info:
+                                        </Typography> 
+                                        // && this.state['order_info']['shipping_info']
+                                      
+                                    }
+                                </div>
+                                </div>
+                             
 
                             </Box>
                     
