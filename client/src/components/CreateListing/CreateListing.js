@@ -273,7 +273,7 @@ class CreateListing extends Component {
         }
     return (<div className="home-container flex-container">
     <div className="left-container-create">
-    <Card className="listing-container">
+    <Card className="listing-container overflowScroll">
             {/* <h2 className="listing-header mont-text">Create A Listing</h2> */}
             <CardHeader title="Create A Listing" titleTypographyProps={{className:"mont-text"}} subheader="Post new trades and sale for others to buy or trade for" />
             <CardContent>
@@ -421,7 +421,7 @@ class CreateListing extends Component {
 
                     </div>
                     
-                <Button type="submit" disabled={!this.validateForm()}  onClick={this.createAListing} variant="contained">Submit</Button>
+                <Button type="submit" onClick={this.createAListing} variant="contained">Submit</Button>
 
             </div>
             </CardContent>

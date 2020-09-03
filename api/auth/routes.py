@@ -494,9 +494,11 @@ def get_user_info(token):
         
 
         pending_trades_in = []
+        accepted_trades_in = []
         for trade in user.trades:
             if(trade.trade_offers):
                 pending_trades_in += [offer.json_rep() for offer in trade.trade_offers if offer.status == "pending"]
+                accepted_trades_in += [offer.json_rep() for offer in trade.trade_offers if offer.status == "accepted"]
 
         pending_trades_out = []
         accepted_trades_out = []
@@ -509,7 +511,7 @@ def get_user_info(token):
                 print("accepted",offer.status)
                 accepted_trades_out.append(offer.json_rep())
         return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 
-        'sales':[sale.json_rep() for sale in user.sales], 'accepted_trades_out':accepted_trades_out,
+        'sales':[sale.json_rep() for sale in user.sales], 'accepted_trades_out':accepted_trades_out, 'accepted_trades_in': accepted_trades_in,
         'pending_trades_out': pending_trades_out, 'user_pending_sales':user_pending_sales,'purchased_sales': [order.json_rep() for order in user.purchased_cards],
         'pending_trades_in':pending_trades_in}),201)
     return (jsonify({"error":"User not found!"}), 401)
@@ -592,10 +594,9 @@ def accept_offer(trade_offer_id, token):
                         trade.trade_offers.remove(assoc_offer)
                         db.session.delete(assoc_offer)
 
-        original_trade = Trade.query.filter_by(id=original_trade_id).first()
+        original_trade = Trade.query.filter_by(id=trade_offer.original_trade_id).first()
         if(original_trade is not None):
             original_trade.for_trade = False
-
         
 
         

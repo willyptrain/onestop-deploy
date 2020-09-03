@@ -139,6 +139,9 @@ class MyListings extends Component {
                                     <IconButton style={{float:'left'}} id={trade['id']} onClick={() => window.location = `/create_listing/edit/trade/${trade['id']}`} aria-label="add to favorites">
                                             <EditIcon />
                                     </IconButton>   
+                                    <Typography align="right" style={{color: !trade.for_trade ? 'green' : 'black'}} className="mont-text ">
+                                        <b>{trade.for_trade ? "For Trade" : "Traded"}</b>
+                                    </Typography>
                         </Card>
                     </Grid>
                     
@@ -187,7 +190,10 @@ class MyListings extends Component {
                         </CardActionArea>
                                     <IconButton style={{float:'left'}} id={sale['id']} onClick={() => window.location = `/create_listing/edit/sale/${sale['id']}`} aria-label="add to favorites">
                                             <EditIcon />
-                                    </IconButton>   
+                                    </IconButton> 
+                                    <Typography align="right" style={{color: !sale.for_sale ? 'green' : 'black'}} className="mont-text ">
+                                        <b>{sale.for_sale ? "For Sale" : "Sold"}</b>
+                                    </Typography>  
                         </Card>
                     </Grid>
                     

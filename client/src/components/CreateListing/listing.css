@@ -6,6 +6,10 @@
     margin-left: 1.25%;
     margin-top: 0vh !important;
     top: 0vh !important;
+    overflow-y: scroll;
+}
+.overflowScroll {
+    overflow-y: scroll !important;
 }
 
 .listing-header {
