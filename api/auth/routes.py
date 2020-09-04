@@ -886,12 +886,35 @@ def create_listing(token):
 @app.route('/api/search/<keyword>/<token>')
 @login_required
 def search(keyword, token):
+    user = User.verify_auth_token(username_or_token)
+    if not user:
+        return (jsonify({"error":"User not found!"}), 401)
     trade_results = Trade.query.filter(Trade.player_name.ilike("%"+keyword.lower()+"%")).all()
     sale_results = Sale.query.filter(Sale.player_name.ilike("%"+keyword.lower()+"%")).all()
     all_results = trade_results + sale_results
 
     return (jsonify({"results":[result.json_rep() for result in all_results], "sales":[sale.json_rep() for sale in sale_results],
     'trades':[trade.json_rep() for trade in trade_results]}), 201)
+
+
+
+
+@app.route('/api/user/delete/trade/<token>', methods=['POST'])
+@login_required
+def delete_trade(token):
+    user = User.verify_auth_token(token)
+    item_id = request.json.get('item_id')
+    if not user:
+        return (jsonify({"error":"User not found!"}), 401)
+    
+
+    trade = Trade.query.filter_by(id=item_id).first()
+    if(not trade):
+        return (jsonify({"error": "Trade not found"}),404)
+    db.session.delete(trade)
+    db.session.commit()
+    return (jsonify({"message": "Trade Deleted"}),201)
+
 
 
 

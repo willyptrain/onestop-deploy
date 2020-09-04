@@ -29,9 +29,20 @@
 }
 .left-hand-panel {
     height: 65vh;
+    flex: 1;
+    margin-left: 2% !important;
+    margin-right: 1% !important;
 }
 .right-hand-panel {
     height: 65vh;
+    overflow: scroll;
+    flex: 1;
+    margin-right: 2% !important;
+    margin-left: 1% !important;
+}
+.product-top-text {
+    overflow: scroll;
+    /* Need to fix width */
 }
 .fullwidth-field-item {
     /* flex-grow: 8; */
@@ -76,4 +87,24 @@
 .year-select {
     float: left;
     text-align: left;
+}
+.danger-button-item {
+    background: #a62832 !important;
+    position: absolute;
+    top: 1vh;
+    height: 5.5vh;
+    width: 90%;
+    color: white !important;
+    font-weight: 900 !important;
+    font-family: Montserrat !important;
+}
+.edit-button-item {
+    background: #303e50 !important;
+    /* position: absolute;
+    top: 1vh; */
+    height: 5.5vh;
+    width: 90%;
+    color: white !important;
+    font-weight: 900 !important;
+    font-family: Montserrat !important;
 }

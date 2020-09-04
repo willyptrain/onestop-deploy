@@ -142,7 +142,7 @@ class App extends React.Component {
               <Route exact path="/signup" component={(props) =>
                 <Signup {...this.state} userInfo={this.state['userInfo']} redirectUrl={this.state.redirectUrl} setUserInfo={this.setUserInfo} />
               }/>
-              <Route exact path="/create_listing">
+            <Route exact path="/create_listing">
               { this.state.status == 'Not logged in' && 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
@@ -157,6 +157,43 @@ class App extends React.Component {
                 </div>
             }
               </Route>
+
+              <Route exact path="/create_listing/edit/trade/:id/" render={(props) =>
+                
+                (this.state.status == 'Not logged in' ? 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} redirectUrl={`/create_listing/edit/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+                :
+                
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <CreateListing {...this.state} edit={true} type={"trade"} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+                )}/>
+
+                <Route exact path="/create_listing/edit/sale/:id/" render={(props) =>
+                
+                (this.state.status == 'Not logged in' ? 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} redirectUrl={`/create_listing/edit/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+                :
+                
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <CreateListing {...this.state} edit={true} type={"sale"} id={props.match.params} userInfo={this.state['userInfo']} />
+                </div>
+                )}/>
+
+
+
+
+              
               <Route exact path="/create_listing/edit/:id" render={(props) =>
                 
                 (this.state.status == 'Not logged in' ? 

@@ -192,7 +192,7 @@ class MyListings extends Component {
                                             <EditIcon />
                                     </IconButton> 
                                     <Typography align="right" style={{color: !sale.for_sale ? 'green' : 'black'}} className="mont-text ">
-                                        <b>{sale.for_sale ? "For Sale" : "Sold"}</b>
+                                        <b>{sale.f ? "For Sale" : "Sold"}</b>
                                     </Typography>  
                         </Card>
                     </Grid>
