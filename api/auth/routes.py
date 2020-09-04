@@ -916,7 +916,39 @@ def delete_trade(token):
     return (jsonify({"message": "Trade Deleted"}),201)
 
 
+@app.route('/api/user/delete/sale/<token>', methods=['POST'])
+@login_required
+def delete_sale(token):
+    user = User.verify_auth_token(token)
+    item_id = request.json.get('item_id')
+    if not user:
+        return (jsonify({"error":"User not found!"}), 401)
+    
 
+    sale = Sale.query.filter_by(id=item_id).first()
+    if(not sale):
+        return (jsonify({"error": "Sale not found"}),404)
+    db.session.delete(sale)
+    db.session.commit()
+    return (jsonify({"message": "Trade Deleted"}),201)
+
+@app.route('/api/users/send_email/', methods=['POST'])
+def send_email():
+    first_name = request.json.get('firstName')
+    last_name = request.json.get('lastName')
+    email = request.json.get('email')
+    subject = request.json.get('subject')
+    message = request.json.get('message')
+    print(first_name, last_name, email, subject, message)
+    with mail.connect() as conn:
+            msg = Message(subject,
+                      sender="willpeterson76@gmail.com",
+                      recipients=["wcp7cp@virginia.edu"])
+            msg.body = message
+            msg.html = render_template('contact_us.html', first_name=first_name, last_name=last_name, email=email, subject=subject, message=message)
+            conn.send(msg)
+            return (jsonify({"message": "Message Sent"}),201)
+    return (jsonify({"error": "Email not delivered"}),404)
 
 
 @app.route('/api/trade_lookup/<id>/<token>')

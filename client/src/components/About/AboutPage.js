@@ -42,6 +42,22 @@ class AboutPage extends Component {
     }
     submitContactUsForm = (event) => {
 
+        console.log(this.state);
+
+        axios.post('/api/users/send_email/', {
+            'firstName': this.state['firstName'],
+            'lastName': this.state['lastName'],
+            'email': this.state['email'],
+            'subject': this.state['subject'],
+            'message': this.state['message'],
+        })
+        .then(res => {
+            console.log(res.data);
+        })
+        .catch(err => {
+            console.log("error");
+            console.log(err);
+        })
     }
 
 
@@ -70,16 +86,19 @@ class AboutPage extends Component {
                     </div>
                     <div className="contact-us-container">
                         <form className="contact-us-form" noValidate autoComplete="off">
-                            <div className="full-width-flex-input">
-                                <TextField form="contact-us-form" className="half-width-name" id="filled-basic" label="Filled" variant="filled" />
-                                <TextField form="contact-us-form" className="half-width-name" id="filled-basic" label="Filled" variant="filled" />
+                            <div className="full-width-flex-input contact-name-box">
+                                <TextField form="contact-us-form" onChange={(event) => this.setState({...this.state, 'firstName':event.target.value})} className="half-width-name-left" id="filled-basic" label="First Name" variant="outlined" />
+                                <TextField form="contact-us-form" onChange={(event) => this.setState({...this.state, 'lastName':event.target.value})} className="half-width-name-right" id="filled-basic" label="Last Name" variant="outlined" />
                             </div>
-                            <TextField fullWidth form="contact-us-form" id="standard-adornment-amount" label="Filled" variant="filled" />
-                            <TextField fullWidth form="contact-us-form" id="standard-adornment-amount" label="Outlined" variant="outlined" />
-                            <TextareaAutosize form="contact-us-form" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
-                    aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="" />
-                            <Button type="submit" onClick={this.submitContactUsForm} variant="contained">Submit</Button>
+                            <TextField fullWidth className="email-contact" onChange={(event) => this.setState({...this.state, 'email':event.target.value})} form="contact-us-form" id="standard-adornment-amount" label="Email" variant="outlined" />
+                            <TextField fullWidth className="subject-contact" onChange={(event) => this.setState({...this.state, 'subject':event.target.value})} form="contact-us-form" id="standard-adornment-amount" label="Subject" variant="outlined" />
 
+                            <TextareaAutosize className="text-area text-area-contact" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '100%'}}
+                            aria-label="minimum height" onChange={(event) => this.setState({...this.state, 'message': event.target.value})} rowsMin={6} placeholder="Message" />
+                            
+                            <div style={{fontFamily: 'Montserrat !important', width: '100%', marginBottom: '2vh'}}>
+                                <Button style={{background: '#132639', color: 'white', width: '60%', height: '6vh'}} type="submit" onClick={this.submitContactUsForm} variant="contained">Submit</Button>
+                            </div>
                         </form>
 
                     </div>
