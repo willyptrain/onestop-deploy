@@ -30,6 +30,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Avatar from '@material-ui/core/Avatar';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Checkbox from '@material-ui/core/Checkbox';
+import Grid from '@material-ui/core/Grid';
 
 
 
@@ -46,9 +47,10 @@ class CreateListing extends Component {
         
         
         //RECENTLY REMOVED edit from the initial this.state even though it is in props because I can now launch edit page from url instead
-        this.state = {'edit':props.edit,'images': [], 'item_id': 'id' in props ? props.id.id : null, 'type': props.type, 
+        this.state = {'edit':props.edit,'images': [], 'new_img_paths':[],'img_paths':[], 'item_id': 'id' in props ? props.id.id : null, 'type': props.type, 
                     'checked': []}; 
         this.addImages.bind(this);
+        this.removeImage.bind(this);
     }
 
     async componentDidMount() {
@@ -255,8 +257,15 @@ class CreateListing extends Component {
     }
 
     addImages = (files, dataUrl) => {
+        let new_img_paths = dataUrl;
+        this.setState({...this.state, 'images':files, 'new_img_paths':new_img_paths})
+    }
 
-        this.setState({...this.state, 'images':files})
+    removeImage = (img_key, index) => {
+        let new_path = this.state[img_key];
+        console.log(index);
+        new_path.splice(index, 1);
+        this.setState({...this.state, img_key: new_path});
     }
 
 
@@ -472,6 +481,59 @@ class CreateListing extends Component {
                     </CardContent>
                 </Card>
             </div>}
+            <div className="image-uploader-preview">
+                <Grid container
+                  alignItems="center"
+                  justify="center" spacing={3}>
+                
+            
+                   
+                {this.state['img_paths'].map((img, index)=>
+                    <Grid item xs={12} sm={4} md={4} lg={4}>
+                        <div>
+                        
+                            <Card>
+                            
+                            <CardMedia
+                                        component="img"
+                                        alt="Card Image"
+                                        className="card-img-upload"
+                                        image={img}
+                            />
+                            <CardActionArea>
+                             <Button onClick={() => this.removeImage("img_paths", index)} className="danger-button-img-upload">Remove</Button>  
+                             </CardActionArea>
+                                </Card>
+                                           
+                            
+                                
+                        </div>
+                    </Grid>
+                )}
+                {this.state['new_img_paths'].map((img, index)=>
+                   <Grid item xs={12} sm={4} md={4} lg={4}>
+                   <div>
+                   
+                       <Card>
+                       
+                       <CardMedia
+                                   component="img"
+                                   alt="Card Image"
+                                   className="card-img-upload"
+                                   image={img}
+                       />
+                       <CardActionArea>
+                        <Button onClick={() => this.removeImage("new_img_paths", index)} className="danger-button-img-upload">Remove</Button>  
+                        </CardActionArea>
+                           </Card>
+                                      
+                       
+                           
+                   </div>
+               </Grid>
+                )}
+                </Grid>
+            </div>
 
             <div className="image-uploader-container">
                 <ImageUploader
@@ -480,7 +542,7 @@ class CreateListing extends Component {
                     onChange={this.addImages}
                     imgExtension={['.jpeg', '.jpg', '.gif', '.png', '.gif']}
                     maxFileSize={5242880}
-                    withPreview={true}
+                    withPreview={false}
                 />
             </div>
         </div>

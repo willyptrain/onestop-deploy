@@ -108,3 +108,30 @@
     font-weight: 900 !important;
     font-family: Montserrat !important;
 }
+.carousel-img-display {
+    height: 100% !important;
+}
+.carousel-img {
+    height: 100% !important;
+}
+.carousel-inner {
+    height: inherit;
+}
+.carousel-img-inner {
+    max-width: 100%;
+    max-height: 86%;
+    width: auto !important;
+    max-width: 80%;
+}
+
+.image-uploader-preview {
+    flex: 1;
+    display: flex;
+}
+.card-img-upload {
+    max-height: 200px ;
+}
+.danger-button-img-upload {
+    background: #a62832 !important;
+    color: white !important; 
+}

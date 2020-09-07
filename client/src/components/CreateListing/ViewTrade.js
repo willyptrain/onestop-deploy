@@ -15,11 +15,13 @@ import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Carousel from 'react-material-ui-carousel';
+// import Carousel from 'react-material-ui-carousel';
+import { Carousel } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from '@material-ui/core/Modal';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-
+import Image from 'react-bootstrap/Image'
 
 
 class ViewTrade extends Component {
@@ -85,15 +87,17 @@ class ViewTrade extends Component {
         return (<div  className="home-container">
         {'trade_info' in this.state && 
 
-<div className="flex-container">
+<div className="flex-container" style={{height: '100%'}}>
     {/* <Grid item xs={12} sm={6} md={6} lg={4}> */}
-        <Paper className="left-hand-panel">
-            <div class="product-img">
-            <Carousel indicators={false} navButtonsAlwaysVisible={false} interval={3000}>
+        <Paper className="left-hand-panel" style={{height: '100%'}}>
+            <div class="product-img" style={{height: '100%'}}>
+            <Carousel style={{height: '100%'}} className="carousel-img-display" interval={null}>
                 {this.state.trade_info.img_paths.map((path) =>
-                    <div>
-                        <img style={{ position: 'relative'}} src={path} />
-                    </div>
+                <Carousel.Item className="carousel-img">
+                    <Image className="carousel-img-inner" src={path} />
+                </Carousel.Item>
+                    
+
                 )}
                 
                 </Carousel>
