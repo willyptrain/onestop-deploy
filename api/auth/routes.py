@@ -194,7 +194,10 @@ class Trade(db.Model):
         db.session.commit()
 
     def json_rep(self):
-        return_dict = {'wanted_in_return_cards': [Trade.query.filter_by(id=int(item_id)).first().json_rep() for item_id in self.wanted_in_return_card_ids if (item_id != '' and len(item_id) > 0)]}
+        if(self.wanted_in_return_card_ids):
+            return_dict = {'wanted_in_return_cards': [Trade.query.filter_by(id=int(item_id)).first().json_rep() for item_id in self.wanted_in_return_card_ids if (item_id != '' and len(item_id) > 0)]}
+        else: 
+            return_dict = {}
         return_dict.update({c.name: getattr(self, c.name) for c in self.__table__.columns})
         return return_dict
 

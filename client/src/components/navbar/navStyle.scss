@@ -22,6 +22,11 @@
     top: 0px;
     margin-top: 0px;
 }
+.nav-signout-container {
+  min-width: 41%;
+  margin-top: 1vh;
+  overflow: hidden;
+}
 // .nav-link {
 //     float: left;
 //     margin-right: 15px !important;
@@ -162,4 +167,12 @@
   .signout-btn {
     color: white !important;
 
+  }
+  .green-snackbar {
+    background: green !important;
+    color: white !important;
+  }
+  .danger-snackbar {
+    background: red !important;
+    color: white !important;
   }

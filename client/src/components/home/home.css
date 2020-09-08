@@ -1,6 +1,7 @@
 .home-container {
     position: relative;
-    height: 65vh;
+    height: 100vh;
+    margin-top: 10vh;
 }
 .carousel-paper {
     height: 65vh;
@@ -11,61 +12,103 @@
 
 }
 .homepage-walkthrough {
-    height: 100vh;
+    height: 160vh;
     width: 100%;
     margin-top: 10vh;
+    display: flex;
 }
 .for-trade-brief {
-    height: 50vh;
+    /* height: 50vh; */
+    flex: 1;
+    height: 140vh;
+
 }
 .for-sale-brief {
-    height: 60vh;
+    /* height: 60vh; */
+    flex: 1;
+    height: 140vh;
 }
 .for-trade-text {
     position: relative;
     /* top: 10vh; */
     font-family: Montserrat !important;
     width: 80%;
+    margin-left: 10% !important;
+    margin-right: 10% !important;
+    font-size: inherit !important;
 }
 .for-sale-text {
     position: relative;
     /* top: 10vh; */
     font-family: Montserrat !important;
-    width: 60%;
-    /* left: 10rem; */
+    width: 80%;
+    margin-left: 10% !important;
+    margin-right: 10% !important;
+    margin-top: 3vh !important;
+    font-size: inherit !important;
 }
 .grid-trade-text {
     text-align: center !important;
 }
 .home-sale-image {
-    /* height: 32vh; */
-    width: 60%;
+    margin-top: 4rem !important;
+    height: 24rem;
+    /* max-width: 60%; */
+    border-radius: 1.5%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 .home-trade-image {
-    width: 60%;
+    margin-top: 4rem !important;
+    height: 24rem;
+    /* width: 60%; */
+    border-radius: 1.5%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+
+
+.paper-brief-right {
+    width: 95% !important;
+    margin-right: 3.25% !important;
+    margin-left: 1.75% !important;
+    height: 100%;
+}
+.paper-brief-left {
+    width: 95% !important;
+    margin-left: 3.25% !important;
+    margin-right: 1.75% !important;
+    height: 100%;
+}
+
 .launch-sale-btn {
     text-transform: none !important; 
     color: black !important;
     height: 5vh;
-    width: 30%;
-    margin-top: 3vh !important;
+    min-width: 30% !important;
+    margin-top: 5vh !important;
+    margin-bottom: 5vh !important;
     font-weight: bold !important; 
     font-size: 1.1rem !important; 
     font-family: Montserrat !important; 
     border: 2px solid black !important; 
+    background: #a62832 !important;
+    border: none !important;
+    color: white !important;
 
 }
 .launch-trade-btn {
     text-transform: none !important; 
     color: black !important;
     height: 5vh;
-    width: 30%;
+    min-width: 30% !important;
     margin-top: 5vh !important;
+    margin-bottom: 5vh !important;
     font-weight: bold !important; 
     font-size: 1.1rem !important; 
     font-family: Montserrat !important; 
     border: 2px solid black !important; 
+    background: #a62832 !important;
+    border: none !important;
+    color: white !important;
 
 }
 .text-container-home {

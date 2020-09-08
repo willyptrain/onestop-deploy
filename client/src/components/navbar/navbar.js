@@ -206,12 +206,12 @@ export function NavBar(data) {
                 </div>
                 </div>
 
-
-                <IconButton className="drawer-exit-btn" href="/shopping_cart">
-                  <ShoppingCartIcon size="large" style={{color: 'white'}} />
-                </IconButton>
-                <Button className="signout-btn mont-text" onClick={signout} variant="filled">Signout</Button>
-
+                <div className="nav-signout-container">
+                  <IconButton className="drawer-exit-btn" href="/shopping_cart">
+                    <ShoppingCartIcon size="large" style={{color: 'white'}} />
+                  </IconButton>
+                  <Button className="signout-btn mont-text" onClick={signout} variant="filled">Signout</Button>
+                </div>
 
                 </div>
 

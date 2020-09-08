@@ -84,54 +84,53 @@ class Home extends Component {
         </div>
         <div className="homepage-walkthrough">
             
+            
                 <div className="for-trade-brief">
-                <Grid container className="for-trade-brief-container"
-                  alignItems="center"
-                  justify="center">
-                    <Grid item xs={12} sm={6} md={6} lg={6} className="grid-trade-text">
-                    <div className="text-container-home">
+                    <Paper className="paper-brief-left">
+                    {/* <div className="text-container-home"> */}
+                    <div style={{width: '100%'}}>
+                        <img className="home-trade-image" src={tradeImage}/>
+                    </div>
+                    <div style={{width: '100%'}}>
+                        <Button className="launch-trade-btn" variant="outlined" color="default" href="/for_trade/all">View our For Trade Page</Button>            
+                    </div>
+                    <div style={{width: '100%', textAlign: 'center'}}>
                         <Typography variant="h4" align="center" paragraph gutterBottom className="for-trade-text">
-                            Trading is made easy and safe through our website. On our platform, we 
-                            offer insurance behind your trades. As avid collectors and traders outselves, we know
-                            that all too many times people will tell you they want to make a trade, only to 
-                            never send their cards, leaving you empty handed. Our goal is to guarantee this never happens,
-                            serving as the midde-men to ensure you get the cards you want in the condition 
-                            in which you agreed!
+                                Trading is made easy and safe through our website. On our platform, we 
+                                offer insurance behind your trades. As avid collectors and traders outselves, we know
+                                that all too many times people will tell you they want to make a trade, only to 
+                                never send their cards, leaving you empty handed. Our goal is to guarantee this never happens,
+                                serving as the midde-men to ensure you get the cards you want in the condition 
+                                in which you agreed!
                         </Typography>
                         </div>
-                        <Button className="launch-trade-btn" variant="outlined" color="default">View our For Trade Page</Button>
-                    </Grid>
-                
-                    <Grid item xs={12} sm={6} md={6} lg={6}>
-                        <img className="home-trade-image" src={tradeImage}/>
-                    </Grid>
-                    </Grid>
+                        </Paper>
                 </div>
+            
+                        
+
+            
                 <div className="for-sale-brief">
-                <Grid container className="for-sale-brief-container"
-                  alignItems="center"
-                  justify="center">
-                    <Grid item xs={12} sm={6} md={6} lg={6}>
+                <Paper className="paper-brief-right">    
+
+                        {/* <div className="text-container-home"> */}
+                        <div style={{width: '100%'}}>
                         <img className="home-sale-image" src={saleImage}/>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={6}>
-                        <div className="text-container-home">
+                        </div>
+                        <div style={{width: '100%'}}>
+                        <Button className="launch-sale-btn" variant="outlined" color="default" href="/for_sale/all">View our For Sale Page</Button>
+                        </div>
+                        <div style={{width: '100%', textAlign: 'center'}}>
                             <Typography variant="h4" align="center" paragraph gutterBottom className="for-sale-text">
-                            We are not only here for trades, but we for sales too! Through our website,
+                            We are not only here for trades, but for sales too! Through our website,
                             you can list and sell your own cards with ease. 
                             </Typography>
                         </div>
-                        <Button className="launch-sale-btn" variant="outlined" color="default">View our For Sale Page</Button>
-
-                    </Grid>
-                    </Grid>
+                        {/* </div> */}
+                </Paper>
                 </div>
 
-
-
-
-        </div>
-
+        </div> 
 
         </div>)
        
