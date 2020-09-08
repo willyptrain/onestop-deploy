@@ -93,11 +93,10 @@ class ViewForSaleItem extends Component {
         {'sale_info' in this.state && 
 
         
-<Grid container spacing={3} alignItems="center"
-justify="center" >
-    <Grid item xs={12} sm={6} md={6} lg={4}>
-        <Paper className="left-hand-panel">
-            <div class="product-img">
+    <div className="flex-container" style={{height: '100%'}}>
+    {/* <Grid item xs={12} sm={6} md={6} lg={4}> */}
+        <Paper className="left-hand-panel" style={{height: '75vh'}}>
+            <div class="product-img" style={{height: '100%'}}>
             <Carousel style={{height: '100%'}} className="carousel-img-display" interval={null}>
                 {this.state.sale_info.img_paths.map((path) =>
                 <Carousel.Item className="carousel-img">
@@ -110,8 +109,7 @@ justify="center" >
                 </Carousel>
             </div>
         </Paper>
-    </Grid>
-    <Grid item xs={12} sm={6} md={6} lg={4}>
+
         <Paper className="right-hand-panel">
             <div class="product-top-text">
                 <Typography className="player-text"
@@ -168,10 +166,8 @@ justify="center" >
 
 
         </Paper>
-    </Grid>
+    </div>
 
-
-</Grid>
 
         }
 

@@ -176,7 +176,7 @@ class MyListings extends Component {
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
                         <Card className="track-card">
-                        <CardActionArea onClick={() => window.location = `/view_listing/trades/${sale['id']}`}>
+                        <CardActionArea onClick={() => window.location = `/view_listing/sales/${sale['id']}`}>
                                     <CardHeader 
                                         title={sale['player_name']}
                                         subheader={sale['username']}
@@ -192,7 +192,7 @@ class MyListings extends Component {
                                             <EditIcon />
                                     </IconButton> 
                                     <Typography align="right" style={{color: !sale.for_sale ? 'green' : 'black'}} className="mont-text ">
-                                        <b>{sale.f ? "For Sale" : "Sold"}</b>
+                                        <b>{sale.for_sale ? "For Sale" : "Sold"}</b>
                                     </Typography>  
                         </Card>
                     </Grid>

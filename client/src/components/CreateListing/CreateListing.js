@@ -263,8 +263,10 @@ class CreateListing extends Component {
     }
 
     removeImage = (img_key, index) => {
+
+        // #NEED TO FIX
+
         let new_path = this.state[img_key];
-        console.log(index);
         new_path.splice(index, 1);
         this.setState({...this.state, img_key: new_path});
     }

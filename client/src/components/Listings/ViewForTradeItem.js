@@ -132,8 +132,7 @@ class ViewForTradeItem extends Component {
                 </Carousel>
             </div>
         </Paper>
-    {/* </Grid> */}
-    {/* <Grid item xs={12} sm={6} md={6} lg={4}> */}
+
         <Paper className="right-hand-panel">
             <div class="product-top-text">
                 <Typography className="player-text"

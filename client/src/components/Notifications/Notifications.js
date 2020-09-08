@@ -350,8 +350,8 @@ class Notifications extends Component {
                                         <div style={{width: '94%', marginLeft: '2rem'}}>
                                             <ListItem key={`notif-trade-${index}`} dense>
                                             
-                                            <Typography className="list-item-text">
-                                                You offered <b>{offer.offered_cards.map(x => <a href={`/for_trade/item/${x.id}`}>{x.player_name}</a> )} </b>
+                                            <Typography style={{display: 'inline-block'}} className="list-item-text">
+                                                You offered <b>{offer.offered_cards.map(x => <><a href={`/for_trade/item/${x.id}`}>{x.player_name}</a><b>, </b></>  )} </b>
                                                     to <b>{offer.original_trade.username} </b> for <b>{offer.original_trade.player_name}</b>
                                             </Typography>
 
