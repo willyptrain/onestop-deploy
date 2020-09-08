@@ -117,7 +117,7 @@
     min-width: 150px;
 }
 .left-hand-panel {
-    height: 65vh;
+    height: 75vh;
     width: 100%;
 }
 .product-img {
@@ -172,7 +172,6 @@
 
 
 .right-hand-panel {
-    height: 65vh;
     width: 95%;
 }
 

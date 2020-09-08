@@ -89,7 +89,7 @@ class ViewTrade extends Component {
 
 <div className="flex-container" style={{height: '100%'}}>
     {/* <Grid item xs={12} sm={6} md={6} lg={4}> */}
-        <Paper className="left-hand-panel" style={{height: '100%'}}>
+        <Paper className="left-hand-panel" style={{height: '75vh'}}>
             <div class="product-img" style={{height: '100%'}}>
             <Carousel style={{height: '100%'}} className="carousel-img-display" interval={null}>
                 {this.state.trade_info.img_paths.map((path) =>

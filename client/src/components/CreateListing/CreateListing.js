@@ -32,7 +32,8 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 
-
+import ClearIcon from '@material-ui/icons/Clear';
+import { CircularProgress } from '@material-ui/core';
 
 
 class CreateListing extends Component {
@@ -47,7 +48,7 @@ class CreateListing extends Component {
         
         
         //RECENTLY REMOVED edit from the initial this.state even though it is in props because I can now launch edit page from url instead
-        this.state = {'edit':props.edit,'images': [], 'new_img_paths':[],'img_paths':[], 'item_id': 'id' in props ? props.id.id : null, 'type': props.type, 
+        this.state = {'loading': false, 'edit':props.edit,'images': [], 'new_img_paths':[],'img_paths':[], 'item_id': 'id' in props ? props.id.id : null, 'type': props.type, 
                     'checked': []}; 
         this.addImages.bind(this);
         this.removeImage.bind(this);
@@ -182,7 +183,7 @@ class CreateListing extends Component {
     createAListing = (event) => {
         let token = localStorage.access_token;
         console.log(this.state['images'])
-
+        this.setState({...this.state, 'loading': true});
         let form_data = new FormData();
         form_data.append('checked', 'checked' in this.state ? this.state['checked'] : []);
         form_data.append('sport', 'sport' in this.state ? this.state['sport'] : "");
@@ -286,268 +287,276 @@ class CreateListing extends Component {
         if(this.state.error && this.state.userInfo == "Not logged in") {
             return <Redirect {...this.state} url={`/`} />
         }
-    return (<div className="home-container flex-container">
-    <div className="left-container-create">
-    <Card className="listing-container overflowScroll">
-            {/* <h2 className="listing-header mont-text">Create A Listing</h2> */}
-            <CardHeader title="Create A Listing" titleTypographyProps={{className:"mont-text"}} subheader="Post new trades and sale for others to buy or trade for" />
-            <CardContent>
-                <div className="form-root">    
-                    
-                    
-                    <div className="fullwidth-field-container">
-                        <Typography variant="body1" className="listing-field-helper mont-text">Player Name</Typography>
-                        <TextField required form="listing-form"
-                            id="standard-adornment-amount"
-                            placeholder="Johnny Doe"
-                            fullWidth
-                            margin="normal"
-                            variant="filled"
-                            value={this.state.player_name}
-                            className="fullwidth-field-item"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            onChange={this.typePlayer}
-                            />
-                    </div>
-
+    if(!this.state['loading']) {
+        return (<div className="home-container flex-container">
+        <div className="left-container-create">
+        <Card className="listing-container overflowScroll">
+                {/* <h2 className="listing-header mont-text">Create A Listing</h2> */}
+                <CardHeader title="Create A Listing" titleTypographyProps={{className:"mont-text"}} subheader="Post new trades and sale for others to buy or trade for" />
+                <CardContent>
+                    <div className="form-root">    
                         
                         
-                    <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['sport']} 
-                    select placeholder="Placeholder" onChange={this.selectSport} 
-                        style={{textAlign: 'left', width: '20%' }} variant="filled" InputLabelProps={{
-                            shrink: true,
-                        }}>
-                        {this.sportList.map((sport) => 
-                            <MenuItem key={sport} value={sport}>
-                                {sport}
-                            </MenuItem>
-                        )}
-
-                    </TextField>
-                
-                    <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['tradeOrSell']} 
-                    select onChange={this.tradeOrSell} 
-                        style={{ minWidth: 150, textAlign: 'left' }} variant="filled" InputLabelProps={{
-                            shrink: true,
-                        }}>
-                            <MenuItem key={"Trade"} value={"Trade"}>
-                                Trade
-                            </MenuItem>
-                            <MenuItem key={"Sell"} value={"Sell"}>
-                                Sell
-                            </MenuItem>
-
-                    </TextField>
-
-                    <FilledInput required={this.state['tradeOrSell'] != "Sell"}
-                    form="listing-form" error={this.state['tradeOrSell'] == "Sell" && (!this.state.price || this.state.price == "")}
-                        id="filled-adornment-amount"
-                        disabled={this.state['tradeOrSell'] != "Sell"}
-                        value={this.state['price']}
-                        onChange={this.setPrice}
-                        startAdornment={<InputAdornment variant="filled" position="start">$</InputAdornment>}
-                    />
-
-
-                  
-                
-                
-
-                    
-
-                <div className="fullwidth-field-container flex-container">
-                    <div className="flex-left">
-                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Manufacturer</Typography>
-                    <TextField required form="listing-form" id="standard-select-currency-native" value={this.state.manufacturer} 
-                    select placeholder="Placeholder" style={{float: 'left'}} onChange={this.selectManufacturer}
-                    variant="filled" InputLabelProps={{
-                            shrink: true,
-                        }}>
-                        {this.cardManufacturers.map((manufacturer) => 
-                            <MenuItem key={manufacturer} value={manufacturer}>
-                                {manufacturer}
-                            </MenuItem>
-                        )}
-
-                    </TextField>
-                    </div>
-
-                    <div className="flex-right">
-                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Year</Typography>
-                    <TextField style={{float: 'left'}} required form="listing-form" class="standard-select-currency-native" value={String(this.state.year)} 
-                    select onChange={this.selectYear}
-                    variant="filled" InputLabelProps={{
-                            shrink: true,
-                        }}>
-                        {this.yearList.map((year) => 
-                            <MenuItem key={year} value={year}>
-                                {year}
-                            </MenuItem>
-                        )}
-
-                    </TextField>
-                    </div>
-                
-                </div>
-
-                <div style={{width: '80%', textAlign: 'left'}}>
-                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Number</Typography>
-                    <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
-                            variant="subtitle2" align="left">Serial number written on card</Typography>
-                    <TextField className="listing-full-label"
-                            required
-                            form="listing-form"
-                            id="standard-adornment-amount"
-                            fullWidth
-                            margin="normal"
-                            variant="filled"
-                            placeholder="123456789"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            error={!this.state.cardNumber || this.state.cardNumber == ""}
-                            onChange={this.setCardNumber}
-                            />
-                </div>
-                    <div style={{width: '80%', textAlign: 'left'}}>
-                        <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Series/Set</Typography>
-                        <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
-                            variant="subtitle2" align="left">Example: Update Series, Series 2, etc. </Typography>
-                        <TextField required className="listing-full-label"
-                            id="standard-adornment-amount"
-                            fullWidth
-                            margin="normal"
-                            placeholder="Card Series or Set"
-                            variant="filled"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            onChange={this.setCardSeries}
-                            error={!this.state.cardSeries || this.state.cardSeries == ""}
-                            />
-
-                    </div>
-                    <div style={{width: '100%', textAlign: 'left'}}>
-                        <Typography style={{fontFamily: 'Montserrat !important'}} variant="subtitle1" align="left">Additional Details/Comments</Typography>
-                        <TextareaAutosize form="listing-form" className="text-area" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
-                            aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="" />
-
-                    </div>
-                    
-                <Button type="submit" onClick={this.createAListing} variant="contained">Submit</Button>
-
-            </div>
-            </CardContent>
-        </Card>
-        </div>
-        <div className="right-container-create">
-
-            {this.state['tradeOrSell'] == "Trade" && 
-            <div className="wanted-cards-container" style={{border: '2px solid black'}}>
-                <Card>
-                    <CardHeader title="Your Favorited Trades" titleTypographyProps={{className:"mont-text"}} subheader="Select which cards you'd like in return" />
-                    <CardContent>
-                    <List>
-                    {'wanted_trades' in this.state && this.state['wanted_trades'] &&
-                        this.state['wanted_trades'].map((trade, index) =>
-                            <ListItem key={index} role={undefined} dense button onClick={this.handleToggle(trade['id'])}>
-
-                            <ListItemAvatar>
-                                        <Avatar variant={"rounded"}
-                                            alt={`Card Image`}
-                                            src={trade['img_paths'][0]}
-                                        />
-                            </ListItemAvatar>
-
-
-                            <ListItemText id={trade['id']} primary={trade['player_name']} />
-
-                            <ListItemIcon>
-                                <Checkbox
-                                    checked={this.state['checked'].indexOf(trade['id']) !== -1}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ 'aria-labelledby': index }}
+                        <div className="fullwidth-field-container">
+                            <Typography variant="body1" className="listing-field-helper mont-text">Player Name</Typography>
+                            <TextField required form="listing-form"
+                                id="standard-adornment-amount"
+                                placeholder="Johnny Doe"
+                                fullWidth
+                                margin="normal"
+                                variant="filled"
+                                value={this.state.player_name}
+                                className="fullwidth-field-item"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                onChange={this.typePlayer}
                                 />
-                            </ListItemIcon>
-                            </ListItem>
-                        
-                        ) 
-
-                    }
-                    </List>
-                    </CardContent>
-                </Card>
-            </div>}
-            <div className="image-uploader-preview">
-                <Grid container
-                  alignItems="center"
-                  justify="center" spacing={3}>
-                
-            
-                   
-                {this.state['img_paths'].map((img, index)=>
-                    <Grid item xs={12} sm={4} md={4} lg={4}>
-                        <div>
-                        
-                            <Card>
-                            
-                            <CardMedia
-                                        component="img"
-                                        alt="Card Image"
-                                        className="card-img-upload"
-                                        image={img}
-                            />
-                            <CardActionArea>
-                             <Button onClick={() => this.removeImage("img_paths", index)} className="danger-button-img-upload">Remove</Button>  
-                             </CardActionArea>
-                                </Card>
-                                           
-                            
-                                
                         </div>
-                    </Grid>
-                )}
-                {this.state['new_img_paths'].map((img, index)=>
-                   <Grid item xs={12} sm={4} md={4} lg={4}>
-                   <div>
-                   
-                       <Card>
-                       
-                       <CardMedia
-                                   component="img"
-                                   alt="Card Image"
-                                   className="card-img-upload"
-                                   image={img}
-                       />
-                       <CardActionArea>
-                        <Button onClick={() => this.removeImage("new_img_paths", index)} className="danger-button-img-upload">Remove</Button>  
-                        </CardActionArea>
-                           </Card>
-                                      
-                       
-                           
-                   </div>
-               </Grid>
-                )}
+
+                            
+                            
+                        <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['sport']} 
+                        select placeholder="Placeholder" onChange={this.selectSport} 
+                            style={{textAlign: 'left', width: '20%' }} variant="filled" InputLabelProps={{
+                                shrink: true,
+                            }}>
+                            {this.sportList.map((sport) => 
+                                <MenuItem key={sport} value={sport}>
+                                    {sport}
+                                </MenuItem>
+                            )}
+
+                        </TextField>
+                    
+                        <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['tradeOrSell']} 
+                        select onChange={this.tradeOrSell} 
+                            style={{ minWidth: 150, textAlign: 'left' }} variant="filled" InputLabelProps={{
+                                shrink: true,
+                            }}>
+                                <MenuItem key={"Trade"} value={"Trade"}>
+                                    Trade
+                                </MenuItem>
+                                <MenuItem key={"Sell"} value={"Sell"}>
+                                    Sell
+                                </MenuItem>
+
+                        </TextField>
+
+                        <FilledInput required={this.state['tradeOrSell'] != "Sell"}
+                        form="listing-form" error={this.state['tradeOrSell'] == "Sell" && (!this.state.price || this.state.price == "")}
+                            id="filled-adornment-amount"
+                            disabled={this.state['tradeOrSell'] != "Sell"}
+                            value={this.state['price']}
+                            onChange={this.setPrice}
+                            startAdornment={<InputAdornment variant="filled" position="start">$</InputAdornment>}
+                        />
+
+
+                    
+                    
+                    
+
+                        
+
+                    <div className="fullwidth-field-container flex-container">
+                        <div className="flex-left">
+                        <Typography style={{fontFamily: 'Montserrat !important'}} variant="subtitle1" align="left">Card Manufacturer</Typography>
+                        <TextField required form="listing-form" id="standard-select-currency-native" value={this.state.manufacturer} 
+                        select placeholder="Placeholder" style={{float: 'left'}} onChange={this.selectManufacturer}
+                        variant="filled" InputLabelProps={{
+                                shrink: true,
+                            }}>
+                            {this.cardManufacturers.map((manufacturer) => 
+                                <MenuItem key={manufacturer} value={manufacturer}>
+                                    {manufacturer}
+                                </MenuItem>
+                            )}
+
+                        </TextField>
+                        </div>
+
+                        <div className="flex-right">
+                        <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Year</Typography>
+                        <TextField style={{float: 'left'}} required form="listing-form" class="standard-select-currency-native" value={String(this.state.year)} 
+                        select onChange={this.selectYear}
+                        variant="filled" InputLabelProps={{
+                                shrink: true,
+                            }}>
+                            {this.yearList.map((year) => 
+                                <MenuItem key={year} value={year}>
+                                    {year}
+                                </MenuItem>
+                            )}
+
+                        </TextField>
+                        </div>
+                    
+                    </div>
+
+                    <div style={{width: '80%', textAlign: 'left'}}>
+                        <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Number</Typography>
+                        <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
+                                variant="subtitle2" align="left">Serial number written on card</Typography>
+                        <TextField className="listing-full-label"
+                                required
+                                form="listing-form"
+                                id="standard-adornment-amount"
+                                fullWidth
+                                margin="normal"
+                                variant="filled"
+                                placeholder="123456789"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                onChange={this.setCardNumber}
+                                />
+                    </div>
+                        <div style={{width: '80%', textAlign: 'left'}}>
+                            <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Series/Set</Typography>
+                            <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
+                                variant="subtitle2" align="left">Example: Update Series, Series 2, etc. </Typography>
+                            <TextField required className="listing-full-label"
+                                id="standard-adornment-amount"
+                                fullWidth
+                                margin="normal"
+                                placeholder="Card Series or Set"
+                                variant="filled"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                onChange={this.setCardSeries}
+                                />
+
+                        </div>
+                        <div style={{width: '100%', textAlign: 'left'}}>
+                            <Typography style={{fontFamily: 'Montserrat !important'}} variant="subtitle1" align="left">Additional Details/Comments</Typography>
+                            <TextareaAutosize form="listing-form" className="text-area" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
+                                aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="" />
+
+                        </div>
+                        
+                    <Button type="submit" onClick={this.createAListing} variant="contained">Submit</Button>
+
+                </div>
+                </CardContent>
+            </Card>
+            </div>
+            <div className="right-container-create">
+
+                {this.state['tradeOrSell'] == "Trade" && 
+                <div className="wanted-cards-container" style={{border: '2px solid black'}}>
+                    <Card>
+                        <CardHeader title="Your Favorited Trades" titleTypographyProps={{className:"mont-text"}} subheader="Select which cards you'd like in return" />
+                        <CardContent>
+                        <List>
+                        {'wanted_trades' in this.state && this.state['wanted_trades'] &&
+                            this.state['wanted_trades'].map((trade, index) =>
+                                <ListItem key={index} role={undefined} dense button onClick={this.handleToggle(trade['id'])}>
+
+                                <ListItemAvatar>
+                                            <Avatar variant={"rounded"}
+                                                alt={`Card Image`}
+                                                src={trade['img_paths'][0]}
+                                            />
+                                </ListItemAvatar>
+
+
+                                <ListItemText id={trade['id']} primary={trade['player_name']} />
+
+                                <ListItemIcon>
+                                    <Checkbox
+                                        checked={this.state['checked'].indexOf(trade['id']) !== -1}
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{ 'aria-labelledby': index }}
+                                    />
+                                </ListItemIcon>
+                                </ListItem>
+                            
+                            ) 
+
+                        }
+                        </List>
+                        </CardContent>
+                    </Card>
+                </div>}
+                <div className="image-uploader-preview">
+                    <Grid container
+                    alignItems="center"
+                    justify="center" spacing={3}>
+                    
+                
+                    
+                    {this.state['img_paths'].map((img, index)=>
+                        <Grid item xs={12} sm={4} md={4} lg={4}>
+                            <div>
+                            
+                                <Card>
+                                <Button onClick={() => this.removeImage("img_paths", index)} className="danger-button-img-upload">
+                                    <ClearIcon />    
+                                    </Button>    
+                                <CardMedia
+                                            component="img"
+                                            alt="Card Image"
+                                            className="card-img-upload"
+                                            image={img}
+                                />
+
+
+                                    </Card>
+                                    <Button onClick={() => this.removeImage("img_paths", index)} className="danger-button-img-upload">
+                                    <ClearIcon />
+                        </Button> 
+                                                                            
+                                
+                                    
+                            </div>
+                        </Grid>
+                    )}
+                    {this.state['new_img_paths'].map((img, index)=>
+                    <Grid item xs={12} sm={4} md={4} lg={4}>
+                    <div>
+
+                        <Card>
+                        
+                        <CardMedia
+                                    component="img"
+                                    alt="Card Image"
+                                    className="card-img-upload"
+                                    image={img}
+                        />
+
+
+                            </Card>
+                            <Button onClick={() => this.removeImage("new_img_paths", index)} className="danger-button-img-upload">
+                                    <ClearIcon />
+                        </Button> 
+                                                                        
+                        
+                            
+                    </div>
                 </Grid>
+                    )}
+                    </Grid>
+                </div>
+
+                <div className="image-uploader-container">
+                    <ImageUploader
+                        withIcon={true}
+                        buttonText='Choose images'
+                        onChange={this.addImages}
+                        imgExtension={['.jpeg', '.jpg', '.gif', '.png', '.gif']}
+                        maxFileSize={5242880}
+                        withPreview={false}
+                    />
+                </div>
             </div>
 
-            <div className="image-uploader-container">
-                <ImageUploader
-                    withIcon={true}
-                    buttonText='Choose images'
-                    onChange={this.addImages}
-                    imgExtension={['.jpeg', '.jpg', '.gif', '.png', '.gif']}
-                    maxFileSize={5242880}
-                    withPreview={false}
-                />
-            </div>
-        </div>
-
-        </div>)
+            </div>)
+    } else {
+        return (<div className="home-container"><CircularProgress /></div>);
+    }
        
     }
 

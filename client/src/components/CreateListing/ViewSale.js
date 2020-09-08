@@ -17,8 +17,9 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { Carousel } from 'react-responsive-carousel';
-
+// import { Carousel } from 'react-responsive-carousel';
+import { Carousel } from 'react-bootstrap';
+import Image from 'react-bootstrap/Image';
 
 
 
@@ -80,11 +81,13 @@ class ViewSale extends Component {
     {/* <Grid item xs={12} sm={6} md={6} lg={4}> */}
         <Paper className="left-hand-panel">
             <div class="product-img">
-            <Carousel indicators={false} navButtonsAlwaysVisible={false} interval={3000}>
+            <Carousel style={{height: '100%'}} className="carousel-img-display" interval={null}>
                 {this.state.sale_info.img_paths.map((path) =>
-                    <div>
-                        <img style={{ position: 'relative'}} src={path} />
-                    </div>
+                <Carousel.Item className="carousel-img">
+                    <Image className="carousel-img-inner" src={path} />
+                </Carousel.Item>
+                    
+
                 )}
                 
                 </Carousel>

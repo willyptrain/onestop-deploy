@@ -886,7 +886,7 @@ def create_listing(token):
 @app.route('/api/search/<keyword>/<token>')
 @login_required
 def search(keyword, token):
-    user = User.verify_auth_token(username_or_token)
+    user = User.verify_auth_token(token)
     if not user:
         return (jsonify({"error":"User not found!"}), 401)
     trade_results = Trade.query.filter(Trade.player_name.ilike("%"+keyword.lower()+"%")).all()
