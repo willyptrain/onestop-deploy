@@ -1,6 +1,6 @@
 import os
 import time
-from flask import Flask, abort, request, jsonify, g, url_for, render_template
+from flask import Flask, request, jsonify, g, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_httpauth import HTTPBasicAuth
 import jwt
@@ -8,45 +8,27 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import datetime  
 from sqlalchemy import func
-from .settings import access_key_id, secret_access_key, acl, bucket_name, bucket_region
 import boto3
-import numpy as np
 from flask_mail import Mail, Message
+from .settings import access_key_id, secret_access_key, acl, bucket_name, bucket_region
 from .email_settings import mail_server, mail_port, mail_username, mail_password
 from .shipping_settings import shipping_address, shipping_zip, shipping_city, shipping_state
 from .stripe_config import stripe_publishable, stripe_secret
 import stripe
 from flask_login import logout_user, login_user, LoginManager, login_required, UserMixin
 import json
+from flask_migrate import Migrate
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
+from .config import DevelopmentConfig 
+# import .config
+# from .config
+
+#USE gunicorn FOR SERVER HOSTING!!!!!!
 
 
-
-# initialization
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy dog'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['UPLOAD_URL'] = "https://"+bucket_name+".s3.us-east-2.amazonaws.com/"
-app.config['TESTING'] = False
-app.config['MAIL_SUPPRESS_SEND'] = False
-app.config['MAIL_DEBUG'] = True
-
-
-app.config['MAIL_SERVER'] = mail_server
-app.config['MAIL_PORT'] = mail_port
-app.config['MAIL_USERNAME'] = mail_username
-app.config['MAIL_PASSWORD'] = mail_password
-app.config['MAIL_USE_TLS'] = 1
-app.config['launch_url'] = "http://localhost:3000/"
-app.config['REDIRECT_URI']="http://localhost:3000/"
-
-
-#SHIPPING
-app.config['SHIP_ADDRESS'] = shipping_address
-app.config['SHIP_CITY'] = shipping_city
-app.config['SHIP_STATE'] = shipping_state
-app.config['SHIP_ZIP'] = shipping_zip
+app.config.from_object(DevelopmentConfig)
 
 
 #STRIPE
@@ -79,6 +61,7 @@ db = SQLAlchemy(app)
 auth = HTTPBasicAuth()
 mail = Mail(app)
 login_manager = LoginManager(app)
+migrate = Migrate(app, db)
 
 
 @login_manager.user_loader
@@ -115,10 +98,13 @@ offered_trades = db.Table('offered_trades',
 #     db.Column('trade_orders', db.Integer, db.ForeignKey('trade_orders.id'))    
 # )
 
+def generate_uuid():
+    return str(uuid.uuid4())
+
 
 class TradeOffer(db.Model):
     __tablename__ = 'trade_offers'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, name="id", primary_key=True, default=generate_uuid)#db.Column(db.Integer, primary_key=True)
     offered_card_ids = db.Column(db.PickleType)
     time = db.Column(db.Integer, index=True)
     status = db.Column(db.String(32), index=True) #string: "pending","accepted", "denied"
@@ -165,7 +151,7 @@ class TradeOffer(db.Model):
 
 class Trade(db.Model):
     __tablename__ = 'tradings'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, name="id", primary_key=True, default=generate_uuid)#db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
     player_name = db.Column(db.String(32), index=True)
     sport = db.Column(db.String(32), index=True)
@@ -203,7 +189,7 @@ class Trade(db.Model):
 
 class Sale(db.Model):
     __tablename__ = 'sales'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, name="id", primary_key=True, default=generate_uuid)#db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
     player_name = db.Column(db.String(32), index=True)
     sport = db.Column(db.String(32), index=True)
@@ -237,7 +223,7 @@ class Sale(db.Model):
 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, name="id", primary_key=True, default=generate_uuid)#db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(32), index=True)
     email = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(64))
@@ -293,7 +279,7 @@ class User(db.Model, UserMixin):
 
 class SaleOrder(db.Model):
     __tablename__ = 'sale_orders'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, name="id", primary_key=True, default=generate_uuid)#db.Column(db.Integer, primary_key=True)
     # cards_being_sent = db.Column(db.PickleType)
     # card_givers = db.Column(db.PickleType) #person who originally offered card, User object
     # card_buyer = db.Column(db.PickleType) #person who pays for card, User object
@@ -321,7 +307,7 @@ class SaleOrder(db.Model):
 
 class TradeOrder(db.Model):
     __tablename__ = 'trade_orders'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, name="id", primary_key=True, default=generate_uuid)#db.Column(db.Integer, primary_key=True)
     #SHOULD JUST CHANGE TO REFERENCE TRADE_ORDER !!!!!!!!
     # posted_card = db.Column(db.PickleType)
     # offered_cards = db.Column(db.PickleType)
@@ -709,6 +695,9 @@ def edit_sale(item_id, token):
         comments = request.form.get('comments')
         tradeOrSell = request.form.get('tradeOrSell')
         price = request.form.get('price')
+        existing_img_paths = [request.form.get('existing_images')]
+        print(request.form.get('existing_images'))
+        print(existing_img_paths)
         images = request.files
         img_paths = []
         for file in images:
@@ -722,6 +711,9 @@ def edit_sale(item_id, token):
                 filename = secure_filename(new_filename)
                 image_bucket.Object(filename).put(Body=img)
                 img_paths.append(app.config['UPLOAD_URL']+filename)
+
+        img_paths += existing_img_paths
+
         sale = Sale.query.filter_by(id=item_id, tradeOrSell="Sell", username=user.username).first()
         if(tradeOrSell == "Sell" and sale is not None):
             sale.username = username
@@ -775,6 +767,9 @@ def edit_trade(item_id, token):
         tradeOrSell = request.form.get('tradeOrSell')
         price = request.form.get('price')
         wanted_in_return_card_ids = request.form.get('checked').split(",")
+        existing_img_paths = request.form.get('existing_images').split(",")
+        print(request.form.get('existing_images'))
+        print(existing_img_paths)
         images = request.files
         img_paths = []
         for file in images:
@@ -788,6 +783,8 @@ def edit_trade(item_id, token):
                 filename = secure_filename(new_filename)
                 image_bucket.Object(filename).put(Body=img)
                 img_paths.append(app.config['UPLOAD_URL']+filename)
+        
+        img_paths += existing_img_paths
         trade = Trade.query.filter_by(id=item_id, tradeOrSell="Trade", username=user.username).first()
         if(tradeOrSell == "Trade" and trade is not None):
             trade.username = username
@@ -1288,4 +1285,5 @@ def get_auth_token():
 if not os.path.exists('db.sqlite'):
     print("CREATED_DB")
     db.create_all()
+# db.create_all()
 app.run(debug=True, ssl_context='adhoc')

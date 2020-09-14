@@ -186,6 +186,7 @@ class CreateListing extends Component {
         this.setState({...this.state, 'loading': true});
         let form_data = new FormData();
         form_data.append('checked', 'checked' in this.state ? this.state['checked'] : []);
+        form_data.append('existing_images', 'img_paths' in this.state ? this.state['img_paths'] : []);
         form_data.append('sport', 'sport' in this.state ? this.state['sport'] : "");
         form_data.append('player_name', 'player_name' in this.state ? this.state['player_name'] : "");
         form_data.append('year', 'year' in this.state ? this.state['year'] : 0);
@@ -483,6 +484,16 @@ class CreateListing extends Component {
                         </CardContent>
                     </Card>
                 </div>}
+                <div className="image-uploader-container">
+                    <ImageUploader
+                        withIcon={true}
+                        buttonText='Choose images'
+                        onChange={this.addImages}
+                        imgExtension={['.jpeg', '.jpg', '.gif', '.png', '.gif']}
+                        maxFileSize={5242880}
+                        withPreview={false}
+                    />
+                </div>
                 <div className="image-uploader-preview">
                     <Grid container
                     alignItems="center"
@@ -543,16 +554,7 @@ class CreateListing extends Component {
                     </Grid>
                 </div>
 
-                <div className="image-uploader-container">
-                    <ImageUploader
-                        withIcon={true}
-                        buttonText='Choose images'
-                        onChange={this.addImages}
-                        imgExtension={['.jpeg', '.jpg', '.gif', '.png', '.gif']}
-                        maxFileSize={5242880}
-                        withPreview={false}
-                    />
-                </div>
+                
             </div>
 
             </div>)

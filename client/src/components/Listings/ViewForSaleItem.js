@@ -118,12 +118,10 @@ class ViewForSaleItem extends Component {
                 variant="subtitle1" align="left">Sport: {this.state.sale_info['sport']}</Typography>
                 <Typography className="year-text" 
                 variant="subtitle1" align="left">Year: {this.state.sale_info['year']}</Typography>
+            <Typography className="price-text"
+                variant="h6" align="left">Price: ${this.state.sale_info['price']}</Typography>
+            </div>
             
-            </div>
-            <div className="price-container">
-                <Typography className="price-text"
-                variant="h3" align="left">Price: ${this.state.sale_info['price']}</Typography>
-            </div>
 
 
             <div style={{top: '52vh'}} className="button-below-img">
