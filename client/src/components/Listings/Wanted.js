@@ -22,6 +22,7 @@ import IconButton from '@material-ui/core/IconButton';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import CardHeader from '@material-ui/core/CardHeader';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import TradingCard from './../Card/TradingCard.js';
 
 
 
@@ -39,12 +40,35 @@ class Wanted extends Component {
         axios.get(`/api/wanted/trades/${this.state["sport"]}/${token}`)
         .then(res => {
             console.log(res.data.trades)
-            this.setState({...this.state, "trades":res.data.trades})
+            let trade_ids = [];
+
+            for (let i=0; i< res.data.trades.length; i++) {
+                trade_ids.push(res.data.trades[i]['id'])
+            }
+            this.setState({...this.state, "trades":res.data.trades, 'trade_ids':trade_ids})
+
+            console.log(trade_ids);
         })
         .catch(err =>  {
 
         })
 
+    }
+
+    addToFavorites = (event) => {
+        let id = event.currentTarget.value;
+        let token = localStorage.access_token;
+        console.log(id, event.currentTarget);
+        axios.post(`/api/post_wanted/trades/${id}/${token}`)
+        .then(res => {
+            console.log(res.data)
+
+            this.setState({...this.state, 'trade_ids':res.data[0]})
+        })
+        .catch(err =>  {
+            console.log("error :(")
+            console.log(err);
+        })
     }
 
     handleChange = (event, new_val) => {
@@ -55,7 +79,11 @@ class Wanted extends Component {
             axios.get(`/api/wanted/trades/${this.state["sport"]}/${token}`)
             .then(res => {
                 console.log(res.data.trades)
-                this.setState({...this.state, "trades":res.data.trades})
+                let trade_ids = []
+                for (let i=0; i< res.data.trades.length; i++) {
+                    trade_ids.push(res.data.trades[i]['id'])
+                }
+                this.setState({...this.state, "trades":res.data.trades, 'trade_ids':trade_ids})
             })
             .catch(err =>  {
 
@@ -97,7 +125,7 @@ class Wanted extends Component {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
-                    <Card className="track-card">
+                    {/* <Card className="track-card">
                                 <CardHeader 
                                     title={trade['player_name']}
                                     subheader={trade['username']}
@@ -109,11 +137,16 @@ class Wanted extends Component {
                                 </Typography>
                                 </CardContent>
                                 <CardActions disableSpacing>
-                                    {/* <IconButton value={trade['id']} aria-label="add to favorites">
+                                    <IconButton value={trade['id']} color={this.state['trades'].includes(trade['id']) ? "primary" : "default"} onClick={this.addToFavorites} aria-label="add to favorites">
                                         <FavoriteIcon />
-                                    </IconButton>    */}
-                                </CardActions>
-                            </Card>
+                                    </IconButton>    
+                                 </CardActions> 
+                            </Card> */}
+                    <TradingCard statusText={true} favorite={true} url="for_trade/item" favorite_trades={this.state['trade_ids']} favorite_func={this.addToFavorites} trade={trade} />
+
+
+
+                        
                     </Grid>
                     
                     

@@ -34,7 +34,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import SearchIcon from '@material-ui/icons/Search';
 import Radio from '@material-ui/core/Radio';
 import Button from '@material-ui/core/Button';
-
+import TradingCard from './../Card/TradingCard.js';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -220,8 +220,13 @@ class ForTrade extends Component {
         axios.get(`/api/all_listings/trades/${this.state['sport']}/${token}`)
         .then(res => {
             console.log(res.data);
+            let trade_ids = [];
+            for (let i=0; i< res.data.wantedCards.length; i++) {
+                trade_ids.push(res.data.wantedCards[i]['id'])
+            }
             this.setState({...this.state, 'trades':res.data.trades,
-                                'favorite_trades': res.data.wantedCards})
+                                'favorite_trades': res.data.wantedCards, 'favorite_trade_ids':trade_ids})
+                                
         })
         .catch(err =>  {
             console.log("error :(")
@@ -237,9 +242,15 @@ class ForTrade extends Component {
         axios.get(`/api/all_listings/trades/${sport}/${token}`)
         .then(res => {
             console.log(res.data);
-            this.setState({...this.state, 'trades':res.data.trades,
-                                'favorite_trades': res.data.wantedCards,
-                            'selectedSport':sport})
+            // this.setState({...this.state, 'trades':res.data.trades,
+            //                     'favorite_trades': res.data.wantedCards,
+            //                 'selectedSport':sport})
+            let trade_ids = [];
+            for (let i=0; i< res.data.wantedCards.length; i++) {
+                trade_ids.push(res.data.wantedCards[i]['id'])
+            }
+            this.setState({...this.state, 'selectedSport':sport, 'trades':res.data.trades, "favorite_trades":res.data.wantedCards, 'favorite_trade_ids':trade_ids})
+
         })
         .catch(err =>  {
             console.log("error :(")
@@ -263,7 +274,13 @@ class ForTrade extends Component {
         let token = localStorage.access_token;
         axios.post(`/api/post_wanted/trades/${id}/${token}`)
         .then(res => {
-            this.setState({...this.state, 'favorite_trades':res.data[0]})
+            // this.setState({...this.state, 'favorite_trades':res.data[0]})
+            // console.log(res.data[0]);
+            // let trade_ids = [];
+            // for (let i=0; i< res.data[0].length; i++) {
+            //     trade_ids.push(res.data[0][i]['id'])
+            // }
+            this.setState({...this.state, "favorite_trade_ids":res.data[0]})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -331,7 +348,7 @@ class ForTrade extends Component {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={12} sm={4} md={4} lg={4}>
 
-                    <Card className="listing-card">
+                    {/* <Card className="listing-card">
                                 <CardActionArea href={`/for_trade/item/${trade['id']}`}>
                                     <CardHeader 
                                         title={trade['player_name']}
@@ -352,7 +369,10 @@ class ForTrade extends Component {
                                     </IconButton>   
                                     
                                 </CardActions>
-                            </Card>
+                            </Card> */}
+                        {/* <TradingCard url="for_trade/item" trade={trade} /> */}
+                        <TradingCard  favorite={true} url="for_trade/item" favorite_trades={this.state['favorite_trade_ids']} favorite_func={this.addToFavorites} trade={trade} />
+
                     </Grid>
                     
                     

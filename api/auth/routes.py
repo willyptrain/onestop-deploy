@@ -23,6 +23,7 @@ import uuid
 from .config import DevelopmentConfig 
 # import .config
 # from .config
+# from auth.a import app
 
 #USE gunicorn FOR SERVER HOSTING!!!!!!
 
@@ -30,15 +31,20 @@ from .config import DevelopmentConfig
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 
+print("STARTING")
+print(app.config)
 
 #STRIPE
 stripe.api_key = stripe_secret
 
 
+app.config['launch_url'] = 'http://localhost:3000/'
 
-
-
-
+db = SQLAlchemy(app)
+auth = HTTPBasicAuth()
+mail = Mail(app)
+login_manager = LoginManager(app)
+migrate = Migrate(app, db)
 
 
 
@@ -55,13 +61,6 @@ s3_resource = boto3.resource('s3',
 image_bucket = s3_resource.Bucket(name=bucket_name)
 
 
-
-# extensions
-db = SQLAlchemy(app)
-auth = HTTPBasicAuth()
-mail = Mail(app)
-login_manager = LoginManager(app)
-migrate = Migrate(app, db)
 
 
 @login_manager.user_loader
@@ -233,6 +232,9 @@ class User(db.Model, UserMixin):
 
     made_offers = db.relationship('TradeOffer', backref="offerer")
     purchased_cards = db.relationship('SaleOrder', backref="buyer")
+
+    seen_welcome_modal = db.Column(db.Boolean, index=True)
+
     # accepted_trade_offers = db.relationship('TradeOffer', backref="offerer")
 
     # trades_posted = db.relationship('TradeOffer', backref="posted_trades")
@@ -502,7 +504,7 @@ def get_user_info(token):
         return (jsonify({'id':user.id, 'username': user.username, 'trades':[trade.json_rep() for trade in user.trades], 
         'sales':[sale.json_rep() for sale in user.sales], 'accepted_trades_out':accepted_trades_out, 'accepted_trades_in': accepted_trades_in,
         'pending_trades_out': pending_trades_out, 'user_pending_sales':user_pending_sales,'purchased_sales': [order.json_rep() for order in user.purchased_cards],
-        'pending_trades_in':pending_trades_in}),201)
+        'pending_trades_in':pending_trades_in, 'seen_welcome_modal': user.seen_welcome_modal}),201)
     return (jsonify({"error":"User not found!"}), 401)
 
 
@@ -1240,7 +1242,7 @@ def new_user():
         return (jsonify({"error":"User not found!"}), 401)
     if User.query.filter_by(username=username).first() is not None or User.query.filter_by(email=email).first() is not None:
         return (jsonify({"error":"User already exists!"}), 409)
-    user = User(username=username, email=email, time=datetime.datetime.now())
+    user = User(username=username, email=email, time=datetime.datetime.now(), seen_welcome_modal=False)
     user.hash_password(password)
     db.session.add(user)
     db.session.commit()
@@ -1248,6 +1250,13 @@ def new_user():
     g.user = user
     return (jsonify({"access_token": access_token.decode('ascii'), 'redirectUrl':app.config['REDIRECT_URI']}),201)
 
+@app.route('/api/seen_welcome_modal/<token>')
+def update_seen_welcome_modal(token):
+    user = User.verify_auth_token(token)
+    if(user):
+        user.seen_welcome_modal = True
+        return (jsonify({'Message':'Updated user.seen_welcome_modal'}),201)
+    return (jsonify({"error":"User not found!"}), 401)
 
 
 
@@ -1282,8 +1291,8 @@ def get_auth_token():
 
 
 
-if not os.path.exists('db.sqlite'):
-    print("CREATED_DB")
-    db.create_all()
-# db.create_all()
-app.run(debug=True, ssl_context='adhoc')
+# if not os.path.exists('db.sqlite'):
+#     print("CREATED_DB")
+#     db.create_all()
+# db.create_all() #RUN IF DB is deleted!
+app.run(debug=True)#, ssl_context='adhoc')

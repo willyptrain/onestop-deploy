@@ -15,7 +15,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import NavDropdown from 'react-bootstrap/NavDropdown'
-import logo from '../../images/logo_transparent.png';
+// import logo from '../../images/logo_transparent.png';
+import logo from '../../images/gifgit_transparent.png';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';

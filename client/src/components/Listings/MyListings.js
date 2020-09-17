@@ -24,6 +24,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import EditIcon from '@material-ui/icons/Edit';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import TradingCard from './../Card/TradingCard.js';
 
 
 class MyListings extends Component {
@@ -122,7 +123,7 @@ class MyListings extends Component {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={6} sm={3} md={3} lg={3}>
 
-                        <Card className="track-card">
+                        {/* <Card className="track-card">
                                     
                         <CardActionArea onClick={() => window.location = `/view_listing/trades/${trade['id']}`}>
                                     <CardHeader 
@@ -142,7 +143,9 @@ class MyListings extends Component {
                                     <Typography align="right" style={{color: !trade.for_trade ? 'green' : 'black'}} className="mont-text ">
                                         <b>{trade.for_trade ? "For Trade" : "Traded"}</b>
                                     </Typography>
-                        </Card>
+                        </Card> */}
+                        <TradingCard statusText={true} url="view_listing/trades" trade={trade} />
+
                     </Grid>
                     
                     

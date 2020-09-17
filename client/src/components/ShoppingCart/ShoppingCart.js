@@ -98,7 +98,7 @@ class ShoppingCart extends Component {
     constructor(props) {
         super(props);
         console.log(props); 
-        this.state = {'open': true, shipping_info: {}}
+        this.state = {'open': false, shipping_info: {}}
     }
 
     // 'username' 'id' 'sport' 'player_name' 'year' 'manufacturer' 'cardNumber'

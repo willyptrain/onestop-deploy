@@ -32,7 +32,7 @@ class Home extends Component {
         axios.get(`/api/users/${token}`)
         .then(res => {
             console.log(res)
-            this.setState()
+            this.setState({'userInfo': res.data})
         })
         .catch(err =>  {
             console.log(err);
@@ -40,6 +40,17 @@ class Home extends Component {
 
         })
 
+    }
+
+    closeWelcomeModal() {
+        let token = localStorage.access_token;
+        axios.get(`/api/seen_welcome_modal/${token}`)
+        .then(res => {
+
+        })
+        .catch(err => {
+
+        })
     }
 
     open = () => {
@@ -52,7 +63,36 @@ class Home extends Component {
 
     render() {
         return (<div className="home-container">
-        
+                {'userInfo' in this.state &&
+                
+                
+                <Modal
+                open={!this.state['userInfo']['seen_welcome_modal']}
+                onClose={this.handleClose}
+                aria-labelledby="simple-modal-title"
+                aria-describedby="simple-modal-description">
+                    
+                    <Grid container className="grid-container"
+                  alignItems="center"
+                  justify="center" spacing={3}>
+            <Grid item xs={6} sm={4} md={4} lg={4}>
+                    <Paper>
+                    <p>Welcome Modal</p>
+                    </Paper>
+                    </Grid>
+                 </Grid>
+              </Modal>
+                
+                }
+
+
+
+
+
+
+
+
+
                 <Modal
                 open={this.state['open']}
                 onClose={this.handleClose}
