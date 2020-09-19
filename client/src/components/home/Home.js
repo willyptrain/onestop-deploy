@@ -67,7 +67,7 @@ class Home extends Component {
                 
                 
                 <Modal
-                open={!this.state['userInfo']['seen_welcome_modal']}
+                open={this.state['userInfo']['seen_welcome_modal']}
                 onClose={this.handleClose}
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description">

@@ -24,15 +24,27 @@ from .config import DevelopmentConfig
 # import .config
 # from .config
 # from auth.a import app
+from .sheets import post_new_row
 
 #USE gunicorn FOR SERVER HOSTING!!!!!!
 
+sheets_row_fields = ['Date', 'Original Poster ID', 'Original Poster Email', 'Trade or Sale', 'Item ID', 'For Trade/Sale', 'Status', 'Insurance', 'TradeOffer ID', 'TradeOrder ID', 'SaleOrder ID', 'Bidder ID', 'Bidder Email']
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 
-print("STARTING")
-print(app.config)
+
+
+
+
+
+
+
+
+
+
+
+
 
 #STRIPE
 stripe.api_key = stripe_secret
@@ -566,11 +578,11 @@ def accept_offer(trade_offer_id, token):
 
 
 
-
+        curr_time = datetime.datetime.now()
 
         trade_order = TradeOrder(original_trade_offer=trade_offer, card_insurance=True, shipping_address=app.config['SHIP_ADDRESS'],
         shipping_state=app.config['SHIP_STATE'], shipping_zip=app.config['SHIP_ZIP'],
-        shipping_city=app.config['SHIP_CITY'], time=datetime.datetime.now())
+        shipping_city=app.config['SHIP_CITY'], time=curr_time)
         db.session.add(trade_order)
         db.session.flush()
 
@@ -590,15 +602,29 @@ def accept_offer(trade_offer_id, token):
             original_trade.for_trade = False
         
 
+
+        row_fields = ['Date', 'Poster ID', 'Poster Email', 'Trade or Sale', 'Trade ID', 'Sale ID', 'Status','Insurance', 'TradeOffer ID', 'TradeOrder ID', 'SaleOrder ID', 'Bidder ID', 'Bidder Email']
         
-
-            
-
-
-
+        google_sheet_request = {}
+    
 
         db.session.commit()
 
+
+        google_sheet_request['Date'] = str(curr_time)
+        google_sheet_request['Poster ID'] = user.id
+        google_sheet_request['Poster Email'] = user.email
+        google_sheet_request['Trade Or Sale'] = 'Trade'
+        google_sheet_request['Trade ID'] = trade_offer.original_trade_id
+        google_sheet_request['Insurance'] = True
+        google_sheet_request['Status'] = "shipping"
+        google_sheet_request['TradeOffer ID'] = trade_offer.id
+        google_sheet_request['TradeOrder ID'] = trade_order.id
+        google_sheet_request['Bidder ID'] = trade_offer.offerer_id
+        bidder = User.query.filter_by(id=trade_offer.offerer_id).first()
+        google_sheet_request['Bidder Email'] = bidder.email
+
+        post_new_row(google_sheet_request)
 
 
         with mail.connect() as conn:
