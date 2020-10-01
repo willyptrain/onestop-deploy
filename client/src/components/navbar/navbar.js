@@ -187,7 +187,7 @@ export function NavBar(data) {
 
                             
                                   <List>
-                                    {searchResults.map((res, index) =>
+                                    {searchResults && searchResults.map((res, index) =>
                                             <ListItem divider={true} component="a" href={`/${res.tradeOrSell == "Trade" ? 'for_trade' : 'for_sale'}/item/${res.id}`}>
                                                 <ListItemAvatar>
                                                   <Avatar
