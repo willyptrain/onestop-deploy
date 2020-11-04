@@ -11,7 +11,7 @@ import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
-import logo from '../../images/text_logo.png';
+import logo from '../../images/old_logo.png';
 
 
 
@@ -76,8 +76,9 @@ class Login extends Component {
                             Login
                             </Button>
                         </form>
-                        <a href={'/signup'}>Signup?</a>
-
+                        <div className="signup-option">
+                            <a href={'/signup'}>Signup?</a>
+                        </div>
                         </div>
                     </Card>
                 </div>

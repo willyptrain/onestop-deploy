@@ -100,10 +100,7 @@ class ViewForTradeItem extends Component {
         this.setState({...this.state,'open':false});
     }
     handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
-        this.setState({...this.state, 'offerSuccess':false})
+        this.setState({...this.state, 'open': false});
         
       };
 
@@ -123,7 +120,7 @@ class ViewForTradeItem extends Component {
                         aria-labelledby="simple-modal-title"
                         aria-describedby="simple-modal-description">
                             
-                            <Grid container className="grid-container"
+                            <Grid container style={{height: '0vh'}}
                         alignItems="center"
                         justify="center" spacing={3}>
                                 <Grid item xs={10} sm={6} md={6} lg={6}>
@@ -170,8 +167,8 @@ class ViewForTradeItem extends Component {
     
                     <div style={{top: '56vh'}} className="button-below-img">
                 
-                        <Button color="secondary" size="large" variant="contained" onClick={this.open} className="button-item">Offer Trade</Button>
-    
+                        <Button className="edit-button-item" color="secondary" size="large" variant="contained" onClick={this.open}>Offer Existing Trade</Button>
+                        <Button className="danger-button-item" style={{background: '#a62832'}} color="secondary" size="large" variant="contained" href={`/create_listing/new_offer/${this.state['trade_info']['id']}`}>Offer New Card</Button>
                     </div>
                     
                     <div className="item-details-tabs">

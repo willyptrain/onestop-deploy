@@ -36,6 +36,7 @@ import Modal from '@material-ui/core/Modal';
 import {Elements} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
 import StripeCheckout from "./StripeCheckout.js"
+import Tooltip from '@material-ui/core/Tooltip';
 
 
 
@@ -98,7 +99,8 @@ class ShoppingCart extends Component {
     constructor(props) {
         super(props);
         console.log(props); 
-        this.state = {'open': false, shipping_info: {}}
+        this.state = {'open': false, shipping_info: {}};
+        this.insuranceHelper = "Insurance brief"
     }
 
     // 'username' 'id' 'sport' 'player_name' 'year' 'manufacturer' 'cardNumber'
@@ -231,7 +233,7 @@ class ShoppingCart extends Component {
                 aria-describedby="simple-modal-description">
                     
                     <Grid container className="grid-container"
-                  alignItems="center"
+                  alignItems="center" style={{height: '0vh'}}
                   justify="center" spacing={3}>
                         <Grid item xs={12} sm={8} md={8} lg={8}>
                             {/* <StripeCheckout /> */}
@@ -321,7 +323,9 @@ class ShoppingCart extends Component {
 
                 <div className="price-box">
                     <div className="insurance-box">
+                        <Tooltip title={this.insuranceHelper}>
                         <Typography variant="body1" className="mont-text">Insurance: </Typography> 
+                        </Tooltip>
                         <Checkbox className="checkbox"
                             checked={this.state['insurance']}
                             onClick={this.checkBox}
@@ -334,8 +338,8 @@ class ShoppingCart extends Component {
                 <Divider className="price-divider" />
                 <Typography className="total-price mont-text" variant='h5'><b>Total: </b>$TBD</Typography>
                 
-                <Button onClick={this.checkout_sale} size="large" variant="contained" className="checkout-btn mont-text">
-                    Proceed to Checkout
+                <Button onClick={this.checkout_sale} disabled={Object.keys(this.state['cart']).length == 0} size="large" variant="contained" className="checkout-btn mont-text">
+                    Proceed to Checkout {Object.keys(this.state['cart']).length == 0}
                 </Button>
                 
                 </div>

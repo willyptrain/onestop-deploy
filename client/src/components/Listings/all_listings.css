@@ -21,24 +21,28 @@
     padding-top: 56.25%;
 }
 .listing-container {
-    height: 80vh;
+    /* height: 80vh; */
+    height: max-content;
     position: relative;
     top: 4vh;
 
 }
+.trade-sport-filter {
+    width: 100%;
+}
 
 .tradeBox-card {
     position: relative;
-    top: 20vh;
+    /* top: 20vh; */
     /* left: 25%; */
-    height: 50vh;
+    height: max-content;
 }
 .left-hand-tradeBox {
     height: 100%;
 
 }
 .left-hand-paper {
-    height: 100%;
+    height: 55vh;
     margin-left: 0px !important;
 }
 .right-hand-tradeBox {
@@ -46,7 +50,7 @@
 
 }
 .right-hand-paper {
-    height: 100%;
+    height: 55vh;
 }
 
 .middle-icon {
@@ -60,11 +64,15 @@
     height: 85%;
 }
 .tradeBox-paper-container {
-    height: 75%;
+    height: 35vh;
     margin-left: 0px !important;
     overflow-y: scroll;
 }
 
+.tradebox {
+    position: relative;
+    top: 20vh;
+}
 
 
 .tradeBox-wanted-img {
@@ -150,6 +158,16 @@
     /* border: 2px solid white !important; */
 
 }
+.search-bar-listing {
+    width: 20%;
+    min-width: 300px;
+    position: relative;
+    top: 1vh;
+    text-align: left;
+    height: fit-content;
+}
+
+
 .price-container {
     position: relative; 
     top: 15vh;
@@ -213,12 +231,15 @@
 
 .filter-container {
     width: 100%;
-    height: 100%;
+    height: 10vh;
     margin-top: 0px !important;
-    background: #ffffff;
+    /* background: #ffffff; */
     display: block;
     text-align: left;
-    flex: 1;
+    /* flex: 2; */
+    /* max-width: 400px; */
+    /* min-width: 200px; */
+    overflow-x: hidden;
 
 }
 .flex-container {
@@ -226,10 +247,20 @@
 
 }
 .right-side-listing {
-    flex: 5;
-    margin-left: 5rem !important;
-    margin-right: 2rem !important;
-    overflow-y:scroll
+    /* flex: 5; */
+    margin-left: 2.5% !important;
+    margin-right: 2.5% !important;
+    overflow-y:scroll;
+    overflow-x: hidden;
+    width: 95%;
+    /* background: red; */
+}
+.filter-inner {
+    height: 100%;
+    display: flex;
+    width: 100%;
+    margin-left: 5%;
+
 }
 
 .price-range-filter {

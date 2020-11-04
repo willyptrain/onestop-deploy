@@ -1,0 +1,6 @@
+access_key_id=""
+secret_access_key=""
+acl=""
+bucket_name=""
+bucket_region=""
+owner_id=""

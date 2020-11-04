@@ -264,6 +264,7 @@ class Notifications extends Component {
     }
     
     acceptOffer = (event) => {
+        this.setState({...this.state, 'loading': true});
         let token = localStorage.access_token;
         axios.get(`/api/accept_trade_offer/${event.currentTarget.value}/${token}`)
         .then(res => {
@@ -306,8 +307,14 @@ class Notifications extends Component {
 
 
     render() {
+        
         if('redirectUrl' in this.state && this.state['redirectUrl']) {
             return <Redirect {...this.state} url={this.state['redirectUrl']} />
+        }
+        if('loading' in this.state && this.state['loading']) {
+            return (<div>
+                Loading...
+            </div>)
         }
         if('pending_trades_out' in this.state) {
                 // if(this.state['tab'] == 'trades') {

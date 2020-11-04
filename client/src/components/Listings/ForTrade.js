@@ -34,13 +34,26 @@ import Checkbox from '@material-ui/core/Checkbox';
 import SearchIcon from '@material-ui/icons/Search';
 import Radio from '@material-ui/core/Radio';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import PageviewIcon from '@material-ui/icons/Pageview';
+
 import TradingCard from './../Card/TradingCard.js';
 
 
 const useStyles = makeStyles((theme) => ({
-    margin: {
-      margin: theme.spacing(1),
-    },
+  root: {
+    width: 300,
+  },
+margin: {
+  margin: theme.spacing(1),
+},
+formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
   }));
 
 
@@ -81,119 +94,69 @@ const useStyles = makeStyles((theme) => ({
   }))(InputBase);
 
 
-
-export function SelectSport(data) {
-
-    
+  export function SelectSport(data) {
 
     const classes = useStyles();
     const [sport, setSport] = React.useState(data.selectedSport);
-    const [checked, setChecked] = React.useState(false);
 
-    
-
-    const handleChange = (event) => {
-        console.log(event.target.value)
-        setSport(event.target.value);
-        data.changeSport(event.target.value)
-      };
-
-    const toggleCollapse = (event) => {
-        setChecked(!checked);
+    const sportMap = {
+        'all': 'View All',
+        'baseball': 'Baseball',
+        'basketball': 'Basketball',
+        'football': 'Football',
+        'hockey': 'Hockey',
+        'wrestling': 'Wrestling',
+        'soccer': 'Soccer',
+        'racing': 'Racing',
+        'gaming': 'Other/Gaming',
     }
+
+    const defaultSport = data.selectedSport in sportMap && data.selectedSport ? sportMap[data.selectedSport] : "View All";
+    const [sportLabel, setSportLabel] = React.useState(defaultSport);
+   
+
+
+      const handleChange = (event) => {
+        console.log(event.target.value)
+        setSportLabel(sportMap[event.target.value]);
+        setSport(event.target.value);
+        data.changeSport(event.target.value);
+      };
+    
 
 
     return (<div>
 
+    <div style={{width: '100%'}}>
+            
+        {/* <MenuItem id="demo-simple-select-label" className="mont-text" style={{cursor: 'pointer', color: 'inherit', textDecoration: 'none', fontSize: '0.75em'}}
+             aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                 
+             {sportLabel}
+             
+        </MenuItem> */}
+        <FormControl className={classes.formControl}>
+        <InputLabel id="demo-simple-select-label">Sport</InputLabel>
 
-
-        <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "all"} />}
-            // disabled={sport != "all"}
-            label="View All"
-            value="all"
-          />
-        <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "baseball"} />}
-            // disabled={sport != "baseball"}
-            label="Baseball"
-            value="baseball"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "basketball"} />}
-            // disabled={sport != "basketball"}
-            label="Basketball"
-            value="basketball"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "football"} />}
-            // disabled={sport != "football"}
-            label="Football"
-            value="football"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "hockey"} />}
-            // disabled={sport != "hockey"}
-            label="Hockey"
-            value="hockey"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "wrestling"} />}
-            // disabled={sport != "wrestling"}
-            label="Wrestling"
-            value="wrestling"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "soccer"} />}
-            // disabled={sport != "soccer"}
-            label="Soccer"
-            value="soccer"
-          />
-                    <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "racing"} />}
-            // disabled={sport != "racing"}
-            label="Racing"
-            value="racing"
-          />
-                    <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "gaming"} />}
-            // disabled={sport != "gaming"}
-            label="Other/Gaming"
-            value="gaming"
-          />
-
-        {/* </Collapse> */}
-
-
-
-
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            className="mont-text"
+            onChange={handleChange}
+            label={sportLabel}
+        >
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="all" >View All</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="baseball">Baseball</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="basketball">Basketball</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="football">Football</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="hockey">Hockey</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="wrestling">Wrestling</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="soccer">Soccer</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="racing">Racing</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="gaming">Other/Gaming</MenuItem>
+        </Select>
+        </FormControl>
+      </div>
     </div>)
 }
 
@@ -249,7 +212,7 @@ class ForTrade extends Component {
             for (let i=0; i< res.data.wantedCards.length; i++) {
                 trade_ids.push(res.data.wantedCards[i]['id'])
             }
-            this.setState({...this.state, 'selectedSport':sport, 'trades':res.data.trades, "favorite_trades":res.data.wantedCards, 'favorite_trade_ids':trade_ids})
+            this.setState({...this.state, 'sport':sport, 'trades':res.data.trades, "favorite_trades":res.data.wantedCards, 'favorite_trade_ids':trade_ids})
 
         })
         .catch(err =>  {
@@ -274,13 +237,8 @@ class ForTrade extends Component {
         let token = localStorage.access_token;
         axios.post(`/api/post_wanted/trades/${id}/${token}`)
         .then(res => {
-            // this.setState({...this.state, 'favorite_trades':res.data[0]})
-            // console.log(res.data[0]);
-            // let trade_ids = [];
-            // for (let i=0; i< res.data[0].length; i++) {
-            //     trade_ids.push(res.data[0][i]['id'])
-            // }
-            this.setState({...this.state, "favorite_trade_ids":res.data[0]})
+            console.log(res.data);
+            this.setState({...this.state, "favorite_trades": res.data.wanted_trade_ids})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -288,41 +246,19 @@ class ForTrade extends Component {
         })
     }
 
-   searchChange = (event) => {
-        if(event.currentTarget.value == "") {
-            let token = localStorage.access_token;
-            axios.get(`/api/all_listings/trades/${this.state['sport']}/${token}`)
-            .then(res => {
-                console.log(res.data);
-                this.setState({...this.state, 'trades':res.data.trades,
-                                    'favorite_trades': res.data.wantedCards})
-            })
-            .catch(err =>  {
-                console.log("error :(")
-                console.log(err);
-            }) 
-        } 
-        else {
-          let token = localStorage.access_token;
-          axios.get(`/api/search/${event.currentTarget.value}/${token}`)
-          .then(res => {
-              this.setState({...this.state, 'trades':res.data.trades});
-          })
-          .catch(err =>  {
-              console.log(err)
-          })
-
-        }
-    }
+   
 
 
     render() {
+
+      console.log(this.state);
         
-            return (<div className="home-container flex-container">
+            return (<div className="home-container">
 
 
                 <div className="filter-container">
-                <Paper component="form" className="search-bar">
+                  <div className="filter-inner">
+                {/* <Paper component="form" className="search-bar-listing">
                     <IconButton type="submit" aria-label="search">
                             <SearchIcon />
                         </IconButton>
@@ -334,16 +270,16 @@ class ForTrade extends Component {
                             inputProps={{ 'aria-label': 'search' }}
                           />
 
-                </Paper>
-                    <SelectSport selectedSport={this.state['sport']} changeSport={this.changeSport} />
+                </Paper> */}
+                      <SelectSport selectedSport={this.state['sport']} changeSport={this.changeSport} />
+
+                  </div>
 
                 </div>
-                {('trades' in this.state && this.state['trades']) &&
+                {('trades' in this.state && this.state['trades']) && this.state['trades'].length > 0 &&
                 <div className="right-side-listing">
 
-                              <Grid container className="grid-container"
-                  alignItems="center"
-                  justify="center" spacing={5}>
+                              <Grid container className="grid-container"spacing={5}>
                 {
                     this.state['trades'].map((trade, index) => 
                     <Grid item xs={12} sm={4} md={4} lg={4}>
@@ -371,7 +307,7 @@ class ForTrade extends Component {
                                 </CardActions>
                             </Card> */}
                         {/* <TradingCard url="for_trade/item" trade={trade} /> */}
-                        <TradingCard  favorite={true} url="for_trade/item" favorite_trades={this.state['favorite_trade_ids']} favorite_func={this.addToFavorites} trade={trade} />
+                        <TradingCard  favorite={true} url="for_trade/item" favorite_trades={this.state['favorite_trades']} favorite_func={this.addToFavorites} trade={trade} />
 
                     </Grid>
                     
@@ -379,7 +315,17 @@ class ForTrade extends Component {
                     )}
                     </Grid>
                     </div>
-            } {!('trades' in this.state && this.state['trades']) && 
+            } 
+            {('trades' in this.state && this.state['trades']) && this.state['trades'].length == 0
+            && 
+            <div className="home-container">
+              <p>No Trades</p>
+            </div>
+            
+            
+            }
+            
+            {!('trades' in this.state && this.state['trades']) && 
             <div className="right-side-listing">
                 <CircularProgress style={{position: 'absolute', top: '40vh'}} />
             </div>

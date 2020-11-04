@@ -55,6 +55,7 @@ class AboutPage extends Component {
             console.log(res.data);
         })
         .catch(err => {
+            this.setState({...this.state, 'error': err});
             console.log("error");
             console.log(err);
         })

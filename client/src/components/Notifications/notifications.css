@@ -66,7 +66,7 @@
     max-width: 72% !important;
 }
 .confirmation-paper {
-    height: 100vh;
+    height: max-content;
     
 }
 .confirmation-done-icon {

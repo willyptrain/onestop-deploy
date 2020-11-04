@@ -37,6 +37,7 @@ class TradeBox extends Component {
         let token = localStorage.access_token;
         axios.get(`/api/my_listings/for_trade/trades/${token}`)
         .then(res => {
+            console.log(res.data.trades);
             this.setState({...this.state, 'my_trades':res.data.trades})
             console.log(res.data);
         })
@@ -69,7 +70,7 @@ class TradeBox extends Component {
     render() {
 
         return (
-                <div className="login">
+                <div className="tradebox">
                 {'my_trades' in this.state && 
                     <Card className="tradeBox-card">
                     <Grid container className="tradeBox-grid-container"
@@ -77,7 +78,7 @@ class TradeBox extends Component {
                 justify="center" spacing={2} >
                         <Grid item xs={5} sm={5} md={5} lg={5} className="left-hand-tradeBox">
                             <div className="left-hand-paper">
-                                <h2 className="tradeBox-want-text">You want: </h2>
+                                <h2 className="tradeBox-want-text mont-text">You want: </h2>
                                 <Card elevation={3} className="tradeBox-card-container">
                                     <CardHeader title={this.state['trade_info']['player_name']} />
                                     <img className="tradeBox-wanted-img"
@@ -92,9 +93,9 @@ class TradeBox extends Component {
                         </Grid>
 
 
-                        <Grid item xs={5} sm={5} md={5} lg={5} className="right-hand-tradeBox">
-                            <div className="right-hand-paper">
-                                <h2>Your offering: </h2>
+                        <Grid item xs={5} sm={5} md={5} lg={5} className="mont-text right-hand-tradeBox">
+                            <div className="mont-text right-hand-paper">
+                                <h2 className="mont-text mont-text">Your offering: </h2>
                                 <Paper elevation={2} className="tradeBox-paper-container">
                                     <List>
                                         {this.state['my_trades'].map((trade,index) =>

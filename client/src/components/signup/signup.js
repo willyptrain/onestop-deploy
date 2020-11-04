@@ -5,60 +5,71 @@ import Redirect from '../redirect.js';
 import Particles from 'react-particles-js';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import TextField from '@material-ui/core/TextField';
 
 import Grid from '@material-ui/core/Grid';
 import './signup.css'
-import logo from '../../images/logo_transparent.png';
+import logo from '../../images/old_logo.png';
+// import logo from '../../images/text_logo.png';
+import Tooltip from '@material-ui/core/Tooltip';
+
+import FormData from 'form-data';
 
 
 class Signup extends Component {
 
     constructor(props) {
         super(props);
-        console.log(props)
-        this.state = {email: "", password: "", username: "", setUserInfo: props.setUserInfo, 
+        this.state = {email: "", password: "", setUserInfo: props.setUserInfo, 
                         redirectUrl: 'redirectUrl' in props ? props.redirectUrl : ""}
-        console.log(this.state)
         this.setToken = false;
     }
 
     validateForm() {
-        return this.state['email'].length > 0 && this.state['username'].length > 0 && this.state['password'].length > 0;
+        return true;//this.state['email'].length > 0 && this.state['email'].includes("@") && this.state['password'].length > 8;
     }
     
     handleSubmit = (event) => {
         event.preventDefault();
-        fetch("/api/users/signup", {
-            method:"POST",
-            cache: "no-cache",
-            headers:{
-                "content_type":"application/json",
-            },
-            body:JSON.stringify(this.state)
-        }).then(response => 
-            response.json()
-        ).then(res => {
-            localStorage.setItem('access_token', res.access_token)
-            this.setState({'redirectUrl':res.redirectUrl, 'token':true})
-            
-        }).catch(err => {
-            console.log(err);
-            this.setState({'error': err})
-        });
-    
 
+        let form_data = new FormData();
+        form_data.append('username', this.state['email'])
+        form_data.append('email', this.state['email'])
+        form_data.append('password', this.state['password'])
+
+        axios.post('/api/users/signup', form_data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
+            .then(res => {
+                
+                localStorage.setItem('access_token', res.data.access_token);
+                this.setState({...this.state, 'redirectUrl':res.data.redirectUrl, 'token':true})
+
+            })
+            .catch(err =>  {
+                this.setState({...this.state, 'error':err,'userInfo': 'Not logged in'})
+
+            })
         
     }
 
     render() {
 
-        if (this.state.token) {
+        if (this.state['token']) {
+            console.log(this.state.token);
             return <Redirect url={`/`} />
           }
+        // if(this.state['error']) {
+        //     return <p>Error!!</p>
+        // }
 
         return (
             <div className="signup-container">
-                <Particles  style={{position: 'absolute', left:'0px',backgroundSize: 'cover', width:'100%', height:'100%'}}
+                {/* <Particles  style={{position: 'absolute', left:'0px',backgroundSize: 'cover', width:'100%', height:'100%'}}
                     params={{ 
                         particles: { 
                         number: { 
@@ -70,7 +81,11 @@ class Signup extends Component {
                         }, 
                         }, 
                     }} 
-                    /> 
+                    />  */}
+                    <div style={{position: 'absolute', left:'0px', width:'100%', height:'100%'}}>
+                        <img style={{opacity: '0.7',position: 'absolute', left:'0px',backgroundSize: 'cover', width:'100%', height:'100%'}} 
+                        src="https://images.pexels.com/photos/139762/pexels-photo-139762.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260" />
+                    </div>
 
                 <div className="signup-box">
 
@@ -78,10 +93,10 @@ class Signup extends Component {
                 <Grid container className="grid-container"
           alignItems="center"
           justify="center" spacing={0}>
-          <Grid style={{marginTop:'20vh'}} item xs={10} sm={10} md={10} lg={8}>
+          <Grid style={{marginTop:'10vh', zIndex: '100'}} item xs={10} sm={4} md={4} lg={4}>
 
                       <Paper elevation="large" className="signup-card">
-                        <div className="signup-left">
+                        {/* <div className="signup-left">
                             <div className="signup-header">
                             <img src={logo} className="logged-in-logo" />
                             </div>
@@ -89,42 +104,59 @@ class Signup extends Component {
                                 <h4 className="have-account-text">Already have an account?</h4>
                                 <Button href={'/'} variant="outlined" className="have-account-login-btn">Login</Button>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="signup-right">
-                            {"error" in this.state &&
-                                <p>{this.state["error"]}</p>
-                            }
+                            
+                            <img src={logo} style={{maxWidth: 160, marginTop: '2vh'}} />
                             <form onSubmit={this.handleSubmit}>
-                                <FormGroup controlId="username" bsSize="large">
-                                <p>Username</p>
-                                <FormControl
-                                    autoFocus
+                                
+                                <FormGroup style={{marginTop: '2vh'}} controlId="email" bsSize="large">
+                                {/* <p>Email</p> */}
+                                <TextField error={"error" in this.state} id="standard-basic" label="Email" className="textbox-generic login-email"
                                     type="text"
-                                    value={this.state['username']}
-                                    onChange={e => this.setState({...this.state, username: e.target.value})}
-                                />
-                                </FormGroup>
-
-                                <FormGroup controlId="email" bsSize="large">
-                                <p>Email</p>
-                                <FormControl
                                     value={this.state['email']}
                                     onChange={e => this.setState({...this.state, email: e.target.value})}
-                                    type="text"
                                 />
                                 </FormGroup>
 
-                                <FormGroup controlId="password" bsSize="large">
-                                <p>Password</p>
-                                <FormControl
+                                <FormGroup style={{marginTop: '3vh'}} controlId="password" bsSize="large">
+                                {/* <p>Password</p> */}
+                                <TextField error={"error" in this.state} id="standard-basic" label="Password" className="textbox-generic login-email"
                                     value={this.state['password']}
                                     onChange={e => this.setState({...this.state, password: e.target.value})}
                                     type="password"
                                 />
                                 </FormGroup>
-                                <Button block bsSize="large" disabled={!this.validateForm()} type="submit">
-                                Signup
-                                </Button>
+                                {'error' in this.state && 
+                                    <div style={{width: '100%'}}>
+                                        <p className="mont-text" style={{fontSize: '0.53em'}}>Email is already taken or Invalid Input</p>
+                                    </div>
+                                }
+                                
+                                <div style={{width: '100%', marginTop: '3vh'}}>
+                                {!this.validateForm() && 
+                                    <div>
+                                        <Tooltip placement="top" title={"Please use a valid email and ensure password length > 7."}>
+                                        <div>
+                                        <Button className="signup-btn" block bsSize="large" color="primary" variant="contained" disabled={!this.validateForm()} type="submit">
+                                            Signup
+                                        </Button>
+                                        </div>
+                                        </Tooltip>
+                                    
+                                    </div>
+                                }
+                                {this.validateForm() && 
+                                    <Button className="signup-btn" block bsSize="large" color="primary" variant="contained" disabled={!this.validateForm()} type="submit">
+                                    Signup
+                                    </Button>
+                                    }
+                                </div>
+                                <div style={{width: '100%', marginBottom: '3vh'}}>
+                                    <a style={{fontSize: '0.55em'}} href="https://cardshop-client.herokuapp.com/">
+                                    Already Signed up? Login here
+                                    </a>
+                                </div>
                             </form>
                         </div>
 

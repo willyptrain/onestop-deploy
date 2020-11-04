@@ -3,7 +3,7 @@ import Redirect from '../redirect.js';
 import axios from 'axios';
 import './listing.css';
 import TextField from '@material-ui/core/TextField';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import {makeStyles, withStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -31,9 +31,241 @@ import Avatar from '@material-ui/core/Avatar';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
-
+import FormControl from '@material-ui/core/FormControl';
 import ClearIcon from '@material-ui/icons/Clear';
 import { CircularProgress } from '@material-ui/core';
+
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        width: 300,
+      },
+    margin: {
+      margin: theme.spacing(1),
+      marginLeft: 0
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        marginLeft: 0,
+        minWidth: 120,
+      },
+      selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
+      formControl2: {
+        margin: theme.spacing(1),
+        minWidth: 170,
+        marginLeft: 0
+      },
+      selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
+  }));
+
+
+
+
+
+
+
+
+
+
+export function SelectSportCreate(data) {
+    const classes = useStyles();
+    const [sport, setSport] = React.useState(data.selectedSport);
+
+    const sportMap = {
+        'all': 'View All',
+        'baseball': 'Baseball',
+        'basketball': 'Basketball',
+        'football': 'Football',
+        'hockey': 'Hockey',
+        'wrestling': 'Wrestling',
+        'soccer': 'Soccer',
+        'racing': 'Racing',
+        'gaming': 'Other/Gaming',
+    }
+
+    const defaultSport = data.selectedSport in sportMap ? sportMap[data.selectedSport] : "View All";
+    const [sportLabel, setSportLabel] = React.useState(defaultSport);
+   
+
+
+      const handleChange = (event) => {
+        console.log(event.target.value)
+        setSportLabel(sportMap[event.target.value]);
+        setSport(event.target.value);
+        data.changeSport(event.target.value);
+      };
+    
+
+
+    return (<div>
+
+    <div style={{width: '100%'}}>
+            
+        {/* <MenuItem id="demo-simple-select-label" className="mont-text" style={{cursor: 'pointer', color: 'inherit', textDecoration: 'none', fontSize: '0.75em'}}
+             aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                 
+             {sportLabel}
+             
+        </MenuItem> */}
+        <FormControl className={classes.formControl}>
+        <InputLabel id="demo-simple-select-label">Sport</InputLabel>
+
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            className="mont-text"
+            onChange={handleChange}
+            label={sportLabel}
+        >
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="baseball">Baseball</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="basketball">Basketball</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="football">Football</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="hockey">Hockey</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="wrestling">Wrestling</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="soccer">Soccer</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="racing">Racing</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="gaming">Other/Gaming</MenuItem>
+        </Select>
+        </FormControl>
+        
+    </div>
+
+      
+
+
+
+
+    </div>)
+}
+
+export function SelectTradeOrSell(data) {
+    const classes = useStyles();
+
+
+    const defaultOpt = data.selectedOption ? data.selectedOption : "Trade";
+    const [optionLabel, setOptionLabel] = React.useState(defaultOpt);
+   
+
+
+      const handleChange = (event) => {
+        console.log(event.target.value);
+        setOptionLabel(event.target.value);
+        data.changeOption(event.target.value);
+      };
+    
+
+
+    return (<div>
+
+    <div style={{width: '100%'}}>
+            
+        {/* <MenuItem id="demo-simple-select-label" className="mont-text" style={{cursor: 'pointer', color: 'inherit', textDecoration: 'none', fontSize: '0.75em'}}
+             aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                 
+             {sportLabel}
+             
+        </MenuItem> */}
+        <FormControl className={classes.formControl2}>
+        <InputLabel id="demo-simple-select-label">Trade Or Sell?</InputLabel>
+
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            className="mont-text"
+            onChange={handleChange}
+            label={optionLabel}
+        >
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="Trade" >Trade</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="Sell">Sell</MenuItem>
+        
+        </Select>
+        </FormControl>
+        
+    </div>
+
+      
+
+
+
+
+    </div>)
+}
+
+
+
+
+
+export function SelectOptionFunc(data) {
+    const classes = useStyles();
+
+
+    const defaultOpt = data.selectedOption ? data.selectedOption : "Trade";
+    const [optionLabel, setOptionLabel] = React.useState(defaultOpt);
+   
+
+
+      const handleChange = (event) => {
+        console.log(event.target.value);
+        setOptionLabel(event.target.value);
+        data.changeOption(event.target.value);
+      };
+    
+
+
+    return (<div>
+
+    <div style={{width: '100%'}}>
+            
+        {/* <MenuItem id="demo-simple-select-label" className="mont-text" style={{cursor: 'pointer', color: 'inherit', textDecoration: 'none', fontSize: '0.75em'}}
+             aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                 
+             {sportLabel}
+             
+        </MenuItem> */}
+        <FormControl className={classes.formControl2}>
+        <InputLabel id="demo-simple-select-label">{data.inputLabel}</InputLabel>
+
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            className="mont-text"
+            onChange={handleChange}
+            label={optionLabel}
+        >
+            {data.menuItems.map((item, index) => 
+            
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value={item} >{item}</MenuItem>
+            
+            )}
+        
+        </Select>
+        </FormControl>
+        
+    </div>
+
+      
+
+
+
+
+    </div>)
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class CreateListing extends Component {
@@ -66,7 +298,7 @@ class CreateListing extends Component {
                     console.log(res.data);
                 })
                 .catch(err =>  {
-                    
+                    this.setState({...this.state, 'error': err});
 
                 })
                 axios.get(`/api/wanted/trades/all/${token}`)
@@ -75,6 +307,7 @@ class CreateListing extends Component {
                     this.setState({...this.state, 'wanted_trades':res.data.trades});
                 })
                 .catch(err =>  {
+                    this.setState({...this.state, 'error': err});
                     
 
                 })
@@ -84,6 +317,7 @@ class CreateListing extends Component {
                     this.setState({...res.data,  'submitted': false});
                 })
                 .catch(err =>  {
+                    this.setState({...this.state, 'error': err});
 
                 })
                 axios.get(`/api/wanted/trades/all/${token}`)
@@ -92,6 +326,7 @@ class CreateListing extends Component {
                     this.setState({...this.state, 'wanted_trades':res.data.trades});
                 })
                 .catch(err =>  {
+                    this.setState({...this.state, 'error': err});
                     
 
                 })
@@ -105,7 +340,7 @@ class CreateListing extends Component {
                     this.setState({...this.state, 'wanted_trades':res.data.trades});
                 })
                 .catch(err =>  {
-                    
+                    this.setState({...this.state, 'error': err});
 
                 })
         }
@@ -134,22 +369,23 @@ class CreateListing extends Component {
 
 
 
-    selectSport = (event) => {
-        this.setState({...this.state, 'sport':event.target.value});
+    selectSport = (sport) => {
+        console.log(sport);
+        this.setState({...this.state, 'sport':sport});
     }
 
     selectYear = (event) => {
         this.setState({...this.state, 'year':event.target.value});
     }
 
-    tradeOrSell = (event) => {
-        this.setState({...this.state, 'tradeOrSell':event.target.value});
+    tradeOrSell = (option) => {
+        this.setState({...this.state, 'tradeOrSell':option});
     }
     setPrice = (event) => {
         this.setState({...this.state, 'price':event.target.value});
     }
-    selectManufacturer = (event) => {
-        this.setState({...this.state, 'manufacturer':event.target.value});
+    selectManufacturer = (manufacturer) => {
+        this.setState({...this.state, 'manufacturer':manufacturer});
     }
 
     typePlayer = (event) => {
@@ -299,7 +535,6 @@ class CreateListing extends Component {
                 <CardContent>
                     <div className="form-root">    
                         
-                        
                         <div className="fullwidth-field-container">
                             <Typography variant="body1" className="listing-field-helper mont-text">Player Name</Typography>
                             <TextField required form="listing-form"
@@ -307,7 +542,7 @@ class CreateListing extends Component {
                                 placeholder="Johnny Doe"
                                 fullWidth
                                 margin="normal"
-                                variant="filled"
+                                // variant="filled"
                                 value={this.state.player_name}
                                 className="fullwidth-field-item"
                                 InputLabelProps={{
@@ -316,10 +551,10 @@ class CreateListing extends Component {
                                 onChange={this.typePlayer}
                                 />
                         </div>
+                        <div style={{width: '100%', display: 'flex'}}>
 
-                            
-                            
-                        <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['sport']} 
+                        <SelectSportCreate selectedSport={this.state['sport']} changeSport={this.selectSport} />
+                        {/* <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['sport']} 
                         select placeholder="Placeholder" onChange={this.selectSport} 
                             style={{textAlign: 'left', width: '20%' }} variant="filled" InputLabelProps={{
                                 shrink: true,
@@ -330,9 +565,11 @@ class CreateListing extends Component {
                                 </MenuItem>
                             )}
 
-                        </TextField>
+                        </TextField> */}
                     
-                        <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['tradeOrSell']} 
+                        <SelectTradeOrSell selectedOption={this.state['tradeOrSell']} changeOption={this.tradeOrSell} />
+
+                        {/* <TextField required form="listing-form" class="standard-select-currency-native" value={this.state['tradeOrSell']} 
                         select onChange={this.tradeOrSell} 
                             style={{ minWidth: 150, textAlign: 'left' }} variant="filled" InputLabelProps={{
                                 shrink: true,
@@ -344,17 +581,21 @@ class CreateListing extends Component {
                                     Sell
                                 </MenuItem>
 
-                        </TextField>
+                        </TextField> */}
 
-                        <FilledInput required={this.state['tradeOrSell'] != "Sell"}
+                        <Input required={this.state['tradeOrSell'] != "Sell"}
                         form="listing-form" error={this.state['tradeOrSell'] == "Sell" && (!this.state.price || this.state.price == "")}
-                            id="filled-adornment-amount"
+                            id="standard-adornment-amount"
                             disabled={this.state['tradeOrSell'] != "Sell"}
                             value={this.state['price']}
                             onChange={this.setPrice}
-                            startAdornment={<InputAdornment variant="filled" position="start">$</InputAdornment>}
+                            style={{height: '56px'}}
+                            startAdornment={<InputAdornment variant="standard" position="start">$</InputAdornment>}
                         />
+                        </div>
 
+
+                        <SelectOptionFunc inputLabel={"Card Manufacturer"} menuItems={this.cardManufacturers} selectedOption={this.state['manufacturer']} changeOption={this.selectManufacturer} />
 
                     
                     
@@ -362,7 +603,7 @@ class CreateListing extends Component {
 
                         
 
-                    <div className="fullwidth-field-container flex-container">
+                    {/* <div className="fullwidth-field-container flex-container">
                         <div className="flex-left">
                         <Typography style={{fontFamily: 'Montserrat !important'}} variant="subtitle1" align="left">Card Manufacturer</Typography>
                         <TextField required form="listing-form" id="standard-select-currency-native" value={this.state.manufacturer} 
@@ -395,13 +636,29 @@ class CreateListing extends Component {
                         </TextField>
                         </div>
                     
-                    </div>
+                    </div> */}
 
-                    <div style={{width: '80%', textAlign: 'left'}}>
-                        <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Number</Typography>
+                    <div style={{width: '80%', textAlign: 'left', marginTop: '2vh'}}>
+                        {/* <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Number</Typography>
                         <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
-                                variant="subtitle2" align="left">Serial number written on card</Typography>
-                        <TextField className="listing-full-label"
+                                variant="subtitle2" align="left">Serial number written on card</Typography> */}
+                        
+                        <Typography variant="body1" style={{marginBottom: '0px'}} className="listing-field-helper mont-text">Card Number</Typography>
+
+                        <TextField required form="listing-form"
+                                id="standard-adornment-amount"
+                                placeholder="Serial #"
+                                fullWidth
+                                margin="normal"
+                                // variant="filled"
+                                value={this.state.cardNumber}
+                                className="fullwidth-field-item"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                onChange={this.setCardNumber}
+                                />
+                        {/* <TextField className="listing-full-label"
                                 required
                                 form="listing-form"
                                 id="standard-adornment-amount"
@@ -413,13 +670,13 @@ class CreateListing extends Component {
                                     shrink: true,
                                 }}
                                 onChange={this.setCardNumber}
-                                />
+                                /> */}
+                        
                     </div>
-                        <div style={{width: '80%', textAlign: 'left'}}>
-                            <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} variant="subtitle1" align="left">Card Series/Set</Typography>
-                            <Typography style={{fontFamily: 'Montserrat !important', marginLeft: '8px'}} color="textSecondary" 
-                                variant="subtitle2" align="left">Example: Update Series, Series 2, etc. </Typography>
-                            <TextField required className="listing-full-label"
+                        <div style={{width: '80%', textAlign: 'left', marginTop: '2vh'}}>
+                        <Typography variant="body1" style={{marginBottom: '0px'}} className="listing-field-helper mont-text">Card Series/Set</Typography>
+                            
+                            {/* <TextField required className="listing-full-label"
                                 id="standard-adornment-amount"
                                 fullWidth
                                 margin="normal"
@@ -429,13 +686,26 @@ class CreateListing extends Component {
                                     shrink: true,
                                 }}
                                 onChange={this.setCardSeries}
+                                /> */}
+                                <TextField required form="listing-form"
+                                id="standard-adornment-amount"
+                                placeholder="Update Series, Topps 500, etc."
+                                fullWidth
+                                margin="normal"
+                                // variant="filled"
+                                value={this.state.cardSeries}
+                                className="fullwidth-field-item"
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                onChange={this.setCardSeries}
                                 />
 
                         </div>
-                        <div style={{width: '100%', textAlign: 'left'}}>
-                            <Typography style={{fontFamily: 'Montserrat !important'}} variant="subtitle1" align="left">Additional Details/Comments</Typography>
-                            <TextareaAutosize form="listing-form" className="text-area" style={{background: '#efefef', fontFamily: 'Montserrat !important', width: '80%'}}
-                                aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="" />
+                        <div style={{width: '100%', textAlign: 'left', marginTop: '3vh'}}>
+                            <Typography style={{fontFamily: 'Montserrat'}} variant="subtitle1" align="left">Additional Details/Comments</Typography>
+                            <TextareaAutosize form="listing-form" className="text-area" style={{paddingLeft: '10px', paddingTop: '10px', background: 'white', fontFamily: 'Montserrat', width: '80%'}}
+                                aria-label="minimum height" onChange={this.setComments} rowsMin={6} placeholder="Comments, etc." />
 
                         </div>
                         

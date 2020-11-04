@@ -15,8 +15,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import NavDropdown from 'react-bootstrap/NavDropdown'
-// import logo from '../../images/logo_transparent.png';
-import logo from '../../images/gifgit_transparent.png';
+import logo from '../../images/old_logo_transparent.png';
+// import logo from '../../images/gifgit_transparent.png';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import List from '@material-ui/core/List';
@@ -136,7 +136,8 @@ export function NavBar(data) {
         let token = localStorage.access_token;
         axios.get('/api/users/signout/${token}')
         .then(res => {
-          console.log(res.data)
+          console.log(res.data);
+          localStorage.clear();
           setRedirectHome(true);
         })
         .catch(err =>  {
@@ -167,7 +168,7 @@ export function NavBar(data) {
 
 
             <div className="right-nav">
-                  <div className="search-bar">
+                  {!data.mobile && <div className="search-bar">
                 <Paper component="form" className={classes.root}>
                     <IconButton type="submit" aria-label="search">
                             <SearchIcon />
@@ -187,7 +188,7 @@ export function NavBar(data) {
 
                             
                                   <List>
-                                    {searchResults && searchResults.map((res, index) =>
+                                    {searchResults.map((res, index) =>
                                             <ListItem divider={true} component="a" href={`/${res.tradeOrSell == "Trade" ? 'for_trade' : 'for_sale'}/item/${res.id}`}>
                                                 <ListItemAvatar>
                                                   <Avatar
@@ -205,14 +206,15 @@ export function NavBar(data) {
 
                             </div>
                 </div>
-                </div>
+                </div>}
 
-                <div className="nav-signout-container">
+                {!data.mobile && <div className="nav-signout-container">
                   <IconButton className="drawer-exit-btn" href="/shopping_cart">
                     <ShoppingCartIcon size="large" style={{color: 'white'}} />
                   </IconButton>
                   <Button className="signout-btn mont-text" onClick={signout} variant="filled">Signout</Button>
                 </div>
+                }
 
                 </div>
 
@@ -241,6 +243,10 @@ export function NavBar(data) {
               </IconButton>
           </div>
           <List className="nav-menu">
+                    <ListItem alignItems="center" component="a" button href={`/`} className="nav-menu-item">
+                     Home
+                      <MenuDropdown type={"for_trade"} />
+                    </ListItem>
                     <ListItem alignItems="center" component="a" button href={`/for_trade/all`} className="nav-menu-item">
                      For Trade
                       <MenuDropdown type={"for_trade"} />
@@ -253,7 +259,8 @@ export function NavBar(data) {
                     </ListItem>
 
 
-                    
+                    {!data.mobile && 
+                    <div>
                     <ListItem alignItems="center" button href={`/wanted/all`} component="a" className="nav-menu-item">
                       Wanted
                       <MenuDropdown type={"wanted"} />
@@ -270,6 +277,8 @@ export function NavBar(data) {
                     <ListItem alignItems="center" button  href={`/notifications`} component="a" className="nav-menu-item">
                             Orders
                     </ListItem> 
+                    </div>
+                    }
                   </List>
           </Drawer>
         

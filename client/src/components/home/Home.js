@@ -12,9 +12,10 @@ import Modal from '@material-ui/core/Modal';
 import Login from '../login/login.js'
 import Grid from '@material-ui/core/Grid';
 import { Typography } from '@material-ui/core';
-import saleImage from '../../images/SaleHome.png'
-import tradeImage from '../../images/TradeHome.jpg'
+import saleImage from '../../images/for_sale_new.JPG'
+import tradeImage from '../../images/for_trade_new.JPG'
 import Button from '@material-ui/core/Button';
+import homeIMG from '../../images/IMG_4630.jpg';
 
 
 class Home extends Component {
@@ -73,6 +74,7 @@ class Home extends Component {
                 aria-describedby="simple-modal-description">
                     
                     <Grid container className="grid-container"
+                  style={{height: '100vh'}}
                   alignItems="center"
                   justify="center" spacing={3}>
             <Grid item xs={6} sm={4} md={4} lg={4}>
@@ -100,6 +102,7 @@ class Home extends Component {
                 aria-describedby="simple-modal-description">
                     
                     <Grid container className="grid-container"
+                    style={{height: '0vh'}}
                   alignItems="center"
                   justify="center" spacing={3}>
             <Grid item xs={6} sm={4} md={4} lg={4}>
@@ -110,6 +113,8 @@ class Home extends Component {
               </Modal>
           
         <div>
+            {/* <img style={{width: '100%'}}
+             src={homeIMG} /> */}
             <Carousel interval={3000}>
                 <Paper className="carousel-paper" key={1}>
                     <img className="carousel-img" src={carousel1} />
@@ -135,13 +140,13 @@ class Home extends Component {
                         <Button className="launch-trade-btn" variant="outlined" color="default" href="/for_trade/all">View our For Trade Page</Button>            
                     </div>
                     <div style={{width: '100%', textAlign: 'center'}}>
-                        <Typography variant="h4" align="center" paragraph gutterBottom className="for-trade-text">
+                        <Typography variant="h4" align="center" gutterBottom className="for-trade-text">
                                 Trading is made easy and safe through our website. On our platform, we 
                                 offer insurance behind your trades. As avid collectors and traders outselves, we know
                                 that all too many times people will tell you they want to make a trade, only to 
                                 never send their cards, leaving you empty handed. Our goal is to guarantee this never happens,
                                 serving as the midde-men to ensure you get the cards you want in the condition 
-                                in which you agreed!
+                                in which you agreed! <br></br><br></br><br></br><br></br>
                         </Typography>
                         </div>
                         </Paper>
@@ -161,9 +166,9 @@ class Home extends Component {
                         <Button className="launch-sale-btn" variant="outlined" color="default" href="/for_sale/all">View our For Sale Page</Button>
                         </div>
                         <div style={{width: '100%', textAlign: 'center'}}>
-                            <Typography variant="h4" align="center" paragraph gutterBottom className="for-sale-text">
+                            <Typography variant="h4" align="center" gutterBottom className="for-sale-text">
                             We are not only here for trades, but for sales too! Through our website,
-                            you can list and sell your own cards with ease. 
+                            you can list and sell your own cards with ease. <br></br><br></br><br></br><br></br>
                             </Typography>
                         </div>
                         {/* </div> */}

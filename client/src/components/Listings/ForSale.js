@@ -35,14 +35,29 @@ import SearchIcon from '@material-ui/icons/Search';
 import Radio from '@material-ui/core/Radio';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Toolbar from '@material-ui/core/Toolbar';
+import Drawer from '@material-ui/core/Drawer';
+import Slider from '@material-ui/core/Slider';
+import Menu from '@material-ui/core/Menu';
+import FormControl from '@material-ui/core/FormControl';
 
 
 
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        width: 300,
+      },
     margin: {
       margin: theme.spacing(1),
     },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+      },
+      selectEmpty: {
+        marginTop: theme.spacing(2),
+      },
   }));
 
 
@@ -84,120 +99,189 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export function SelectSport(data) {
 
+  function valueText(value) {
+    return "$" + `${value}`;
+  }
+
+export function PriceSlider(data) {
     
 
     const classes = useStyles();
+    const [value, setValue] = React.useState([20, 37]);
+  
+    const handleChange = (event, newValue) => {
+        data.setMin(newValue[0], data.setMax(newValue[1]));
+        setValue(newValue);
+        data.filterByPrice();
+    };
+  
+
+
+    return (
+        
+
+        <div className={classes.root}>
+            <Typography id="range-slider" gutterBottom>
+                Price
+            </Typography>
+            <Slider
+                value={value}
+                onChange={handleChange}
+                valueLabelDisplay="auto"
+                aria-labelledby="range-slider"
+                getAriaValueText={valueText}
+            />
+        </div>
+
+    );
+}
+
+
+
+
+
+export function SelectSport(data) {
+
+    const classes = useStyles();
     const [sport, setSport] = React.useState(data.selectedSport);
-    const [checked, setChecked] = React.useState(false);
 
-    
-
-    const handleChange = (event) => {
-        console.log(event.target.value)
-        setSport(event.target.value);
-        data.changeSport(event.target.value)
-      };
-
-    const toggleCollapse = (event) => {
-        setChecked(!checked);
+    const sportMap = {
+        'all': 'View All',
+        'baseball': 'Baseball',
+        'basketball': 'Basketball',
+        'football': 'Football',
+        'hockey': 'Hockey',
+        'wrestling': 'Wrestling',
+        'soccer': 'Soccer',
+        'racing': 'Racing',
+        'gaming': 'Other/Gaming',
     }
+
+    const defaultSport = data.selectedSport in sportMap ? sportMap[data.selectedSport] : "View All";
+    const [sportLabel, setSportLabel] = React.useState(defaultSport);
+   
+
+
+      const handleChange = (event) => {
+        console.log(event.target.value)
+        setSportLabel(sportMap[event.target.value]);
+        setSport(event.target.value);
+        data.changeSport(event.target.value);
+      };
+    
 
 
     return (<div>
 
+    <div style={{width: '100%'}}>
+            
+        {/* <MenuItem id="demo-simple-select-label" className="mont-text" style={{cursor: 'pointer', color: 'inherit', textDecoration: 'none', fontSize: '0.75em'}}
+             aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                 
+             {sportLabel}
+             
+        </MenuItem> */}
+        <FormControl className={classes.formControl}>
+        <InputLabel id="demo-simple-select-label">Sport</InputLabel>
 
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            className="mont-text"
+            onChange={handleChange}
+            label={sportLabel}
+        >
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="all" >View All</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="baseball">Baseball</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="basketball">Basketball</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="football">Football</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="hockey">Hockey</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="wrestling">Wrestling</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="soccer">Soccer</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="racing">Racing</MenuItem>
+            <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="gaming">Other/Gaming</MenuItem>
+        </Select>
+        </FormControl>
+        
+    </div>
 
-        <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "all"} />}
-            // disabled={sport != "all"}
-            label="View All"
-            value="all"
-          />
-        <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "baseball"} />}
-            // disabled={sport != "baseball"}
-            label="Baseball"
-            value="baseball"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "basketball"} />}
-            // disabled={sport != "basketball"}
-            label="Basketball"
-            value="basketball"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "football"} />}
-            // disabled={sport != "football"}
-            label="Football"
-            value="football"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "hockey"} />}
-            // disabled={sport != "hockey"}
-            label="Hockey"
-            value="hockey"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "wrestling"} />}
-            // disabled={sport != "wrestling"}
-            label="Wrestling"
-            value="wrestling"
-          />
-          <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "soccer"} />}
-            // disabled={sport != "soccer"}
-            label="Soccer"
-            value="soccer"
-          />
-                    <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "racing"} />}
-            // disabled={sport != "racing"}
-            label="Racing"
-            value="racing"
-          />
-                    <FormControlLabel
-            aria-label="Acknowledge"
-            onClick={handleChange}
-            onFocus={handleChange}
-            control={<Radio checked={sport == "gaming"} />}
-            // disabled={sport != "gaming"}
-            label="Other/Gaming"
-            value="gaming"
-          />
-
-        {/* </Collapse> */}
+      
 
 
 
 
     </div>)
 }
+
+
+export function PriceRangeDropdown(data) {
+
+    const classes = useStyles();
+    const [priceRange, setPriceRange] = React.useState([0, 100]);
+    const [priceRangeLabel, setPriceRangeLabel] = React.useState("0 - 100");
+
+
+
+    const priceMap = {
+        "0 - 100": [0, 100],
+        "100 - 250": [100, 250],
+        "250 - 500": [250, 500],
+        "500+": [500, 1000000000]
+    };
+
+
+
+
+      const handleChange = (event) => {
+        let newValue = priceMap[event.target.value];
+        console.log(newValue, event.target.value);
+        data.setMin(newValue[0]);
+        data.setMax(newValue[1]);
+        setPriceRange(newValue);
+        setPriceRangeLabel(event.target.value);
+        data.filterByPrice(newValue[0], newValue[1]);
+      };
+    
+
+
+    return (<div>
+
+    <div style={{width: '100%'}}>
+            
+        {/* <MenuItem id="demo-simple-select-label" className="mont-text" style={{cursor: 'pointer', color: 'inherit', textDecoration: 'none', fontSize: '0.75em'}}
+             aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                 
+             {sportLabel}
+             
+        </MenuItem> */}
+        <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Price Range</InputLabel>
+
+            <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                className="mont-text"
+                onChange={handleChange}
+                label={priceRangeLabel}
+            >
+                <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="0 - 100" >0 - 100</MenuItem>
+                <MenuItem style={{fontSize: '1.1em'}} className="mont-text" value="100 - 250">100 - 250</MenuItem>
+                <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="250 - 500">250 - 500</MenuItem>
+                <MenuItem style={{fontSize: '1.1em'}} className="mont-text"  value="500+">500+</MenuItem>
+            </Select>
+        </FormControl>
+        
+    </div>
+
+      
+
+
+
+
+    </div>)
+}
+
 
 
 
@@ -255,12 +339,16 @@ class ForSale extends Component {
 
     changeSport = (sport) => {
         let token = localStorage.access_token;
+        console.log(sport);
+        this.setState({...this.state, 'sport':sport})
+
+
         axios.get(`/api/all_listings/sales/${sport}/${token}`)
         .then(res => {
             console.log(res.data);
             this.setState({...this.state, 'sales':res.data.sales,
                                 'favorite_sals': res.data.wantedCards,
-                            'selectedSport':sport})
+                            'sport':sport})
         })
         .catch(err =>  {
             console.log("error :(")
@@ -295,17 +383,36 @@ class ForSale extends Component {
         }
     }
 
-    setMin = (event) => {
-        this.setState({...this.state, 'minPrice': event.currentTarget.value})
+    setMin = (value) => {
+        console.log(value);
+        this.setState({...this.state, 'minPrice': value})
     }
-    setMax = (event) => {
-        this.setState({...this.state, 'maxPrice': event.currentTarget.value})
+    setMax = (value) => {
+        console.log(value);
+        this.setState({...this.state, 'maxPrice': value})
     }
 
-    filterByPrice = (event) => {
-        if(this.state['minPrice'] != "" && this.state['minPrice'] && this.state['maxPrice'] != "" && this.state['maxPrice']) {
+    // filterByPrice = (event) => {
+    //     console.log(this.state);
+    //     if(this.state['minPrice'] != "" && this.state['minPrice'] && this.state['maxPrice'] != "" && this.state['maxPrice']) {
+    //         let token = localStorage.access_token;
+    //         axios.get(`/api/all_listings/sales/${this.state['sport']}/${[this.state['minPrice'],this.state['maxPrice']]}/${token}`)
+    //         .then(res => {
+    //             console.log(res.data);
+    //             this.setState({...this.state, 'sales':res.data.sales,
+    //                                 'favorite_sales': res.data.wantedCards})
+    //         })
+    //         .catch(err =>  {
+    //             console.log("error :(")
+    //             console.log(err);
+    //         }) 
+    //     }
+    // }
+
+    filterByPrice = (minPrice, maxPrice) => {
+        console.log(this.state);
             let token = localStorage.access_token;
-            axios.get(`/api/all_listings/sales/${this.state['sport']}/${[this.state['minPrice'],this.state['maxPrice']]}/${token}`)
+            axios.get(`/api/all_listings/sales/${this.state['sport']}/${[minPrice, maxPrice]}/${token}`)
             .then(res => {
                 console.log(res.data);
                 this.setState({...this.state, 'sales':res.data.sales,
@@ -315,17 +422,21 @@ class ForSale extends Component {
                 console.log("error :(")
                 console.log(err);
             }) 
-        }
+        
     }
+
+
+
 
 
 
     render() {
         
-            return (<div className="home-container flex-container">
+            return (<div className="home-container">
                               
             <div className="filter-container">
-                <Paper component="form" className="search-bar">
+            <div className="filter-inner">
+                {/* <Paper component="form" className="search-bar-listing">
                     <IconButton type="submit" aria-label="search">
                             <SearchIcon />
                         </IconButton>
@@ -337,15 +448,18 @@ class ForSale extends Component {
                             inputProps={{ 'aria-label': 'search' }}
                           />
 
-                </Paper>
+                </Paper> */}
                     <SelectSport selectedSport={this.state['sport']} changeSport={this.changeSport} />
+                    <PriceRangeDropdown filterByPrice={this.filterByPrice} setMin={this.setMin} setMax={this.setMax} />
 
-                    <div className="price-range-filter">
+                    {/* <PriceSlider filterByPrice={this.filterByPrice} setMin={this.setMin} setMax={this.setMax} /> */}
+                    {/* <div className="price-range-filter">
                         <TextField onChange={this.setMin} variant="filled" className="min-price-filter" id="filled-required" label="Min Price" type="search" variant="outlined" />
                         <TextField onChange={this.setMax} variant="filled" className="max-price-filter" id="filled-required" label="Max Price" type="search" variant="outlined" />
                         <Button className="price-range-filter-btn" onClick={this.filterByPrice}>Go</Button>
-                    </div>
+                    </div> */}
 
+                    </div>
 
 
 
@@ -358,9 +472,7 @@ class ForSale extends Component {
                               
                 {('sales' in this.state && this.state['sales']) &&
                 <div className="right-side-listing">      
-                              <Grid container className="grid-container"
-                  alignItems="center"
-                  justify="center" spacing={3}>
+                              <Grid container className="grid-container" spacing={3}>
                 
                 {
                     this.state['sales'].map((sale, index) => 

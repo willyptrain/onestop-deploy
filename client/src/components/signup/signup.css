@@ -11,7 +11,8 @@
 }
 .signup-card {
     display: flex;
-    height: 50vh !important;
+    height: max-content !important;
+    z-index: 1000 !important;
 }
 .signup-left {
     flex: 1;
@@ -22,6 +23,13 @@
 .signup-right {
     flex: 2;
 }
+
+.signup-btn {
+    width: 80%;
+
+}
+
+
 .logged-in-logo {
     height: 4vh;
     margin-top: 0.5vh !important;

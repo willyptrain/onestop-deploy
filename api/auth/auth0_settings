@@ -1,0 +1,8 @@
+auth0_client_id=""
+auth0_client_secret=""
+auth0_base_url=""
+auth0_token_url=""
+auth0_authorize_url=""
+auth0_client_kwargs={
+    'scope': 'openid profile email',
+}

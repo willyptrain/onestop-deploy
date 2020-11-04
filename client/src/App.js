@@ -8,11 +8,14 @@ import Signup from "./components/signup/signup.js";
 import Redirect from './components/redirect.js';
 import axios from 'axios';
 import Navbar from './components/navbar/navbar.js';
+import CreateNewOffer from './components/CreateListing/CreateNewOffer.js';
 import CreateListing from './components/CreateListing/CreateListing.js';
 import ViewTrade from './components/CreateListing/ViewTrade.js';
 import ViewSale from './components/CreateListing/ViewSale.js';
 import ForTrade from './components/Listings/ForTrade';
 import ForSale from './components/Listings/ForSale';
+import ForTradeMobile from './components/Listings/ForTradeMobile';
+import ForSaleMobile from './components/Listings/ForSaleMobile';
 import ViewForTradeItem from './components/Listings/ViewForTradeItem';
 import ViewForSaleItem from './components/Listings/ViewForSaleItem';
 import Wanted from './components/Listings/Wanted';
@@ -23,13 +26,14 @@ import Notifications from './components/Notifications/Notifications.js'
 import ConfirmationPage from './components/Notifications/ConfirmationPage.js'
 import ShoppingCart from './components/ShoppingCart/ShoppingCart.js';
 import Checkout from './components/ShoppingCart/Checkout.js';
-import ConfirmationSale from './components/ShoppingCart/ConfirmationSale.js'
+import ConfirmationSale from './components/ShoppingCart/ConfirmationSale.js';
 import {
   BrowserView,
   MobileView,
   isBrowser,
   isMobile
 } from "react-device-detect";
+import HomeMobile from './components/home/HomeMobile.js';
 
 
 class App extends React.Component {
@@ -72,6 +76,8 @@ class App extends React.Component {
             if(!localStorage.getItem('cart')) {
               localStorage.setItem('cart', JSON.stringify({}))
             }
+            console.log(token)
+            console.log(res.data)
 
             this.setState({...this.state, launchModal: false, 'status':"logged in",'userInfo': res.data})
         })
@@ -128,6 +134,7 @@ class App extends React.Component {
           <div style={{height:'100%', width: '100%'}}>
           <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"></link>
             <Switch>
+              
               <Route exact path="/" component={(props) =>
                 (this.state.status == 'Not logged in' ? 
                 <div>
@@ -158,12 +165,34 @@ class App extends React.Component {
             }
               </Route>
 
+
+              <Route exact path="/create_listing/new_offer/:posted_card_id/" render={(props) =>
+                
+                (this.state.status == 'Not logged in' ? 
+                <div>
+                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
+                  <Home {...this.state} redirectUrl={`/create_listing/new_offer/${props.match.params.posted_card_id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                </div>
+                
+                :
+                
+                <div>
+                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />
+                  <CreateNewOffer {...this.state} edit={false} type={"trade"} posted_card_id={props.match.params.posted_card_id} userInfo={this.state['userInfo']} />
+                </div>
+                )}/>
+
+
+
+
+
+
               <Route exact path="/create_listing/edit/trade/:id/" render={(props) =>
                 
                 (this.state.status == 'Not logged in' ? 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} redirectUrl={`/create_listing/edit/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Home {...this.state} redirectUrl={`/create_listing/edit/trade/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 
                 :
@@ -179,7 +208,7 @@ class App extends React.Component {
                 (this.state.status == 'Not logged in' ? 
                 <div>
                   <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} redirectUrl={`/create_listing/edit/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
+                  <Home {...this.state} redirectUrl={`/create_listing/edit/sale/${props.match.params.id}`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
                 </div>
                 
                 :
@@ -297,22 +326,7 @@ class App extends React.Component {
 
 
 
-              {/* <Route exact path="/checkout">
-              { this.state.status == 'Not logged in' && 
-                <div>
-                  <Navbar  {...this.state} setModal={this.launchModal}   loggedIn={this.state.status == "logged in"} />
-                  <Home {...this.state} redirectUrl={`/shopping_cart`} launchModal={this.state['launchModal']}  userInfo={this.state['userInfo']} setUserInfo={this.setUserInfo} />
-                </div>
-                
-              }
-              { this.state.status != 'Not logged in' && 
-                <div>
-                  <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
-                  <Checkout {...this.state} userInfo={this.state['userInfo']} />
-                </div>
-              } 
-
-              </Route> */}
+              
 
 
 
@@ -499,6 +513,8 @@ class App extends React.Component {
             }
               </Route>
 
+              <Route render={() => <Redirect url='/' />} />
+
 
 
             </Switch>
@@ -508,11 +524,59 @@ class App extends React.Component {
         </header>
         </BrowserView>
         <MobileView>
-        <div style={{height: '20vh'}}>
-        <Navbar  {...this.state}  loggedIn={this.state.status != 'Not logged in'} />  
-        </div>
+
+        <header className="App-header">
+        <Router>
+          <div style={{height:'100%', width: '100%'}}>
+          <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet"></link>
+            <Switch>
+
+
+            <Route exact path="/">
+               <div>
+
+                {/* <Navbar  {...this.state} mobile={true}  loggedIn={this.state.status != 'Not logged in'} />  */}
+                <HomeMobile />
+                  
+                </div> 
+              </Route>
+
+
+
+
+
+
+
+
+        <Route exact path="/for_sale/all">
+          <div>
+       
+          <Navbar  {...this.state} mobile={true}  loggedIn={this.state.status != 'Not logged in'} /> 
+       
+          
+          <ForSaleMobile {...this.state} sport={{"sport":"all"}} loggedIn={userInfo != 'Not logged in'}  />
+          </div>
+          
+        </Route>
         
-        <h4 className="mont-text">Mobile Support Currently Not Supported</h4>
+        
+        <Route exact path="/for_trade/all">
+        <div>
+        
+          <Navbar  {...this.state} mobile={true}  loggedIn={this.state.status != 'Not logged in'} /> 
+        
+          <ForTradeMobile {...this.state} sport={{"sport":"all"}} loggedIn={userInfo != 'Not logged in'}  />
+          </div>
+        </Route>
+
+        <Route render={() => <Redirect url='/' />} />
+
+
+        </Switch>
+          </div>
+        </Router>
+  
+        </header>
         </MobileView>
       </div>
     );

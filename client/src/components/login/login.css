@@ -19,7 +19,7 @@
     position: relative;
     top: 20vh;
     /* left: 25%; */
-    height: 50vh;
+    height: max-content;
 }
 .login-alert {
     position: absolute;
@@ -40,5 +40,11 @@
 }
 .login-btn {
     width: 80%;
-    margin-top: 8vh !important;
+    margin-top: 4vh !important;
+    margin-bottom: 2vh !important;
+    
+}
+.signup-option {
+    margin-bottom: 4vh !important;
+    width: 100%;
 }
